@@ -1,0 +1,34 @@
+database:
+    dsn: ""
+    src: "../sql/admin.sql"
+    tables: []
+    ignoreTables: []
+    ignoreColumns: []
+api:
+    status: true
+    style: ""
+    jwt: ""
+    middleware: ""
+    prefix: ""
+    multiple: false
+    dir: ""
+    serviceName: "admin-api"
+    tables: []
+    ignoreTables: ["jwt_blacklist"]
+    ignoreColumns: []
+protobuf:
+    status: true
+    package: ""
+    goPackage: ""
+    multiple: false
+    dir: ""
+    serviceName: "admin"
+    tables: []
+    ignoreTables: []
+    ignoreColumns: []
+model:
+    status: false
+    dir: ""
+    tables: []
+    ignoreTables: []
+    ignoreColumns: []
