@@ -26,6 +26,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
   init        Create the default genzero configuration file in the current directory
+  logic       Modify logic files, this feature has not been developed yet
   model       Generate model code
   pb          Generate .proto files
   upgrade     Upgrade genzero to latest version
