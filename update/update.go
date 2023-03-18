@@ -19,20 +19,20 @@ import (
 
 func Update() {
 	currentVersion := config.CurrentVersion
-	fmt.Printf("当前版本号：%s\n", currentVersion)
+	tools.Message("当前版本号：%s\n", currentVersion)
 	latestVersion := getLatestVersion()
-	fmt.Printf("最新版本号：%s\n", latestVersion)
+	tools.Message("最新版本号：%s\n", latestVersion)
 	if latestVersion != currentVersion {
-		fmt.Println("有新版本可用，开始更新...")
+		tools.Warning("有新版本可用，开始更新...")
 		if err := updateSelf("latest"); err != nil {
-			fmt.Printf("更新失败：%s\n", err)
+			tools.Error("更新失败：%s\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("更新成功，重新启动程序...")
+		tools.Success("更新成功，重新启动程序...")
 		// 重新启动程序
 		os.Exit(0)
 	} else {
-		fmt.Println("已是最新版本，无需更新。")
+		tools.Success("已是最新版本，无需更新。")
 	}
 }
 
@@ -40,7 +40,7 @@ func Update() {
 func getLatestVersion() string {
 	v, err := tools.GetLatestReleaseVersion(config.ProjectInfoURL)
 	if err != nil {
-		fmt.Printf("获取最新版本号失败：%s\n", err)
+		tools.Error("获取最新版本号失败：%s\n", err)
 		os.Exit(1)
 	}
 	return v

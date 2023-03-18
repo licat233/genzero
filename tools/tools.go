@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"github.com/iancoleman/strcase"
 )
@@ -65,7 +66,7 @@ func PickMarkContents2(startMark, endMark string, content []byte) ([][]byte, err
 		}
 		byteArr = append(byteArr, target)
 	}
-	// fmt.Printf("%s匹配结果: %#v \n", expr, byteArr)
+	// Message("%s匹配结果: %#v \n", expr, byteArr)
 	return byteArr, nil
 }
 
@@ -79,6 +80,8 @@ func PathExists(path string) (bool, error) {
 	}
 	return false, err
 }
+
+var FileExists = PathExists
 
 func MakeDir(filename string) error {
 	has, err := PathExists(filename)
@@ -193,7 +196,7 @@ func UpgradeCurrentProject(currentVersion, projectInfoURL, projectUrl string) er
 	}
 	//对比版本号
 	if version == currentVersion {
-		fmt.Printf(" version: %s\n The current version is the latest version，no need to upgrade，\n", currentVersion)
+		Success(" version: %s\n The current version is the latest version，no need to upgrade，\n", currentVersion)
 		return nil
 	}
 
@@ -211,7 +214,7 @@ func UpgradeCurrentProject(currentVersion, projectInfoURL, projectUrl string) er
 		return errors.New(out)
 	}
 
-	fmt.Printf("\n Upgrade succeeded: %s -> %s\n", currentVersion, version)
+	Success(" Upgrade succeeded: %s -> %s\n", currentVersion, version)
 	return nil
 }
 
@@ -354,10 +357,6 @@ func IsIdColumn(name string) bool {
 	return strings.HasSuffix(name, "_id") || strings.HasSuffix(name, "Id")
 }
 
-func Println(v any) (n int, err error) {
-	return fmt.Printf("\033[32m%s\033[0m\n", v)
-}
-
 func ExecGoimports(w string) error {
 	// 检查命令是否存在
 	goimportsBinary, err := exec.LookPath("goimports")
@@ -372,7 +371,7 @@ func ExecGoimports(w string) error {
 	// 命令存在，执行它
 	err = exec.Command(goimportsBinary, "-w", w).Run()
 	if err != nil {
-		return errors.New("command failed to run: 【goimports -w .】")
+		return fmt.Errorf("command failed to run: gofmt -w %s】", w)
 	}
 	return nil
 }
@@ -387,4 +386,48 @@ func InstallGoImports() error {
 		return errors.New("failed to install command: go install golang.org/x/tools/cmd/goimports@latest，Please install manually")
 	}
 	return nil
+}
+
+func ExecGoFormat(filename string) error {
+	// 检查命令是否存在
+	goimportsBinary, err := exec.LookPath("gofmt")
+	if err != nil {
+		return fmt.Errorf("未找到gofmt命令：%w\n请先安装go：https://go.dev", err)
+	}
+	if filename == "" {
+		filename = "."
+	}
+	// 命令存在，执行它
+	err = exec.Command(goimportsBinary, "-w", filename).Run()
+	if err != nil {
+		return fmt.Errorf("command failed to run: gofmt -w %s】", filename)
+	}
+	return nil
+}
+
+func Template(name string) *template.Template {
+	return template.New(name).Funcs(template.FuncMap{
+		"ToCamel":      ToCamel,
+		"ToLowerCamel": ToLowerCamel,
+		"ToSnake":      ToSnake,
+	})
+}
+
+func IsReturn(line string) bool {
+	line = strings.TrimSpace(line)
+	reg := regexp.MustCompile(`^return\s.+{},\snil$`)
+	return reg.MatchString(line)
+}
+
+func ParserTpl(tpl string, data any) (string, error) {
+	var buf bytes.Buffer
+	t, err := Template("tpl").Parse(tpl)
+	if err != nil {
+		return "", err
+	}
+	err = t.Execute(&buf, data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

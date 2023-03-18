@@ -33,7 +33,7 @@ import "{{.Filename}}"
 //{{.Comment}}
 type {{.Name}} {
   {{range .Fields}}
-  {{.Name}} {{.Typ}} ^{{.TagType}}:{{.TagName}},{{.TagOpt}}^; //{{.Comment}}
+  {{.Name}} {{.Typ}} {{.TagString}} //{{.Comment}}
   {{end}}
 }
 
@@ -48,7 +48,7 @@ type {{.Name}} {
 //{{.Comment}}
 type {{.Name}} {
   {{range .Fields}}
-  {{.Name}} {{.Typ}} ^{{.TagType}}:{{.TagName}},{{.TagOpt}}^; //{{.Comment}}
+  {{.Name}} {{.Typ}} {{.TagString}} //{{.Comment}}
   {{end}}
 }
 {{end}}
@@ -68,12 +68,7 @@ type {{.Name}} {
 {{if NeedRenderStruct .Multiple .CurrentIsCoreFile}}
 
 {{range .Services}}
-@server(
-  jwt: {{.Server.Jwt}}
-  group: {{.Server.Group}}
-  middleware: {{.Server.Middleware}}
-  prefix: {{.Server.Prefix}}
-)
+{{.Server}}
 service {{$.ServiceName}} {
   {{range .Apis}}
   @doc "{{.Comment}}"

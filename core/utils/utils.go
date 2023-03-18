@@ -2,7 +2,6 @@ package utils
 
 import (
 	"strings"
-	"text/template"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/tools"
@@ -22,8 +21,9 @@ func ConvertStringStyle(style, name string) string {
 	}
 }
 
-func HandleOptContent(opts string) string {
-	list := strings.Split(opts, ",")
+func HandleOptContent(opts ...string) string {
+	optstring := strings.Join(opts, ",")
+	list := strings.Split(optstring, ",")
 	filter := []string{}
 	for _, arg := range list {
 		arg = strings.TrimSpace(arg)
@@ -44,12 +44,4 @@ func ToCamelHandler(value string) string {
 		list[i] = tools.ToCamel(v)
 	}
 	return strings.Join(list, ",")
-}
-
-func Template(name string) *template.Template {
-	return template.New(name).Funcs(template.FuncMap{
-		"ToCamel":      tools.ToCamel,
-		"ToLowerCamel": tools.ToLowerCamel,
-		"ToSnake":      tools.ToSnake,
-	})
 }

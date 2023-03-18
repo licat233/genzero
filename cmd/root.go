@@ -6,6 +6,7 @@ import (
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/api"
+	"github.com/licat233/genzero/core/logic"
 	"github.com/licat233/genzero/core/model"
 	"github.com/licat233/genzero/core/pb"
 	"github.com/licat233/genzero/global"
@@ -19,7 +20,7 @@ var versionCmd = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Print the version number of " + config.ProjectName,
 	Run: func(cmd *cobra.Command, args []string) {
-		tools.Println("current version: " + config.CurrentVersion)
+		tools.Success("current version: " + config.CurrentVersion)
 	},
 }
 
@@ -40,7 +41,7 @@ var initCmd = &cobra.Command{
 		if err := config.C.CreateYaml(); err != nil {
 			log.Fatalln(err)
 		}
-		tools.Println("Done.")
+		tools.Success("Done.")
 	},
 }
 
@@ -53,7 +54,7 @@ var modelCmd = &cobra.Command{
 		if err := model.New().Run(); err != nil {
 			log.Fatal(err)
 		}
-		tools.Println("Done.")
+		tools.Success("Done.")
 	},
 }
 
@@ -66,7 +67,7 @@ var apiCmd = &cobra.Command{
 		if err := api.New().Run(); err != nil {
 			log.Fatal(err)
 		}
-		tools.Println("Done.")
+		tools.Success("Done.")
 	},
 }
 
@@ -79,7 +80,46 @@ var pbCmd = &cobra.Command{
 		if err := pb.New().Run(); err != nil {
 			log.Fatal(err)
 		}
-		tools.Println("Done.")
+		tools.Success("Done.")
+	},
+}
+
+var logicCmd = &cobra.Command{
+	Use:   "logic",
+	Short: "Modify logic files, this feature has not been developed yet",
+	Run: func(cmd *cobra.Command, args []string) {
+		config.C.LogicConfig.Status = true
+		Initialize()
+		if err := logic.New().Run(); err != nil {
+			log.Fatal(err)
+		}
+		tools.Success("Done.")
+	},
+}
+
+var apilogicCmd = &cobra.Command{
+	Use:   "api",
+	Short: "Modify api logic files",
+	Run: func(cmd *cobra.Command, args []string) {
+		config.C.LogicConfig.Api.Status = true
+		Initialize()
+		if err := logic.New().Run(); err != nil {
+			log.Fatal(err)
+		}
+		tools.Success("Done.")
+	},
+}
+
+var rpclogicCmd = &cobra.Command{
+	Use:   "rpc",
+	Short: "Modify rpc logic files",
+	Run: func(cmd *cobra.Command, args []string) {
+		config.C.LogicConfig.Rpc.Status = true
+		Initialize()
+		if err := logic.New().Run(); err != nil {
+			log.Fatal(err)
+		}
+		tools.Success("Done.")
 	},
 }
 
@@ -107,7 +147,7 @@ var yamlCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 		}
-		tools.Println("Done.")
+		tools.Success("Done.")
 	},
 }
 
@@ -165,6 +205,16 @@ func init() {
 	modelCmd.PersistentFlags().StringSliceVar(&config.C.ApiConfig.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
 	modelCmd.PersistentFlags().StringSliceVar(&config.C.ApiConfig.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
+	apilogicCmd.PersistentFlags().BoolVar(&config.C.LogicConfig.Api.UseRpc, "use_rpc", false, "use rpc for api")
+	apilogicCmd.PersistentFlags().StringVar(&config.C.LogicConfig.Api.Dir, "dir", "", "api logic directory")
+	apilogicCmd.PersistentFlags().StringSliceVar(&config.C.LogicConfig.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
+	apilogicCmd.PersistentFlags().StringSliceVar(&config.C.LogicConfig.Api.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
+
+	rpclogicCmd.PersistentFlags().BoolVar(&config.C.LogicConfig.Rpc.Multiple, "multiple", false, "is multiple ?")
+	rpclogicCmd.PersistentFlags().StringVar(&config.C.LogicConfig.Rpc.Dir, "dir", "", "rpc logic directory")
+	rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.LogicConfig.Rpc.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
+	rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.LogicConfig.Rpc.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
+
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(initCmd)
@@ -172,6 +222,11 @@ func init() {
 	rootCmd.AddCommand(apiCmd)
 	rootCmd.AddCommand(modelCmd)
 	rootCmd.AddCommand(yamlCmd)
+
+	logicCmd.AddCommand(apilogicCmd)
+	logicCmd.AddCommand(rpclogicCmd)
+
+	rootCmd.AddCommand(logicCmd)
 }
 
 func Initialize() {

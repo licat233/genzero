@@ -1,8 +1,6 @@
 package conf
 
 var (
-	FileContent string //文件内容
-
 	BaseIgnoreTables  = []string{} //当前服务必须忽略的表
 	BaseIgnoreColumns = []string{} //每个结构体必须忽略的列
 

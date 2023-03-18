@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"sort"
+	"text/template"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/pb/conf"
@@ -134,7 +135,11 @@ func (s *PbCore) WriteFile(content string) error {
 }
 
 func (s *PbCore) Render() (string, error) {
-	tmpl, err := utils.Template("proto").Parse(s.TplContent)
+	tmpl, err := tools.Template("proto").Funcs(template.FuncMap{
+		"isEmpty": func(str string) bool {
+			return tools.TrimSpace(str) == ""
+		},
+	}).Parse(s.TplContent)
 	if err != nil {
 		return "", err
 	}

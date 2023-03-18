@@ -12,7 +12,6 @@ import (
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/model/conf"
 	"github.com/licat233/genzero/core/model/internal/funcs"
-	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/parser"
 	"github.com/licat233/genzero/tools"
 )
@@ -79,7 +78,7 @@ func (t *TableModel) WriteFile(content string) error {
 }
 
 func (t *TableModel) Render() (string, error) {
-	tmpl, err := utils.Template("model").Parse(t.TplContent)
+	tmpl, err := tools.Template("model").Parse(t.TplContent)
 	if err != nil {
 		return "", err
 	}
@@ -149,7 +148,7 @@ func (t *TableModel) ExtendOriginalInterface() error {
 		return err
 	}
 	if !has {
-		fmt.Printf("\n%s 文件不存在，请先使用goctl工具创建", genFilename)
+		tools.Warning("%s 文件不存在，请先使用goctl工具创建", genFilename)
 		return nil
 	}
 
@@ -195,7 +194,7 @@ func (t *TableModel) ExtendOriginalInterface() error {
 
 	_, err = file.WriteString(newContent.String())
 	if err != nil {
-		fmt.Println("文件写入失败，请检查文件路径是否正确")
+		tools.Error("文件写入失败，请检查文件路径是否正确")
 		return err
 	}
 

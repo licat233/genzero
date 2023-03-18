@@ -66,7 +66,9 @@ func (c *PbConfig) Validate() error {
 		c.Package = tools.ToLowerCamel(c.ServiceName) + "_proto"
 	}
 	if c.GoPackage == "" {
-		c.GoPackage = tools.ToLowerCamel(c.ServiceName) + "_pb"
+		c.GoPackage = "./" + tools.ToLowerCamel(c.ServiceName) + "_pb"
+	} else if !strings.HasSuffix(c.GoPackage, "/") && !strings.HasSuffix(c.GoPackage, "./") {
+		c.GoPackage = "./" + c.GoPackage
 	}
 	c.ServiceName = tools.ToCamel(c.ServiceName)
 	return nil
@@ -83,4 +85,23 @@ type ModelConfig struct {
 
 func (c *ModelConfig) Validate() error {
 	return nil
+}
+
+// logic配置global.Config
+type LogicConfig struct {
+	Status bool `yaml:"status"` // modify logic
+	Api    struct {
+		Status       bool     `yaml:"status"`       // generate api
+		UseRpc       bool     `yaml:"useRpc"`       // use rpc
+		Dir          string   `yaml:"dir"`          // api logic directory
+		Tables       []string `yaml:"tables"`       // need to generate tables, default is all tables，split multiple value by ","
+		IgnoreTables []string `yaml:"ignoreTables"` // ignore table string, default is none，split multiple value by ","
+	} `yaml:"api"`
+	Rpc struct {
+		Status       bool     `yaml:"status"`       // generate rpc
+		Multiple     bool     `yaml:"multiple"`     // is multiple
+		Dir          string   `yaml:"dir"`          // rpc logic directory
+		Tables       []string `yaml:"tables"`       // need to generate tables, default is all tables，split multiple value by ","
+		IgnoreTables []string `yaml:"ignoreTables"` // ignore table string, default is none，split multiple value by ","
+	} `yaml:"rpc"`
 }

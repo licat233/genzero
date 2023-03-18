@@ -139,7 +139,7 @@ func (s *ApiCore) WriteFile(content string) error {
 }
 
 func (s *ApiCore) Render() (string, error) {
-	tmpl, err := utils.Template("api").Funcs(template.FuncMap{
+	tmpl, err := tools.Template("api").Funcs(template.FuncMap{
 		"NeedRenderStruct": func(isMultiple, isCoreFile bool) bool {
 			return !isMultiple || (isMultiple && !isCoreFile)
 		},

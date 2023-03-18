@@ -51,24 +51,6 @@ func (sc ServiceCollection) Swap(i, j int) {
 	sc[i], sc[j] = sc[j], sc[i]
 }
 
-type Server struct {
-	Name       string
-	Jwt        string
-	Group      string
-	Middleware string
-	Prefix     string
-}
-
-func NewServer(name, jwt, group, middleware, prefix string) *Server {
-	return &Server{
-		Name:       name,
-		Jwt:        jwt,
-		Group:      group,
-		Middleware: middleware,
-		Prefix:     prefix,
-	}
-}
-
 type Api struct {
 	Method  string
 	Path    string

@@ -135,25 +135,38 @@ func (mc StructCollection) Swap(i, j int) {
 }
 
 type StructField struct {
-	Name    string
-	Typ     string
-	TagType string
-	TagName string
-	TagOpt  string
-	Comment string
+	Name      string
+	Typ       string
+	TagType   string
+	TagName   string
+	TagOpt    string
+	TagString string
+	Comment   string
 }
 
 func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *StructField {
 	if tagName == "" {
 		tagName = name
 	}
+	if tagType == "" {
+		tagType = "json"
+	}
+
+	if typ == "time.Time" {
+		typ = "int64"
+	}
+
+	tagName = utils.ConvertStringStyle(config.C.ApiConfig.Style, tagName)
+	tagOptString := utils.HandleOptContent(tagName, tagOpt)
+	tagString := fmt.Sprintf("`%s:\"%s\"`", tagType, tagOptString)
 	return &StructField{
-		Name:    name,
-		Typ:     typ,
-		TagType: tagType,
-		TagName: utils.ConvertStringStyle(config.C.ApiConfig.Style, tagName),
-		TagOpt:  utils.HandleOptContent(tagOpt),
-		Comment: comment,
+		Name:      name,
+		Typ:       typ,
+		TagType:   tagType,
+		TagName:   tagName,
+		TagOpt:    tagOpt,
+		TagString: tagString,
+		Comment:   comment,
 	}
 }
 

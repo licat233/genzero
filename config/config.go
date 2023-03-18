@@ -10,8 +10,9 @@ var C *Config
 type Config struct {
 	DatabaseConfig *DatabaseConfig `yaml:"database"`
 	ApiConfig      *ApiConfig      `yaml:"api"`
-	PbConfig       *PbConfig       `yaml:"protobuf"`
+	PbConfig       *PbConfig       `yaml:"proto"`
 	ModelConfig    *ModelConfig    `yaml:"model"`
+	LogicConfig    *LogicConfig    `yaml:"logic"`
 }
 
 func New() *Config {
@@ -20,10 +21,27 @@ func New() *Config {
 		ApiConfig:      &ApiConfig{},
 		PbConfig:       &PbConfig{},
 		ModelConfig:    &ModelConfig{},
+		LogicConfig:    &LogicConfig{},
 	}
 }
 
 func (c *Config) CreateYaml() error {
+	//先判断是否已经存在
+	exists, err := tools.PathExists(DefaultConfigFileName)
+	if err != nil {
+		return err
+	}
+	if exists {
+		//判断内容是否为空
+		content, err := tools.ReadFile(DefaultConfigFileName)
+		if err != nil {
+			return err
+		}
+		if content != "" {
+			tools.Warning("%s already exists, please empty the file content or delete the file first.", DefaultConfigFileName)
+			return nil
+		}
+	}
 	yamlBytes, err := yaml.Marshal(c)
 	if err != nil {
 		return err

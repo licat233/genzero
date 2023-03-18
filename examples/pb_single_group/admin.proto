@@ -6,7 +6,7 @@
 syntax = "proto3";
 
 package admin_proto;
-option go_package="admin_pb";
+option go_package="./admin_pb";
 
 // ------------------------------ Import Start ------------------------------
 

@@ -6,7 +6,7 @@
 syntax = "proto3";
 
 package admin_proto;
-option go_package="admin_pb";
+option go_package="./admin_pb";
 
 // ------------------------------ Import Start ------------------------------
 
@@ -385,7 +385,7 @@ message PutJwtBlacklistResp {
 
 // ------------------------------ Service Start ------------------------------
 
-service Admin {
+service Base {
 
   // Adminer rpc
 
@@ -427,9 +427,16 @@ service Admin {
   //获取jwt黑名单枚举列表
   rpc BaseGetJwtBlacklistEnums(GetJwtBlacklistEnumsReq) returns (Enums);
 
+}
+
+service Admin {
   // The content in this block will not be updated
   // 此区块内的内容不会被更新
   //[custom service start]
+
+  //Preset methods can be deleted. At least one method needs to be defined in a service
+  //预置的方法，可以删除，一个 service 中至少需要定义一个 method
+  rpc Test(NilReq) returns (NilResp);
 
   //[custom service end]
 }

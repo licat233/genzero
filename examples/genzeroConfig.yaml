@@ -16,19 +16,33 @@ api:
     tables: []
     ignoreTables: ["jwt_blacklist"]
     ignoreColumns: []
-protobuf:
+proto:
     status: true
     package: ""
     goPackage: ""
-    multiple: false
+    multiple: true
     dir: ""
     serviceName: "admin"
     tables: []
     ignoreTables: []
     ignoreColumns: []
 model:
-    status: false
-    dir: ""
+    status: true
+    dir: "model"
     tables: []
     ignoreTables: []
     ignoreColumns: []
+logic:
+    status: false
+    api:
+        status: false
+        useRpc: false
+        dir: ""
+        tables: []
+        ignoreTables: []
+    rpc:
+        status: false
+        multiple: false
+        dir: ""
+        tables: []
+        ignoreTables: []

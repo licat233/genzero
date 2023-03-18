@@ -82,7 +82,7 @@ message {{.Name}} {
 {{.ServiceStartMark}}
 
 {{if .Multiple}}
-service Base{{.ServiceName}} {
+service Base {
   {{range .Services }}
   // {{.Name}} rpc
 
@@ -93,7 +93,20 @@ service Base{{.ServiceName}} {
 
   {{end}}
 }
+{{/* 用户自定义service板块start */}}
+{{if isEmpty .CustomServiceContent}}
+service {{.ServiceName}} {
+  // The content in this block will not be updated
+  // 此区块内的内容不会被更新
+  {{.CustomServiceStartMark}}
 
+  //Preset methods can be deleted. At least one method needs to be defined in a service
+  //预置的方法，可以删除，一个 service 中至少需要定义一个 method
+  rpc Test(NilReq) returns (NilResp);
+
+  {{.CustomServiceEndMark}}
+}
+{{else}}
 service {{.ServiceName}} {
   // The content in this block will not be updated
   // 此区块内的内容不会被更新
@@ -103,6 +116,8 @@ service {{.ServiceName}} {
 
   {{.CustomServiceEndMark}}
 }
+{{end}}
+{{/* 用户自定义service板块end */}}
 {{else}}
 service {{.ServiceName}} {
   {{range .Services }}
