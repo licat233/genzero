@@ -68,7 +68,7 @@ genzero model --src="../sql/admin.sql" --service_name="admin" --dir="model"
 genzeroConfig.yaml will be created in the current directory
 
 ```shell
-genzero init
+genzero init config
 ```
 
 A genzeroConfig.yaml configuration file will be created. [Sample file](./examples/genzeroConfig.yaml)

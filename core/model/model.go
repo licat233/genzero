@@ -14,10 +14,10 @@ type ModelCore struct {
 }
 
 func New() *ModelCore {
-	dbTables := utils.FilterTables(global.Schema.Tables, config.C.ModelConfig.Tables, utils.MergeSlice(config.C.ModelConfig.IgnoreTables, conf.BaseIgnoreTables))
+	dbTables := utils.FilterTables(global.Schema.Tables, config.C.Model.Tables, utils.MergeSlice(config.C.Model.IgnoreTables, conf.BaseIgnoreTables))
 	tables := make(internal.TableModelCollection, 0, len(dbTables))
 	for _, t := range dbTables {
-		tables = append(tables, *internal.NewTableModel(t.Copy()))
+		tables = append(tables, internal.NewTableModel(t.Copy()))
 	}
 	return &ModelCore{
 		Tables: tables,
@@ -25,12 +25,12 @@ func New() *ModelCore {
 }
 
 func (m *ModelCore) Run() (err error) {
-	for _, table := range m.Tables {
-		if err := table.Run(); err != nil {
-			return err
-		}
+	err = m.Generate()
+	if err != nil {
+		tools.Error("generate model file failed: %v", err)
+	} else {
+		tools.Success("generate model file success")
 	}
-	err = tools.ExecGoimports(config.C.ModelConfig.Dir)
 	return
 }
 
@@ -38,13 +38,16 @@ func (m *ModelCore) Generate() error {
 	if err := m.initTplContent(); err != nil {
 		return err
 	}
-	for _, table := range m.Tables {
-		if err := table.Run(); err != nil {
+	for _, tableModel := range m.Tables {
+		if tableModel == nil {
+			continue
+		}
+		if err := tableModel.Run(); err != nil {
 			return err
 		}
 	}
-
-	return nil
+	err := tools.ExecGoimports(config.C.Model.Dir)
+	return err
 }
 
 func (m *ModelCore) initTplContent() (err error) {

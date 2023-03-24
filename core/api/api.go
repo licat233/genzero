@@ -10,7 +10,7 @@ import (
 	"github.com/licat233/genzero/core/api/internal"
 	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
-	"github.com/licat233/genzero/parser"
+	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
@@ -44,7 +44,7 @@ type ApiCore struct {
 	CustomServiceContent   string
 	CustomServiceEndMark   string
 
-	DbTables          parser.TableCollection
+	DbTables          sql.TableCollection
 	DbIgoreFieldsName []string
 
 	Imports     internal.ImportCollection
@@ -54,7 +54,7 @@ type ApiCore struct {
 }
 
 func getOutFilename(name string) string {
-	return path.Join(config.C.ApiConfig.Dir, tools.ToLowerCamel(name)+".api")
+	return path.Join(config.C.Api.Dir, tools.ToLowerCamel(name)+".api")
 }
 
 func New() *ApiCore {
@@ -64,11 +64,11 @@ func New() *ApiCore {
 		ProjectAddr:            config.ProjectURL,
 		ProjectVersion:         config.CurrentVersion,
 		TplContent:             conf.TplContent,
-		OutFileName:            getOutFilename(config.C.ApiConfig.ServiceName),
+		OutFileName:            getOutFilename(config.C.Api.ServiceName),
 		OldContent:             "",
-		Multiple:               config.C.ApiConfig.Multiple,
+		Multiple:               config.C.Api.Multiple,
 		CurrentIsCoreFile:      true,
-		ServiceName:            config.C.ApiConfig.ServiceName,
+		ServiceName:            config.C.Api.ServiceName,
 		ServiceComment:         global.Schema.Comment,
 		ImportStartMark:        config.ImportStartMark,
 		ImportEndMark:          config.ImportEndMark,
@@ -85,8 +85,8 @@ func New() *ApiCore {
 		CustomServiceStartMark: config.CustomServiceStartMark,
 		CustomServiceContent:   "",
 		CustomServiceEndMark:   config.CustomServiceEndMark,
-		DbTables:               utils.FilterTables(global.Schema.Tables, config.C.ApiConfig.Tables, utils.MergeSlice(config.C.ApiConfig.IgnoreTables, conf.BaseIgnoreTables)),
-		DbIgoreFieldsName:      utils.MergeSlice(config.C.ApiConfig.IgnoreColumns, conf.BaseIgnoreColumns),
+		DbTables:               utils.FilterTables(global.Schema.Tables, config.C.Api.Tables, utils.MergeSlice(config.C.Api.IgnoreTables, conf.BaseIgnoreTables)),
+		DbIgoreFieldsName:      utils.MergeSlice(config.C.Api.IgnoreColumns, conf.BaseIgnoreColumns),
 		Imports:                []*internal.Import{},
 		BaseStructs:            internal.GenBaseStructCollection(),
 		Structs:                []*internal.Struct{},
@@ -112,12 +112,19 @@ func (s *ApiCore) Run() error {
 	}
 
 	s.CurrentIsCoreFile = true
-	s.OutFileName = getOutFilename(config.C.ApiConfig.ServiceName)
+	s.OutFileName = getOutFilename(config.C.Api.ServiceName)
 	s.Imports = imports
-	return s.Generate()
+
+	err := s.Generate()
+	if err != nil {
+		tools.Error("generate api file failed: %v", err)
+	} else {
+		tools.Success("generate api file success")
+	}
+	return err
 }
 
-func (s *ApiCore) Generate(tables ...parser.Table) error {
+func (s *ApiCore) Generate(tables ...sql.Table) error {
 	s.DbTables = tables
 	err := s.Init()
 	if err != nil {

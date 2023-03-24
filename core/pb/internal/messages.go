@@ -49,9 +49,9 @@ func (ms *Message) IgnoreMessageFields(needIgnoreFields []string, more ...string
 
 func (ms *Message) GenCommonMessages() []*Message {
 	//default
-	defaultMessage := ms.Copy().IgnoreMessageFields(config.C.PbConfig.IgnoreColumns)
+	defaultMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns)
 	//add req
-	addReqMessage := ms.Copy().IgnoreMessageFields(config.C.PbConfig.IgnoreColumns, conf.MoreIgnoreColumns...) //AddReqMessage
+	addReqMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns, conf.MoreIgnoreColumns...) //AddReqMessage
 	addReqMessage.Name = "Add" + tools.ToCamel(ms.Name) + "Req"
 	addReqMessage.Comment = "添加" + ms.Comment + "请求"
 	//add resp
@@ -62,7 +62,7 @@ func (ms *Message) GenCommonMessages() []*Message {
 		NewMessageField(tools.ToCamel(ms.Name), ms.Name, 1, ms.Comment+"信息"),
 	}
 	//put req
-	putReqMessage := ms.Copy().IgnoreMessageFields(config.C.PbConfig.IgnoreColumns) //PutReqMessage
+	putReqMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns) //PutReqMessage
 	putReqMessage.Name = "Put" + tools.ToCamel(ms.Name) + "Req"
 	putReqMessage.Comment = "更新" + ms.Comment + "请求"
 	//put resp

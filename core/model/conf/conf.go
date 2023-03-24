@@ -6,17 +6,18 @@ var (
 
 	MoreIgnoreTables  = []string{}             //当前服务可能忽略的表
 	MoreIgnoreColumns = []string{"id", "uuid"} //某个结构可能忽略的列
-
-	QueryRow  = "m.conn.QueryRowCtx"
-	QueryRows = "m.conn.QueryRowsCtx"
+	IsCacheMode       bool
 )
 
-func ChangeQueryString(isCache bool) {
-	if isCache {
-		QueryRow = "m.QueryRowNoCacheCtx"
-		QueryRows = "m.QueryRowsNoCacheCtx"
-	} else {
-		QueryRow = "m.conn.QueryRowCtx"
-		QueryRows = "m.conn.QueryRowsCtx"
-	}
-}
+// func ChangeQueryString(isCache bool) {
+// 	IsCacheMode = isCache
+// 	if isCache {
+// 		QueryRow = "m.QueryRowNoCacheCtx"
+// 		QueryRows = "m.QueryRowsNoCacheCtx"
+// 		Exec = "m.ExecNoCacheCtx"
+// 	} else {
+// 		QueryRow = "m.conn.QueryRowCtx"
+// 		QueryRows = "m.conn.QueryRowsCtx"
+// 		Exec = "m.conn.ExecCtx"
+// 	}
+// }

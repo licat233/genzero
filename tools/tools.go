@@ -84,24 +84,8 @@ func PathExists(path string) (bool, error) {
 var FileExists = PathExists
 
 func MakeDir(filename string) error {
-	has, err := PathExists(filename)
-	if err != nil {
-		return err
-	}
-	if !has {
-		dir := path.Dir(filename)
-		has, err = PathExists(dir)
-		if err != nil {
-			return err
-		}
-		if !has {
-			err = os.MkdirAll(dir, os.ModePerm)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+	err := os.MkdirAll(filename, 0755)
+	return err
 }
 
 func RTCFile(filename string) (content string, f *os.File, err error) {
@@ -176,6 +160,24 @@ func ToLowerCamel(s string) string {
 
 func ToSnake(s string) string {
 	return strcase.ToSnake(strcase.ToCamel(s))
+}
+
+func IsSnake(s string) bool {
+	// 定义正则表达式
+	r := regexp.MustCompile(`^[a-z]+(_[a-z]+)*$`)
+	return r.MatchString(s)
+}
+
+func IsCamel(s string) bool {
+	// 定义正则表达式
+	r := regexp.MustCompile(`^[A-Z]+([A-Z][a-z]*)*$`)
+	return r.MatchString(s)
+}
+
+func IsLowerCamel(s string) bool {
+	// 定义正则表达式
+	r := regexp.MustCompile(`^[a-z]+([A-Z][a-z]*)*$`)
+	return r.MatchString(s)
 }
 
 func ExecShell(command string) (string, error) {
@@ -311,12 +313,35 @@ func FindFile(dir string, file string) (string, error) {
 	return "", nil
 }
 
+func CreateFile(filePath string) (*os.File, error) {
+	// 获取文件所在的目录
+	dir := filepath.Dir(filePath)
+
+	// 创建目录及其父目录
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
+	}
+
+	// 创建文件
+	f, err := os.Create(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return f, nil
+}
+
 func WriteFile(filename string, data string) error {
-	file, err := os.Create(filename)
+	file, err := CreateFile(filename)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(f *os.File) {
+		if f != nil {
+			f.Close()
+		}
+	}(file)
+
 	_, err = file.WriteString(data)
 	if err != nil {
 		return err
@@ -430,4 +455,14 @@ func ParserTpl(tpl string, data any) (string, error) {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func FormatGoFile(filename string) error {
+	if err := ExecGoimports(filename); err != nil {
+		return err
+	}
+	if err := ExecGoFormat(filename); err != nil {
+		return err
+	}
+	return nil
 }

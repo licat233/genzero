@@ -1,12 +1,13 @@
 api:
     dir: ""
     ignoreColumns: []
-    ignoreTables: []
+    ignoreTables:
+        - jwt_blacklist
     jwt: ""
     middleware: ""
     multiple: false
     prefix: ""
-    serviceName: ""
+    serviceName: admin-api
     status: false
     style: genZero
     tables: []
@@ -14,29 +15,29 @@ database:
     dsn: ""
     ignoreColumns: []
     ignoreTables: []
-    src: ""
+    src: ../sql/admin.sql
     tables: []
 logic:
     api:
-        dir: ""
+        dir: api/internal/logic
         ignoreTables: []
-        status: false
+        status: true
         style: genZero
         tables: []
-        useRpc: false
+        useRpc: true
     rpc:
-        dir: ""
+        dir: rpc/internal/logic
         ignoreTables: []
-        multiple: false
-        status: false
+        multiple: true
+        status: true
         style: genZero
         tables: []
-    status: false
+    status: true
 model:
-    dir: ""
+    dir: model
     ignoreColumns: []
     ignoreTables: []
-    status: false
+    status: true
     tables: []
 proto:
     dir: ""
@@ -45,7 +46,7 @@ proto:
     ignoreTables: []
     multiple: false
     package: ""
-    serviceName: ""
+    serviceName: admin
     status: false
     style: genZero
     tables: []

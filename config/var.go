@@ -1,12 +1,16 @@
 package config
 
+import "strings"
+
 var (
-	UseYaml bool
+	UseConf     bool
+	ConfSrc     string
+	InitConfSrc string
 )
 
 const (
 	// CurrentVersion 当前项目版本
-	CurrentVersion = "v1.0.0"
+	CurrentVersion = "v1.1.0-bate.1"
 
 	// ProjectName 当前项目名称
 	ProjectName = "genzero"
@@ -26,6 +30,12 @@ const (
 	UpdatedFileMsg = "已更新文件"
 	CreatedFileMsg = "已创建文件"
 )
+
+var StyleList = strings.Join([]string{
+	LowerCamelCase,
+	CamelCase,
+	SnakeCase,
+}, ",")
 
 var (
 	InfoStartMark, InfoEndMark       = GetMark("Info")

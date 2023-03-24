@@ -52,13 +52,13 @@ func (st *Struct) IgnoreStructFields(needIgnoreFields []string, more ...string) 
 
 func (st *Struct) GenCommonStructs() []*Struct {
 	//default
-	defaultStruct := st.Copy().IgnoreStructFields(config.C.ApiConfig.IgnoreColumns)
+	defaultStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns)
 	//add req
-	addReqStruct := st.Copy().IgnoreStructFields(config.C.ApiConfig.IgnoreColumns, conf.MoreIgnoreColumns...) //AddReqStruct
+	addReqStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns, conf.MoreIgnoreColumns...) //AddReqStruct
 	addReqStruct.Name = "Add" + tools.ToCamel(st.Name) + "Req"
 	addReqStruct.Comment = "添加" + st.Comment + "请求"
 	//put req
-	putReqStruct := st.Copy().IgnoreStructFields(config.C.ApiConfig.IgnoreColumns) //PutReqStruct
+	putReqStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns) //PutReqStruct
 	putReqStruct.Name = "Put" + tools.ToCamel(st.Name) + "Req"
 	putReqStruct.Comment = "更新" + st.Comment + "请求"
 	//del req
@@ -82,7 +82,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	listReqStruct.TagType = "form"
 	listReqStruct.Fields = GenListReqFields().PutTagType(st.TagType)
 	for _, field := range st.Fields {
-		if tools.HasInSlice(config.C.ApiConfig.IgnoreColumns, field.Name) {
+		if tools.HasInSlice(config.C.Api.IgnoreColumns, field.Name) {
 			continue
 		}
 		field.TagType = st.TagType
@@ -156,7 +156,7 @@ func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *Struct
 		typ = "int64"
 	}
 
-	tagName = utils.ConvertStringStyle(config.C.ApiConfig.Style, tagName)
+	tagName = utils.ConvertStringStyle(config.C.Api.Style, tagName)
 	tagOptString := utils.HandleOptContent(tagName, tagOpt)
 	tagString := fmt.Sprintf("`%s:\"%s\"`", tagType, tagOptString)
 	return &StructField{

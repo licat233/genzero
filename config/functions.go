@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/licat233/genzero/tools"
 	"gopkg.in/yaml.v3"
@@ -26,15 +27,15 @@ func GetBaseMark(name string) (startMark string, endMark string) {
 }
 
 func ConfigureByYaml(filename string, config *Config) error {
-	exists, err := tools.PathExists(DefaultConfigFileName)
+	exists, err := tools.PathExists(ConfSrc)
 	if err != nil {
 		return err
 	}
 	if !exists {
-		return errors.New("config file not exists, please create it first, command: " + ProjectName + " init")
+		return fmt.Errorf("config file (%s) not exists, please create it first, command: %s init", ConfSrc, ProjectName)
 	}
 	if filename == "" {
-		filename = DefaultConfigFileName
+		filename = ConfSrc
 	}
 	data, err := tools.ReadFile(filename)
 	if err != nil {

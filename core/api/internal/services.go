@@ -19,7 +19,7 @@ func NewService(name, comment string) *Service {
 		Name:    name,
 		Comment: comment,
 		Apis:    ApiCollection{},
-		Server:  NewServer(name, config.C.ApiConfig.Jwt, tools.ToLowerCamel(name), config.C.ApiConfig.Middleware, path.Join(config.C.ApiConfig.Prefix, tools.ToLowerCamel(name))),
+		Server:  NewServer(name, config.C.Api.Jwt, tools.ToLowerCamel(name), config.C.Api.Middleware, path.Join(config.C.Api.Prefix, tools.ToLowerCamel(name))),
 	}
 	s.initBaseApiServiceItems()
 	return s

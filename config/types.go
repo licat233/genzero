@@ -48,6 +48,7 @@ func (c *ApiConfig) Validate() error {
 // pb配置
 type PbConfig struct {
 	Status        bool     `yaml:"status"` // generate proto
+	Style         string   `yaml:"style"`
 	Package       string   `yaml:"package"`
 	GoPackage     string   `yaml:"goPackage"`
 	Multiple      bool     `yaml:"multiple"`
@@ -93,15 +94,23 @@ type LogicConfig struct {
 	Api    struct {
 		Status       bool     `yaml:"status"`       // generate api
 		UseRpc       bool     `yaml:"useRpc"`       // use rpc
+		Style        string   `yaml:"style"`        // style
 		Dir          string   `yaml:"dir"`          // api logic directory
 		Tables       []string `yaml:"tables"`       // need to generate tables, default is all tables，split multiple value by ","
 		IgnoreTables []string `yaml:"ignoreTables"` // ignore table string, default is none，split multiple value by ","
+		// IgnoreColumns []string `yaml:"ignoreColumns"` // ignore column string, default is none，split multiple value by ","
 	} `yaml:"api"`
 	Rpc struct {
 		Status       bool     `yaml:"status"`       // generate rpc
 		Multiple     bool     `yaml:"multiple"`     // is multiple
+		Style        string   `yaml:"style"`        // style
 		Dir          string   `yaml:"dir"`          // rpc logic directory
 		Tables       []string `yaml:"tables"`       // need to generate tables, default is all tables，split multiple value by ","
 		IgnoreTables []string `yaml:"ignoreTables"` // ignore table string, default is none，split multiple value by ","
+		// IgnoreColumns []string `yaml:"ignoreColumns"` // ignore column string, default is none，split multiple value by ","
 	} `yaml:"rpc"`
+}
+
+func (c *LogicConfig) Validate() error {
+	return nil
 }

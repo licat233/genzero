@@ -4,20 +4,20 @@ import (
 	"errors"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/parser"
+	"github.com/licat233/genzero/sql"
 )
 
-var Schema *parser.Schema
+var Schema *sql.Schema
 
 func InitSchema() (err error) {
-	parser.InitConfig()
+	sql.InitConfig()
 	//优先使用ddl模式
-	if config.C.DatabaseConfig.Src != "" {
-		Schema, err = parser.ParseSqlFile(config.C.DatabaseConfig.Src)
+	if config.C.DB.Src != "" {
+		Schema, err = sql.ParseSqlFile(config.C.DB.Src)
 		return
 	}
-	if config.C.DatabaseConfig.DSN != "" {
-		Schema, err = parser.ParseSqlDsn(config.C.DatabaseConfig.DSN)
+	if config.C.DB.DSN != "" {
+		Schema, err = sql.ParseSqlDsn(config.C.DB.DSN)
 		return
 	}
 

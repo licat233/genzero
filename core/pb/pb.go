@@ -12,7 +12,7 @@ import (
 	"github.com/licat233/genzero/core/pb/internal"
 	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
-	"github.com/licat233/genzero/parser"
+	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
@@ -52,7 +52,7 @@ type PbCore struct {
 	CustomServiceContent   string
 	CustomServiceEndMark   string
 
-	DbTables          parser.TableCollection
+	DbTables          sql.TableCollection
 	DbIgoreFieldsName []string
 
 	Imports      internal.ImportCollection
@@ -63,7 +63,7 @@ type PbCore struct {
 }
 
 func getOutFilename(name string) string {
-	return path.Join(config.C.PbConfig.Dir, tools.ToLowerCamel(name)+".proto")
+	return path.Join(config.C.Pb.Dir, tools.ToLowerCamel(name)+".proto")
 }
 
 func New() *PbCore {
@@ -73,13 +73,13 @@ func New() *PbCore {
 		ProjectAddr:            config.ProjectURL,
 		ProjectVersion:         config.CurrentVersion,
 		TplContent:             conf.TplContent,
-		OutFileName:            getOutFilename(config.C.PbConfig.ServiceName),
+		OutFileName:            getOutFilename(config.C.Pb.ServiceName),
 		OldContent:             "",
-		Multiple:               config.C.PbConfig.Multiple,
-		ServiceName:            config.C.PbConfig.ServiceName,
+		Multiple:               config.C.Pb.Multiple,
+		ServiceName:            config.C.Pb.ServiceName,
 		ServiceComment:         global.Schema.Comment,
-		Package:                config.C.PbConfig.Package,
-		GoPackage:              config.C.PbConfig.GoPackage,
+		Package:                config.C.Pb.Package,
+		GoPackage:              config.C.Pb.GoPackage,
 		ImportStartMark:        config.ImportStartMark,
 		ImportEndMark:          config.ImportEndMark,
 		CustomImportStartMark:  config.CustomImportStartMark,
@@ -100,8 +100,8 @@ func New() *PbCore {
 		CustomServiceStartMark: config.CustomServiceStartMark,
 		CustomServiceContent:   "",
 		CustomServiceEndMark:   config.CustomServiceEndMark,
-		DbTables:               utils.FilterTables(global.Schema.Tables, config.C.PbConfig.Tables, utils.MergeSlice(config.C.PbConfig.IgnoreTables, conf.BaseIgnoreTables)),
-		DbIgoreFieldsName:      utils.MergeSlice(config.C.PbConfig.IgnoreColumns, conf.BaseIgnoreColumns),
+		DbTables:               utils.FilterTables(global.Schema.Tables, config.C.Pb.Tables, utils.MergeSlice(config.C.Pb.IgnoreTables, conf.BaseIgnoreTables)),
+		DbIgoreFieldsName:      utils.MergeSlice(config.C.Pb.IgnoreColumns, conf.BaseIgnoreColumns),
 		Imports:                []*internal.Import{},
 		Enums:                  []*internal.Enum{},
 		BaseMessages:           []*internal.Message{},
@@ -111,7 +111,13 @@ func New() *PbCore {
 }
 
 func (s *PbCore) Run() error {
-	return s.Generate()
+	err := s.Generate()
+	if err != nil {
+		tools.Error("generate proto file failed: %v", err)
+	} else {
+		tools.Success("generate proto file success")
+	}
+	return err
 }
 
 func (s *PbCore) Generate() error {

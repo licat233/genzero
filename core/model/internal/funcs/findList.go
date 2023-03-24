@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/licat233/genzero/core/model/conf"
-	"github.com/licat233/genzero/parser"
+	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
@@ -16,12 +16,12 @@ type FindList struct {
 	req       string
 	resp      string
 	fullname  string
-	Table     *parser.Table
+	Table     *sql.Table
 }
 
 var _ ModelFunc = (*FindList)(nil)
 
-func NewFindList(t *parser.Table) FindList {
+func NewFindList(t *sql.Table) FindList {
 	camelName := tools.ToCamel(t.Name)
 	lowerName := tools.ToLowerCamel(t.Name)
 	modelName := modelName(t.Name)
@@ -49,8 +49,11 @@ func (s FindList) String() string {
 	if hasName {
 		buf.WriteString("\n\thasName := false")
 	}
-	baseSq := fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table)", lowerName)
-	buf.WriteString(baseSq)
+	if s.Table.HasDeleteFiled {
+		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table).Where(\"`is_deleted`= '0'\")", lowerName))
+	} else {
+		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table)", lowerName))
+	}
 
 	s.thanString(buf)
 
@@ -60,11 +63,21 @@ func (s FindList) String() string {
 	buf.WriteString("\n\t\tqueryCount, agrsCount, e := sqCount.ToSql()")
 	buf.WriteString("\n\t\tif e != nil {\n\t\t\terr = e\n\t\t\treturn\n\t\t}")
 	buf.WriteString(fmt.Sprintf("\n\t\tqueryCount = strings.ReplaceAll(queryCount, %sRows, \"COUNT(*)\")", lowerName))
-	buf.WriteString("\n\t\tif err = " + conf.QueryRow + "(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
+	if conf.IsCacheMode {
+		buf.WriteString("\n\t\tif err = m.QueryRowNoCacheCtx(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
+	} else {
+		buf.WriteString("\n\t\tif err = m.conn.QueryRowCtx(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
+	}
+
 	buf.WriteString("\n\t}")
 	buf.WriteString("\n\tquery, agrs, err := sq.ToSql()\n\tif err != nil {\n\t\treturn\n\t}")
 	buf.WriteString(fmt.Sprintf("\n\tresp = make([]*%s, 0)", camelName))
-	buf.WriteString("\n\tif err = " + conf.QueryRows + "(ctx, &resp, query, agrs...); err != nil {\n\t\treturn\n\t}")
+	if conf.IsCacheMode {
+		buf.WriteString("\n\tif err = m.QueryRowsNoCacheCtx(ctx, &resp, query, agrs...); err != nil {\n\t\treturn\n\t}")
+	} else {
+		buf.WriteString("\n\tif err = m.conn.QueryRowsCtx(ctx, &resp, query, agrs...); err != nil {\n\t\treturn\n\t}")
+	}
+
 	buf.WriteString("\n\treturn")
 	buf.WriteString("\n}\n")
 	return buf.String()
@@ -138,6 +151,6 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 	}
 }
 
-func isNameField(field parser.Field) bool {
+func isNameField(field sql.Field) bool {
 	return strings.ToLower(field.Name) == "name" && field.Type == "string"
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/model/conf"
 	"github.com/licat233/genzero/core/model/internal/funcs"
-	"github.com/licat233/genzero/parser"
+	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
@@ -23,25 +23,29 @@ type TableModel struct {
 	OutFileName   string
 	TplContent    string
 	IsCacheMode   bool
-	table         *parser.Table
+	table         *sql.Table
 	Funcs         []funcs.ModelFunc
 }
 
-type TableModelCollection []TableModel
+type TableModelCollection []*TableModel
 
-func NewTableModel(t *parser.Table) *TableModel {
+func NewTableModel(t *sql.Table) *TableModel {
 	lowerName := tools.ToLowerCamel(t.Name)
 	return &TableModel{
 		ProjectName:   config.ProjectName,
 		TableName:     t.Name,
 		InterfaceName: fmt.Sprintf("%s_model", lowerName),
-		OutFileName:   path.Join(config.C.ModelConfig.Dir, fmt.Sprintf("%sModel_extend.go", lowerName)),
+		OutFileName:   path.Join(config.C.Model.Dir, fmt.Sprintf("%sModel_extend.go", lowerName)),
 		TplContent:    conf.TplContent,
 		IsCacheMode:   false,
 		table:         t,
 		Funcs: []funcs.ModelFunc{
+			funcs.NewFindAll(t),
 			funcs.NewFindList(t),
 			funcs.NewTableName(t),
+			funcs.NewFindByUuid(t),
+			funcs.NewSoftDelete(t),
+			funcs.NewFormatUuidKey(t),
 		},
 	}
 }
@@ -70,6 +74,13 @@ func (t *TableModel) Generate() error {
 		return err
 	}
 	err = t.ExtendOriginalInterface()
+	if err != nil {
+		return err
+	}
+	err = tools.FormatGoFile(t.OutFileName)
+	if err != nil {
+		tools.Error("[model core] format go content error, in file: %s", t.OutFileName)
+	}
 	return err
 }
 
@@ -89,8 +100,6 @@ func (t *TableModel) Render() (string, error) {
 	}
 	content := buf.String()
 
-	content, err = tools.FormatGoContent(content)
-
 	return content, err
 }
 
@@ -100,13 +109,13 @@ func (t *TableModel) Init() (err error) {
 		return err
 	}
 	t.IsCacheMode = isCache
-	conf.ChangeQueryString(isCache)
+	// conf.ChangeQueryString(isCache)
 	return nil
 }
 
 func (t *TableModel) isCacheMode() (bool, error) {
 	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(t.TableName))
-	filePath := path.Join(config.C.ModelConfig.Dir, genFilename)
+	filePath := path.Join(config.C.Model.Dir, genFilename)
 	exists, err := tools.PathExists(filePath)
 	if err != nil {
 		return false, err
@@ -139,7 +148,7 @@ func (t *TableModel) isCacheMode() (bool, error) {
 // 拓展原始接口，添加当前定义的接口
 func (t *TableModel) ExtendOriginalInterface() error {
 	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(t.TableName))
-	filePath, err := tools.FindFile(config.C.ModelConfig.Dir, genFilename)
+	filePath, err := tools.FindFile(config.C.Model.Dir, genFilename)
 	if err != nil {
 		return err
 	}
