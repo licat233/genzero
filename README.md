@@ -29,9 +29,9 @@ Available Commands:
   logic       Modify logic files, this feature has not been developed yet
   model       Generate model code
   pb          Generate .proto files
+  start       Use yaml file configuration to start genzero
   upgrade     Upgrade genzero to latest version
   version     Print the version number of genzero
-  yaml        Use yaml file configuration
 
 Flags:
       --dsn string               data source name (DSN) to use when connecting to the database
@@ -78,7 +78,7 @@ A genzeroConfig.yaml configuration file will be created. [Sample file](./example
 Please ensure that genzeroConfig.yaml already exists in the current directory
 
 ```shell
-genzero yaml
+genzero start
 ```
 
 ### Use [goZero](https://github.com/zeromicro/go-zero)'s goctl tool to generate service code
@@ -104,7 +104,7 @@ goctl model mysql ddl --src "admin.sql" -dir . --style goZero
 ### Upgrade genzero to latest version
 
 ```shell
-genzero -upgrade
+genzero upgrade
 ```
 
 ### Configuration description
