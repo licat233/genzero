@@ -12,7 +12,7 @@ api:
     style: genZero
     tables: []
 database:
-    dsn: ""
+    dsn: # "root@tcp(localhost:3306)/admin"
     ignoreColumns: []
     ignoreTables: []
     src: ../sql/admin.sql

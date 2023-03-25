@@ -78,7 +78,7 @@ A genzeroConfig.yaml configuration file will be created. [Sample file](./example
 Please ensure that genzeroConfig.yaml already exists in the current directory
 
 ```shell
-genzero start
+genzero start --src=./genzeroConfig.yaml
 ```
 
 ### Use [goZero](https://github.com/zeromicro/go-zero)'s goctl tool to generate service code

@@ -37,6 +37,12 @@ var initCmd = &cobra.Command{
 	Use:     "init",
 	Aliases: []string{"i"},
 	Short:   "Create the default " + config.ProjectName + " configuration file in the current directory",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("%s requires at least one argument", cmd.CommandPath())
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
@@ -169,11 +175,6 @@ var rootCmd = &cobra.Command{
 }
 
 func runByConf() {
-	err := config.C.ConfigureByYaml()
-	if err != nil {
-		tools.Warning(err.Error())
-		os.Exit(1)
-	}
 	Initialize()
 	if config.C.Model.Status {
 		if err := model.New().Run(); err != nil {
@@ -202,12 +203,16 @@ func runByConf() {
 	tools.Success("Done.")
 }
 
+var IsDev bool
+
 func init() {
 	config.C = config.New()
 
 	startCmd.PersistentFlags().StringVar(&config.ConfSrc, "src", config.DefaultConfigFileName, "file location for yaml configuration")
 
 	initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "src", config.DefaultConfigFileName, "file location for yaml configuration")
+
+	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode")
 
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.DSN, "dsn", "", "data source name (DSN) to use when connecting to the database")
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.Src, "src", "", "sql file to use when connecting to the database")
@@ -227,7 +232,7 @@ func init() {
 
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Style, "style", config.LowerCamelCase, "api style: "+config.StyleList)
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Jwt, "jwt", "", "api jwt")
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.Middleware, "middleware", "", "api middleware")
+	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Middleware, "middleware", []string{}, "api middleware")
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Prefix, "prefix", "", "api prefix")
 	apiCmd.PersistentFlags().BoolVar(&config.C.Api.Multiple, "multiple", false, "api multiple")
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Dir, "dir", "", "api output directory")
@@ -271,36 +276,32 @@ func init() {
 	initCmd.AddCommand(initConfigCmd)
 }
 
-func Initialize() {
-	if err := config.C.Validate(); err != nil {
-		tools.Warning(err.Error())
-		os.Exit(1)
+func Initialize() error {
+	if config.UseConf {
+		if err := config.C.ConfigureByYaml(); err != nil {
+			return fmt.Errorf("read config faild: %v", err)
+		}
 	}
 
-	if config.UseConf {
-		exists, err := tools.FileExists(config.ConfSrc)
-		if err != nil {
-			tools.Error(err.Error())
-			os.Exit(1)
-		}
-		if !exists {
-			tools.Warning("%s file not exists", config.ConfSrc)
-			os.Exit(1)
-		}
+	if err := config.C.Validate(); err != nil {
+		return err
 	}
 
 	if err := global.InitSchema(); err != nil {
-		tools.Warning(err.Error())
-		os.Exit(1)
+		return err
 	}
+	return nil
 }
 
 func Execute() {
 	defer func() {
-		if err := recover(); err != nil {
-			tools.Warning(fmt.Sprintf("%v", err))
+		if !IsDev {
+			if err := recover(); err != nil {
+				tools.Warning(fmt.Sprintf("%v", err))
+			}
 		}
 	}()
+
 	if err := rootCmd.Execute(); err != nil {
 		tools.Warning(err.Error())
 		os.Exit(1)

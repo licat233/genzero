@@ -17,7 +17,7 @@ type DatabaseConfig struct {
 
 func (c *DatabaseConfig) Validate() error {
 	if c.DSN == "" && c.Src == "" {
-		return errors.New("dsn or src must be set")
+		return errors.New("database dsn or src must be set")
 	}
 	return nil
 }
@@ -27,7 +27,7 @@ type ApiConfig struct {
 	Status        bool     `yaml:"status"` // generate api
 	Style         string   `yaml:"style"`
 	Jwt           string   `yaml:"jwt"`
-	Middleware    string   `yaml:"middleware"`
+	Middleware    []string `yaml:"middleware"`
 	Prefix        string   `yaml:"prefix"`
 	Multiple      bool     `yaml:"multiple"`
 	Dir           string   `yaml:"dir"` // api output directory
@@ -40,6 +40,11 @@ type ApiConfig struct {
 func (c *ApiConfig) Validate() error {
 	if c.ServiceName == "" {
 		return errors.New("serviceName must be set")
+	}
+	if len(c.Middleware) != 0 {
+		for i := range c.Middleware {
+			c.Middleware[i] = tools.ToCamel(c.Middleware[i])
+		}
 	}
 	c.ServiceName = strings.TrimRight(tools.ToLowerCamel(c.ServiceName), "Api")
 	return nil

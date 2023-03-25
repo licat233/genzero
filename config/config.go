@@ -84,5 +84,10 @@ func (c *Config) Validate() error {
 			return err
 		}
 	}
+	if c.Logic != nil && C.Logic.Status {
+		if err := C.Logic.Validate(); err != nil {
+			return err
+		}
+	}
 	return nil
 }

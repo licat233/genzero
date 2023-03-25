@@ -74,15 +74,25 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
 				continue
 			}
+
+			if !strings.Contains(line, " ") {
+				//不存在类型，忽略改行
+				continue
+			}
+
 			fieldComment := ""
 			if strings.Contains(line, "COMMENT") {
 				fieldComment = strings.Trim(strings.Split(line, "COMMENT '")[1], "',")
 			}
+
 			fieldType := strings.TrimRightFunc(strings.Split(line, " ")[1], func(r rune) bool {
 				return r < 'a' || r > 'z'
 			})
 			if fieldType == "_enum" || fieldType == "set" {
 				enumList := regexp.MustCompile(`[_enum|set]\((.+?)\)`).FindStringSubmatch(fieldType)
+				if len(enumList) < 2 {
+					continue
+				}
 				enums := strings.FieldsFunc(enumList[1], func(c rune) bool {
 					cs := string(c)
 					return cs == "," || cs == "'"

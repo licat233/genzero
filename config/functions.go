@@ -32,7 +32,7 @@ func ConfigureByYaml(filename string, config *Config) error {
 		return err
 	}
 	if !exists {
-		return fmt.Errorf("config file (%s) not exists, please create it first, command: %s init", ConfSrc, ProjectName)
+		return fmt.Errorf("config file (%s) not exists, please create it first, command: %s init config", ConfSrc, ProjectName)
 	}
 	if filename == "" {
 		filename = ConfSrc

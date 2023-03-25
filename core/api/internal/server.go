@@ -2,17 +2,18 @@ package internal
 
 import (
 	"bytes"
+	"strings"
 )
 
 type Server struct {
 	Name       string
 	Jwt        string
 	Group      string
-	Middleware string
+	Middleware []string
 	Prefix     string
 }
 
-func NewServer(name, jwt, group, middleware, prefix string) *Server {
+func NewServer(name string, jwt string, group string, middleware []string, prefix string) *Server {
 	return &Server{
 		Name:       name,
 		Jwt:        jwt,
@@ -34,9 +35,9 @@ func (s *Server) String() string {
 		exists = true
 		buf.WriteString("  group: " + s.Group + "\n")
 	}
-	if s.Middleware != "" {
+	if len(s.Middleware) != 0 {
 		exists = true
-		buf.WriteString("  middleware: " + s.Middleware + "\n")
+		buf.WriteString("  middleware: " + strings.Join(s.Middleware, ",") + "\n")
 	}
 	if s.Prefix != "" {
 		exists = true
