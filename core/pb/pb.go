@@ -113,11 +113,11 @@ func New() *PbCore {
 func (s *PbCore) Run() error {
 	err := s.Generate()
 	if err != nil {
-		tools.Error("generate proto file failed: %v", err)
-	} else {
-		tools.Success("generate proto file success")
+		tools.Error("generate proto file faild.")
+		return err
 	}
-	return err
+	tools.Success("generate proto file success.")
+	return nil
 }
 
 func (s *PbCore) Generate() error {

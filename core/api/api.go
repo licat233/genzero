@@ -117,11 +117,11 @@ func (s *ApiCore) Run() error {
 
 	err := s.Generate()
 	if err != nil {
-		tools.Error("generate api file failed: %v", err)
-	} else {
-		tools.Success("generate api file success")
+		tools.Error("generate api file failed.")
+		return err
 	}
-	return err
+	tools.Success("generate api file success.")
+	return nil
 }
 
 func (s *ApiCore) Generate(tables ...sql.Table) error {

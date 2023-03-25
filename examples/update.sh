@@ -23,8 +23,8 @@ rm -f ./*.api
 rm -f ./*.proto
 
 ./build.sh
-./model_file/gen.sh
 ./all/gen.sh
+./model_file/gen.sh
 ./api_multiple_file/gen.sh
 ./api_single_file/gen.sh
 ./pb_multiple_group/gen.sh

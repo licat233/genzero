@@ -27,10 +27,10 @@ func New() *ModelCore {
 func (m *ModelCore) Run() (err error) {
 	err = m.Generate()
 	if err != nil {
-		tools.Error("generate model file failed: %v", err)
-	} else {
-		tools.Success("generate model file success")
+		tools.Error("generate model extend file faild.")
+		return err
 	}
+	tools.Success("generate model file success.")
 	return
 }
 

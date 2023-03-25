@@ -14,7 +14,7 @@ option go_package="{{.GoPackage}}";
 {{.ImportStartMark}}
 
 {{range .Imports}}
-import "{{.Filename}}"
+{{printf "import \"%s\";" .Filename -}}
 {{end}}
 
 // The content in this block will not be updated
@@ -32,8 +32,8 @@ import "{{.Filename}}"
 {{range .Enums}}
 // {{.Comment}}
 enum {{.Name}} {
-  {{range .Fields}}
-  {{.Name}} = {{.Tag}};
+  {{- range .Fields}}
+  {{printf "%s = %s;" .Name .Tag -}}
   {{end}}
 }
 {{end}}
@@ -55,8 +55,8 @@ enum {{.Name}} {
 {{range .BaseMessages}}
 //{{.Comment}}
 message {{.Name}} {
-  {{range .Fields}}
-  {{.Typ}} {{.Name}} = {{.Tag}}; //{{.Comment}}
+  {{- range .Fields}}
+  {{printf "%s %s = %d; //%s" .Typ .Name .Tag .Comment -}}
   {{end}}
 }
 {{end}}
@@ -65,8 +65,8 @@ message {{.Name}} {
 {{range .Messages}}
 //{{.Comment}}
 message {{.Name}} {
-  {{range .Fields}}
-  {{.Typ}} {{.Name}} = {{.Tag}}; //{{.Comment}}
+  {{- range .Fields}}
+  {{printf "%s %s = %d; //%s" .Typ .Name .Tag .Comment -}}
   {{end}}
 }
 
@@ -90,8 +90,7 @@ service Base {
   // {{.Name}} rpc
 
   {{range .Rpcs}}
-  //{{.Comment}}
-  rpc {{.Name}}({{.Req}}) returns ({{.Resp}});
+  {{printf "//%s\n rpc %s(%s) returns (%s);" .Comment .Name .Req .Resp -}}
   {{end}}
 
   {{end}}
@@ -99,6 +98,7 @@ service Base {
 {{/* 用户自定义service板块start */}}
 {{if isEmpty .CustomServiceContent}}
 service {{.ServiceName}} {
+
   // The content in this block will not be updated
   // 此区块内的内容不会被更新
   {{.CustomServiceStartMark}}
@@ -108,9 +108,11 @@ service {{.ServiceName}} {
   rpc Test(NilReq) returns (NilResp);
 
   {{.CustomServiceEndMark}}
+
 }
 {{else}}
 service {{.ServiceName}} {
+
   // The content in this block will not be updated
   // 此区块内的内容不会被更新
   {{.CustomServiceStartMark}}
@@ -118,6 +120,7 @@ service {{.ServiceName}} {
   {{.CustomServiceContent}}
 
   {{.CustomServiceEndMark}}
+
 }
 {{end}}
 {{/* 用户自定义service板块end */}}
@@ -127,8 +130,7 @@ service {{.ServiceName}} {
   // {{.Name}} rpc
 
   {{range .Rpcs}}
-  //{{.Comment}}
-  rpc {{.Name}}({{.Req}}) returns ({{.Resp}});
+  {{printf "//%s\n rpc %s(%s) returns (%s);" .Comment .Name .Req .Resp -}}
   {{end}}
 
   {{end}}
@@ -140,6 +142,7 @@ service {{.ServiceName}} {
   {{.CustomServiceContent}}
 
   {{.CustomServiceEndMark}}
+
 }
 {{end}}
 {{.ServiceEndMark}}

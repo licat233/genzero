@@ -23,10 +23,14 @@ fi
 
 # ../build.sh
 
-# rm -f ./model/*.go
+rm -rf ./model
 
-# goctl model mysql ddl --src "../sql/admin.sql" -dir="model" --style goZero -cache=false
-# go mod tidy
+if [ ! -d model ]; then
+    if ! goctl model mysql ddl --src "../sql/admin.sql" -dir="model" --style goZero -cache=false; then
+        exit 1
+    fi
+    go mod tidy
+fi
 
 if ! ../genzero model --src="../sql/admin.sql" --service_name="admin" --dir="model";
 then

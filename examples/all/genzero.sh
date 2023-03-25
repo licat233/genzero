@@ -23,6 +23,6 @@ fi
 # fi
 
 # 会根据yaml配置文件来生成服务的配置文件
-if ! ../genzero start --src="./config2.yaml"; then
+if ! ../genzero start --src="./config.yaml"; then
     exit 1
 fi
