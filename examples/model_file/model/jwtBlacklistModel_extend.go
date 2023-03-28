@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -13,14 +14,16 @@ import (
 
 type jwtBlacklist_model interface {
 	FindAll(ctx context.Context) ([]*JwtBlacklist, error)
-
 	FindList(ctx context.Context, pageSize, page int64, keyword string, jwtBlacklist *JwtBlacklist) (resp []*JwtBlacklist, total int64, err error)
-
 	TableName() string
 
-	FindByUuid(ctx context.Context, uuid string) (*JwtBlacklist, error)
-
 	formatUuidKey(uuid string) string
+	FindByAdminerId(ctx context.Context, adminerId int64) (*JwtBlacklist, error)
+	FindByUuid(ctx context.Context, uuid string) (*JwtBlacklist, error)
+	FindByToken(ctx context.Context, token string) (*JwtBlacklist, error)
+	FindByPlatform(ctx context.Context, platform string) (*JwtBlacklist, error)
+	FindByIp(ctx context.Context, ip string) (*JwtBlacklist, error)
+	FindByExpireAt(ctx context.Context, expireAt time.Time) (*JwtBlacklist, error)
 }
 
 func (m *defaultJwtBlacklistModel) FindAll(ctx context.Context) ([]*JwtBlacklist, error) {
@@ -59,7 +62,7 @@ func (m *defaultJwtBlacklistModel) FindList(ctx context.Context, pageSize, page 
 			sq = sq.Where("ip = ?", jwtBlacklist.Ip)
 		}
 		if jwtBlacklist.ExpireAt.IsZero() {
-			sq = sq.Where("expire_at = ?", jwtBlacklist.ExpireAt)
+			sq = sq.Where("expire_at = ?", jwtBlacklist.ExpireAt.Format("2006-01-02 15:04:05"))
 		}
 	}
 	if pageSize > 0 && page > 0 {
@@ -90,6 +93,24 @@ func (m *defaultJwtBlacklistModel) TableName() string {
 	return m.table
 }
 
+func (m *defaultJwtBlacklistModel) formatUuidKey(uuid string) string {
+	return fmt.Sprintf("cache:jwtBlacklist:uuid:%v", uuid)
+}
+
+func (m *defaultJwtBlacklistModel) FindByAdminerId(ctx context.Context, adminerId int64) (*JwtBlacklist, error) {
+	var resp JwtBlacklist
+	query := fmt.Sprintf("select %s from %s where `adminer_id` = ? limit 1", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, adminerId)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultJwtBlacklistModel) FindByUuid(ctx context.Context, uuid string) (*JwtBlacklist, error) {
 	var resp JwtBlacklist
 	query := fmt.Sprintf("select %s from %s where `uuid` = ? limit 1", jwtBlacklistRows, m.table)
@@ -104,6 +125,58 @@ func (m *defaultJwtBlacklistModel) FindByUuid(ctx context.Context, uuid string) 
 	}
 }
 
-func (m *defaultJwtBlacklistModel) formatUuidKey(uuid string) string {
-	return fmt.Sprintf("cache:jwtBlacklist:uuid:%v", uuid)
+func (m *defaultJwtBlacklistModel) FindByToken(ctx context.Context, token string) (*JwtBlacklist, error) {
+	var resp JwtBlacklist
+	query := fmt.Sprintf("select %s from %s where `token` = ? limit 1", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, token)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultJwtBlacklistModel) FindByPlatform(ctx context.Context, platform string) (*JwtBlacklist, error) {
+	var resp JwtBlacklist
+	query := fmt.Sprintf("select %s from %s where `platform` = ? limit 1", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, platform)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultJwtBlacklistModel) FindByIp(ctx context.Context, ip string) (*JwtBlacklist, error) {
+	var resp JwtBlacklist
+	query := fmt.Sprintf("select %s from %s where `ip` = ? limit 1", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, ip)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultJwtBlacklistModel) FindByExpireAt(ctx context.Context, expireAt time.Time) (*JwtBlacklist, error) {
+	var resp JwtBlacklist
+	query := fmt.Sprintf("select %s from %s where `expire_at` = ? limit 1", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, expireAt.Format("2006-01-02 15:04:05"))
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

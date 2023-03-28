@@ -33,13 +33,18 @@ func New() *RpcLogic {
 	}
 }
 
-func (l *RpcLogic) Run() error {
+func (l *RpcLogic) Run() (err error) {
 	var buf bytes.Buffer
 	buf.WriteString("package dataconv\n\n")
+	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	for _, logic := range l.Logics {
-		if err := logic.Run(); err != nil {
-			return err
-		}
+		localLogic := logic // 为每个任务创建一个本地变量
+		tasks = append(tasks, func() error {
+			return localLogic.Run()
+		})
+		// if err := logic.Run(); err != nil {
+		// 	return err
+		// }
 		buf.WriteString(logic.PbToMd())
 		buf.WriteString(logic.MdToPb())
 		if s, err := logic.PbList2MdList(); err != nil {
@@ -53,29 +58,30 @@ func (l *RpcLogic) Run() error {
 			buf.WriteString(s)
 		}
 	}
-	dirname := path.Join(config.C.Logic.Rpc.Dir, "dataconv")
-	err := tools.MakeDir(dirname)
-	if err != nil {
-		return err
-	}
-	filename := path.Join(dirname, "dataconv.go")
+
+	filename := path.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
 	err = tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err
 	}
 
-	if err := tools.FormatGoFile(dirname); err != nil {
-		tools.Error("[logic rpc core] format go content error, in dir: %s", dirname)
+	if err := tools.FormatGoFile(filename); err != nil {
+		tools.Error("[logic rpc core] format go content error\n in file: %s\n error: %v", filename, err)
+	}
+
+	err = tools.RunConcurrentTasks(tasks)
+	if err != nil {
+		return err
 	}
 
 	if l.Multiple {
-		dirname = path.Join(config.C.Logic.Rpc.Dir, "base")
+		filename = path.Join(config.C.Logic.Rpc.Dir, "base")
 	} else {
-		dirname = config.C.Logic.Rpc.Dir
+		filename = config.C.Logic.Rpc.Dir
 	}
 
-	if err := tools.FormatGoFile(dirname); err != nil {
-		tools.Error("[logic rpc core] format go content error, in dir: %s", dirname)
+	if err := tools.FormatGoFile(filename); err != nil {
+		tools.Error("[logic rpc core] format go content error\n in file: %s\n error: %v", filename, err)
 	}
 
 	return nil

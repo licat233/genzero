@@ -6,7 +6,7 @@ var (
 
 	MoreIgnoreTables  = []string{}             //当前服务可能忽略的表
 	MoreIgnoreColumns = []string{"id", "uuid"} //某个结构可能忽略的列
-	IsCacheMode       bool
+	// IsCacheMode       bool
 )
 
 // func ChangeQueryString(isCache bool) {

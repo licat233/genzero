@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -13,16 +14,20 @@ import (
 
 type adminer_model interface {
 	FindAll(ctx context.Context) ([]*Adminer, error)
-
 	FindList(ctx context.Context, pageSize, page int64, keyword string, adminer *Adminer) (resp []*Adminer, total int64, err error)
-
 	TableName() string
-
-	FindByUuid(ctx context.Context, uuid string) (*Adminer, error)
-
 	SoftDelete(ctx context.Context, id int64) error
-
 	formatUuidKey(uuid string) string
+	FindByUuid(ctx context.Context, uuid string) (*Adminer, error)
+	FindByName(ctx context.Context, name string) (*Adminer, error)
+	FindByAvatar(ctx context.Context, avatar string) (*Adminer, error)
+	FindByPassport(ctx context.Context, passport string) (*Adminer, error)
+	FindByPassword(ctx context.Context, password string) (*Adminer, error)
+	FindByEmail(ctx context.Context, email string) (*Adminer, error)
+	FindByStatus(ctx context.Context, status int64) (*Adminer, error)
+	FindByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) (*Adminer, error)
+	FindByLoginCount(ctx context.Context, loginCount int64) (*Adminer, error)
+	FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error)
 }
 
 func (m *defaultAdminerModel) FindAll(ctx context.Context) ([]*Adminer, error) {
@@ -75,7 +80,7 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 			sq = sq.Where("login_count = ?", adminer.LoginCount)
 		}
 		if adminer.LastLogin.IsZero() {
-			sq = sq.Where("last_login = ?", adminer.LastLogin)
+			sq = sq.Where("last_login = ?", adminer.LastLogin.Format("2006-01-02 15:04:05"))
 		}
 	}
 	if keyword != "" && !hasName {
@@ -109,6 +114,16 @@ func (m *defaultAdminerModel) TableName() string {
 	return m.table
 }
 
+func (m *defaultAdminerModel) SoftDelete(ctx context.Context, id int64) error {
+	query := fmt.Sprintf("update %s set `is_deleted` = '1', `delete_at` = now() where `id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, id)
+	return err
+}
+
+func (m *defaultAdminerModel) formatUuidKey(uuid string) string {
+	return fmt.Sprintf("cache:adminer:uuid:%v", uuid)
+}
+
 func (m *defaultAdminerModel) FindByUuid(ctx context.Context, uuid string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `uuid` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
@@ -123,13 +138,128 @@ func (m *defaultAdminerModel) FindByUuid(ctx context.Context, uuid string) (*Adm
 	}
 }
 
-func (m *defaultAdminerModel) SoftDelete(ctx context.Context, id int64) error {
-	// 更新 is_deleted 状态，不走缓存
-	query := fmt.Sprintf("update %s set `is_deleted` = '1', `delete_at` = now() where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
-	return err
+func (m *defaultAdminerModel) FindByName(ctx context.Context, name string) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `name` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, name)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }
 
-func (m *defaultAdminerModel) formatUuidKey(uuid string) string {
-	return fmt.Sprintf("cache:adminer:uuid:%v", uuid)
+func (m *defaultAdminerModel) FindByAvatar(ctx context.Context, avatar string) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `avatar` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, avatar)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByPassport(ctx context.Context, passport string) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `passport` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, passport)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByPassword(ctx context.Context, password string) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `password` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, password)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByEmail(ctx context.Context, email string) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `email` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, email)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByStatus(ctx context.Context, status int64) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `status` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, status)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `is_super_admin` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, isSuperAdmin)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByLoginCount(ctx context.Context, loginCount int64) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `login_count` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, loginCount)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultAdminerModel) FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `last_login` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, lastLogin.Format("2006-01-02 15:04:05"))
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

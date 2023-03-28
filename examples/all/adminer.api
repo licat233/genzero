@@ -24,6 +24,7 @@ type Adminer {
   Uuid string `json:"uuid"` //唯一识别码
   Name string `json:"name"` //管理员名称
   Avatar string `json:"avatar"` //头像
+  Access string `json:"access"` //身份
   Passport string `json:"passport"` //账号
   Password string `json:"password"` //密码
   Email string `json:"email"` //邮箱
@@ -39,6 +40,7 @@ type AddAdminerReq {
   Uuid string `json:"uuid"` //唯一识别码
   Name string `json:"name"` //管理员名称
   Avatar string `json:"avatar"` //头像
+  Access string `json:"access"` //身份
   Passport string `json:"passport"` //账号
   Password string `json:"password"` //密码
   Email string `json:"email"` //邮箱
@@ -54,6 +56,7 @@ type PutAdminerReq {
   Uuid string `json:"uuid"` //唯一识别码
   Name string `json:"name"` //管理员名称
   Avatar string `json:"avatar"` //头像
+  Access string `json:"access"` //身份
   Passport string `json:"passport"` //账号
   Password string `json:"password"` //密码
   Email string `json:"email"` //邮箱
@@ -83,6 +86,7 @@ type GetAdminerListReq {
   Uuid string `json:"uuid"` //唯一识别码
   Name string `json:"name"` //管理员名称
   Avatar string `json:"avatar"` //头像
+  Access string `json:"access"` //身份
   Passport string `json:"passport"` //账号
   Password string `json:"password"` //密码
   Email string `json:"email"` //邮箱
@@ -106,10 +110,8 @@ type GetAdminerEnumsReq {
 // ------------------------------ Struct End ------------------------------
 
 @server(
-  jwt: Auth
   group: adminer
-  middleware: AuthMiddleware
-  prefix: /v1/api/admin/adminer
+  prefix: adminer
 )
 service admin {
 

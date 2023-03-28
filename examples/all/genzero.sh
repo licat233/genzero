@@ -14,7 +14,10 @@ if [ ! -f "../genzero" ]; then
     ../build.sh
 fi
 
-../build.sh
+rm -f ./*.api
+rm -f ./*.proto
+
+# ../build.sh
 
 # if [ ! -f "./genzeroConfig.yaml" ]; then
 #     if ! ../genzero init config; then
@@ -23,6 +26,6 @@ fi
 # fi
 
 # 会根据yaml配置文件来生成服务的配置文件
-if ! ../genzero start --src="./config.yaml"; then
+if ! ../genzero start --src="./config.yaml" --dev; then
     exit 1
 fi

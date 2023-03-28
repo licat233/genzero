@@ -313,36 +313,52 @@ func FindFile(dir string, file string) (string, error) {
 	return "", nil
 }
 
-func CreateFile(filePath string) (*os.File, error) {
+func CreateFile(filePath string) error {
 	// 获取文件所在的目录
 	dir := filepath.Dir(filePath)
 
 	// 创建目录及其父目录
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, err
+		return err
 	}
 
 	// 创建文件
 	f, err := os.Create(filePath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return f, nil
+	// 关闭文件
+	defer func(f *os.File) {
+		if f != nil {
+			err := f.Close()
+			if err != nil {
+				return
+			}
+		}
+	}(f)
+
+	return nil
 }
 
 func WriteFile(filename string, data string) error {
-	file, err := CreateFile(filename)
+	exists, err := FileExists(filename)
 	if err != nil {
 		return err
 	}
-	defer func(f *os.File) {
-		if f != nil {
-			f.Close()
+	if !exists {
+		err := CreateFile(filename)
+		if err != nil {
+			return err
 		}
-	}(file)
+	}
 
-	_, err = file.WriteString(data)
+	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	_, err = f.WriteString(data)
 	if err != nil {
 		return err
 	}
@@ -396,7 +412,7 @@ func ExecGoimports(w string) error {
 	// 命令存在，执行它
 	err = exec.Command(goimportsBinary, "-w", w).Run()
 	if err != nil {
-		return fmt.Errorf("command failed to run: gofmt -w %s】", w)
+		return fmt.Errorf("command failed to run: gofmt -w %s", w)
 	}
 	return nil
 }
@@ -425,7 +441,7 @@ func ExecGoFormat(filename string) error {
 	// 命令存在，执行它
 	err = exec.Command(goimportsBinary, "-w", filename).Run()
 	if err != nil {
-		return fmt.Errorf("command failed to run: gofmt -w %s】", filename)
+		return fmt.Errorf("command failed to run: gofmt -w %s", filename)
 	}
 	return nil
 }
@@ -457,12 +473,42 @@ func ParserTpl(tpl string, data any) (string, error) {
 	return buf.String(), nil
 }
 
-func FormatGoFile(filename string) error {
+func FormatGoFile(filename string) (err error) {
+	filename, err = GetGoFileDir(filename)
+	if err != nil {
+		return err
+	}
+
 	if err := ExecGoimports(filename); err != nil {
 		return err
 	}
+
 	if err := ExecGoFormat(filename); err != nil {
 		return err
 	}
 	return nil
+}
+
+func GetGoFileDir(filename string) (string, error) {
+	if !strings.HasSuffix(filename, ".go") {
+		return filename, nil
+	}
+	dir, err := filepath.Abs(filepath.Dir(filename))
+	if err != nil {
+		return "", err
+	}
+	return dir, nil
+}
+
+func PickGoPkgName(line string) string {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return ""
+	}
+	reg := regexp.MustCompile(`(\w+)$`)
+	arr := reg.FindStringSubmatch(line)
+	if len(arr) == 2 {
+		return strings.TrimSpace(arr[1])
+	}
+	return ""
 }

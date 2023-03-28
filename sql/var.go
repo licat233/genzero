@@ -22,6 +22,7 @@ type Table struct {
 	Name           string `sql:"name"`
 	Comment        string `sql:"comment"`
 	HasDeleteFiled bool   `sql:"is_deleted"`
+	HasUuid        bool   `sql:"uuid"`
 
 	Fields FieldCollection `sql:"fields"`
 	Enums  EnumCollection  `sql:"enums"`
@@ -32,6 +33,7 @@ func (t *Table) Copy() *Table {
 		Name:           t.Name,
 		Comment:        t.Comment,
 		HasDeleteFiled: t.HasDeleteFiled,
+		HasUuid:        t.HasUuid,
 		Fields:         t.Fields.Copy(),
 		Enums:          t.Enums.Copy(),
 	}

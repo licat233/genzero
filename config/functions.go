@@ -46,6 +46,7 @@ func ConfigureByYaml(filename string, config *Config) error {
 	}
 	err = yaml.Unmarshal([]byte(data), config)
 	if err != nil {
+		tools.Error("parse config file (%s) failed", filename)
 		return err
 	}
 	return nil

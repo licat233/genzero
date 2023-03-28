@@ -26,17 +26,35 @@ func ParseSqlFile(filename string) (*Schema, error) {
 
 	mustFilter, checkColumnStr := TableFilterCondition()
 	var currentTableName string
+	var isBlockNote bool
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if len(line) == 0 {
+			continue
+		}
+		if strings.HasPrefix(line, "/*") {
+			isBlockNote = true
+		}
+		if isBlockNote && strings.HasSuffix(line, "*/") {
+			isBlockNote = false
+			continue
+		}
+		if isBlockNote {
 			continue
 		}
 		if strings.HasPrefix(line, "--") {
 			// Ignore comments
 			continue
 		}
+		chips := strings.Split(line, " ")
+		if len(chips) < 2 {
+			continue
+		}
 		if strings.Contains(line, "CREATE TABLE") {
-			tableName := strings.Split(line, "`")[1]
+			if len(chips) < 3 {
+				continue
+			}
+			tableName := strings.Trim(chips[2], "`")
 			currentTableName = tableName
 			if tools.HasInSlice(config.C.DB.IgnoreTables, tableName) {
 				continue
@@ -54,40 +72,34 @@ func ParseSqlFile(filename string) (*Schema, error) {
 		if table == nil {
 			continue
 		}
-		if strings.Contains(line, "ENGINE") && strings.Contains(line, "COMMENT=") {
-			comment := strings.Trim(strings.Split(line, "COMMENT='")[1], "'")
-			comment = strings.TrimSuffix(comment, "';")
+
+		if ok, _ := MutipleStringSubmatch(line, `^\)?\sENGINE\s?=`, `^\)?\sengine\s?=`); ok {
+			if err != nil {
+				tools.Error(err.Error())
+			}
+			comment := PickTableComment(line)
 			table.Comment = comment
 			schema.Tables = append(schema.Tables, *table)
 			table = nil
 			currentTableName = ""
 			continue
 		}
-		if line[0] == '`' {
-			fieldName := strings.Split(line, "`")[1]
+		if fieldName := PickFieldName(line); fieldName != "" {
+			if has := tools.ToSnake(fieldName) == "is_deleted"; has {
+				table.HasDeleteFiled = true
+			}
 
-			has := tools.ToSnake(fieldName) == "is_deleted"
-			if has {
-				table.HasDeleteFiled = has
+			if has := strings.ToLower(fieldName) == "uuid"; has {
+				table.HasUuid = true
 			}
 
 			if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
 				continue
 			}
 
-			if !strings.Contains(line, " ") {
-				//不存在类型，忽略改行
-				continue
-			}
-
-			fieldComment := ""
-			if strings.Contains(line, "COMMENT") {
-				fieldComment = strings.Trim(strings.Split(line, "COMMENT '")[1], "',")
-			}
-
-			fieldType := strings.TrimRightFunc(strings.Split(line, " ")[1], func(r rune) bool {
-				return r < 'a' || r > 'z'
-			})
+			fieldComment := PickFieldComment(line)
+			fieldType := PickFieldType(line)
+			fieldType = strings.ToLower(fieldType)
 			if fieldType == "_enum" || fieldType == "set" {
 				enumList := regexp.MustCompile(`[_enum|set]\((.+?)\)`).FindStringSubmatch(fieldType)
 				if len(enumList) < 2 {
@@ -109,7 +121,7 @@ func ParseSqlFile(filename string) (*Schema, error) {
 
 			field := Field{
 				Primary:            false,
-				Name:               currentTableName,
+				Name:               fieldName,
 				UpperCamelCaseName: "",
 				Type:               fieldType,
 				Comment:            fieldComment,
@@ -123,9 +135,8 @@ func ParseSqlFile(filename string) (*Schema, error) {
 
 			field.Type = goType(fieldType)
 
-			if strings.Contains(line, "DEFAULT'") {
-				field.DefaultValue = strings.Split(line, "DEFAULT ")[1]
-			}
+			field.DefaultValue = PickFieldDefaultValue(line)
+
 			field.Primary = strings.Contains(line, "PRIMARY KEY")
 			field.Nullable = !strings.Contains(line, "NOT NULL")
 

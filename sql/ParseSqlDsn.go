@@ -122,6 +122,12 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 				table.HasDeleteFiled = true
 			}
 		}
+		if strings.ToLower(column.ColumnName) == "uuid" {
+			table, ok := tableMap[column.TableName]
+			if ok {
+				table.HasUuid = true
+			}
+		}
 	}
 
 	for _, table := range tableMap {

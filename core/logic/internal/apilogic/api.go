@@ -34,10 +34,15 @@ func New() *ApiLogic {
 func (l *ApiLogic) Run() error {
 	var buf bytes.Buffer
 	buf.WriteString("package dataconv\n\n")
+	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	for _, logic := range l.Logics {
-		if err := logic.Run(); err != nil {
-			return err
-		}
+		localLogic := logic // 为每个任务创建一个本地变量
+		tasks = append(tasks, func() error {
+			return localLogic.Run()
+		})
+		// if err := logic.Run(); err != nil {
+		// 	return err
+		// }
 		buf.WriteString(logic.MdToApi())
 		buf.WriteString(logic.PbToApi())
 		if s, err := logic.MdList2ApiList(); err != nil {
@@ -51,19 +56,20 @@ func (l *ApiLogic) Run() error {
 			buf.WriteString(s)
 		}
 	}
-	dirname := path.Join(config.C.Logic.Api.Dir, "dataconv")
-	err := tools.MakeDir(dirname)
-	if err != nil {
-		return err
-	}
-	filename := path.Join(dirname, "dataconv.go")
-	err = tools.WriteFile(filename, buf.String())
+	filename := path.Join(config.C.Logic.Api.Dir, "dataconv/dataconv.go")
+	err := tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err
 	}
 
-	if err := tools.FormatGoFile(dirname); err != nil {
-		tools.Error("[logic api core] format go content error, in dir: %s", dirname)
+	if err := tools.FormatGoFile(filename); err != nil {
+		tools.Error("[logic api core] format go content error\n in file: %s\n error: %v", filename, err)
 	}
+
+	err = tools.RunConcurrentTasks(tasks)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

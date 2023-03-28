@@ -34,20 +34,38 @@ func (m *ModelCore) Run() (err error) {
 	return
 }
 
-func (m *ModelCore) Generate() error {
-	if err := m.initTplContent(); err != nil {
+func (m *ModelCore) Generate() (err error) {
+	if err = m.initTplContent(); err != nil {
 		return err
 	}
+	if len(m.Tables) == 0 {
+		return nil
+	}
+	tasks := make([]tools.TaskFunc, 0, len(m.Tables))
 	for _, tableModel := range m.Tables {
 		if tableModel == nil {
 			continue
 		}
-		if err := tableModel.Run(); err != nil {
-			return err
-		}
+		localTableModel := tableModel // 为每个任务创建一个本地变量
+		tasks = append(tasks, func() error {
+			return localTableModel.Run()
+		})
 	}
-	err := tools.ExecGoimports(config.C.Model.Dir)
-	return err
+
+	err = tools.RunConcurrentTasks(tasks)
+	if err != nil {
+		return err
+	}
+
+	err = tools.ExecGoimports(config.C.Model.Dir)
+	if err != nil {
+		return err
+	}
+	_, err = tools.ExecShell("go get -u github.com/Masterminds/squirrel")
+	if err != nil {
+		tools.Warning("go get github.com/Masterminds/squirrel failed: %v", err)
+	}
+	return nil
 }
 
 func (m *ModelCore) initTplContent() (err error) {

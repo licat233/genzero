@@ -175,31 +175,40 @@ var rootCmd = &cobra.Command{
 }
 
 func runByConf() {
-	Initialize()
+	if err := Initialize(); err != nil {
+		tools.Error("Failed to initialize: " + err.Error())
+		os.Exit(1)
+	}
+	tasks := make([]tools.TaskFunc, 0)
 	if config.C.Model.Status {
-		if err := model.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
+		tasks = append(tasks, func() error {
+			return model.New().Run()
+		})
 	}
+
 	if config.C.Pb.Status {
-		if err := pb.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
+		tasks = append(tasks, func() error {
+			return pb.New().Run()
+		})
 	}
+
 	if config.C.Api.Status {
-		if err := api.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
+		tasks = append(tasks, func() error {
+			return api.New().Run()
+		})
 	}
 	if config.C.Logic.Status {
-		if err := logic.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
+		tasks = append(tasks, func() error {
+			return logic.New().Run()
+		})
 	}
+
+	err := tools.RunConcurrentTasks(tasks)
+	if err != nil {
+		tools.Error(err.Error())
+		os.Exit(1)
+	}
+
 	tools.Success("Done.")
 }
 

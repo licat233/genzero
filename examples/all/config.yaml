@@ -4,18 +4,18 @@ api:
     ignoreTables:
         - jwt_blacklist
     jwt: ""
-    middleware: ""
-    multiple: false
+    middleware: []
+    multiple: true
     prefix: ""
     serviceName: admin-api
-    status: false
+    status: true
     style: genZero
     tables: []
 database:
-    dsn: # "root@tcp(localhost:3306)/admin"
+    dsn: ""
     ignoreColumns: []
     ignoreTables: []
-    src: ../sql/admin.sql
+    src: admin.sql
     tables: []
 logic:
     api:
@@ -32,21 +32,21 @@ logic:
         status: true
         style: genZero
         tables: []
-    status: true
+    status: false
 model:
     dir: model
     ignoreColumns: []
     ignoreTables: []
-    status: true
+    status: false
     tables: []
 proto:
     dir: ""
     goPackage: ""
     ignoreColumns: []
     ignoreTables: []
-    multiple: false
+    multiple: true
     package: ""
     serviceName: admin
-    status: false
+    status: true
     style: genZero
     tables: []

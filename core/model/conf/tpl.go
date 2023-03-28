@@ -16,8 +16,8 @@ import (
 )
 
 type {{.InterfaceName}} interface {
-	{{range $.Funcs}}
-	{{ .FullName | printf "%s"  }}
+	{{- range $.Funcs}}
+	{{ .FullName | printf "%s" -}}
 	{{end}}
 }
 

@@ -40,7 +40,7 @@ func NewLogic(t *sql.Table) *Logic {
 		PluralizedName: tools.PluralizedName(tools.ToCamel(t.Name)),
 		ModelName:      tools.ToCamel(t.Name) + "Model",
 		RpcSvcName:     tools.ToCamel(t.Name) + "Rpc",
-		RpcGoPkgName:   config.C.Pb.GoPackage,
+		RpcGoPkgName:   tools.PickGoPkgName(config.C.Pb.GoPackage),
 		Dir:            config.C.Logic.Api.Dir,
 		UseRpc:         config.C.Logic.Api.UseRpc,
 		HasName:        utils.HasName(t.Fields),

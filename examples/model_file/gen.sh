@@ -21,9 +21,9 @@ if [ ! -f "../genzero" ]; then
     ../build.sh
 fi
 
-# ../build.sh
+../build.sh
 
-rm -rf ./model
+# rm -rf ./model
 
 if [ ! -d model ]; then
     if ! goctl model mysql ddl --src "../sql/admin.sql" -dir="model" --style goZero -cache=false; then
@@ -36,21 +36,3 @@ if ! ../genzero model --src="../sql/admin.sql" --service_name="admin" --dir="mod
 then
     exit 1
 fi
-
-if [ -d api ]; then
-    rm -rf api/*
-fi
-
-# Please install the goctl first
-# command: go install github.com/zeromicro/go-zero/tools/goctl@latest
-# github: https://github.com/zeromicro/go-zero
-
-
-exit # 如果需要生成gozero框架的服务代码，请注释这行
-
-goctl api go -api admin.api -dir ./api -style goZero
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-cd ../
-go mod tidy

@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/licat233/genzero/core/model/conf"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
 type FindList struct {
-	modelName string
-	name      string
-	req       string
-	resp      string
-	fullname  string
-	Table     *sql.Table
+	modelName   string
+	name        string
+	req         string
+	resp        string
+	fullName    string
+	IsCacheMode bool
+	Table       *sql.Table
 }
 
 var _ ModelFunc = (*FindList)(nil)
 
-func NewFindList(t *sql.Table) FindList {
+func NewFindList(t *sql.Table, isCacheMode bool) FindList {
 	camelName := tools.ToCamel(t.Name)
 	lowerName := tools.ToLowerCamel(t.Name)
 	modelName := modelName(t.Name)
@@ -30,12 +30,13 @@ func NewFindList(t *sql.Table) FindList {
 	resp := fmt.Sprintf("(resp []*%s, total int64, err error)", camelName)
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
 	return FindList{
-		modelName: modelName,
-		name:      name,
-		req:       req,
-		resp:      resp,
-		fullname:  fullName,
-		Table:     t,
+		modelName:   modelName,
+		name:        name,
+		req:         req,
+		resp:        resp,
+		fullName:    fullName,
+		IsCacheMode: isCacheMode,
+		Table:       t,
 	}
 }
 
@@ -45,7 +46,7 @@ func (s FindList) String() string {
 	camelName := tools.ToCamel(s.Table.Name)
 	lowerName := tools.ToLowerCamel(s.Table.Name)
 	var buf = new(bytes.Buffer)
-	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {", s.modelName, s.fullname))
+	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {", s.modelName, s.fullName))
 	if hasName {
 		buf.WriteString("\n\thasName := false")
 	}
@@ -63,7 +64,7 @@ func (s FindList) String() string {
 	buf.WriteString("\n\t\tqueryCount, agrsCount, e := sqCount.ToSql()")
 	buf.WriteString("\n\t\tif e != nil {\n\t\t\terr = e\n\t\t\treturn\n\t\t}")
 	buf.WriteString(fmt.Sprintf("\n\t\tqueryCount = strings.ReplaceAll(queryCount, %sRows, \"COUNT(*)\")", lowerName))
-	if conf.IsCacheMode {
+	if s.IsCacheMode {
 		buf.WriteString("\n\t\tif err = m.QueryRowNoCacheCtx(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
 	} else {
 		buf.WriteString("\n\t\tif err = m.conn.QueryRowCtx(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
@@ -72,7 +73,7 @@ func (s FindList) String() string {
 	buf.WriteString("\n\t}")
 	buf.WriteString("\n\tquery, agrs, err := sq.ToSql()\n\tif err != nil {\n\t\treturn\n\t}")
 	buf.WriteString(fmt.Sprintf("\n\tresp = make([]*%s, 0)", camelName))
-	if conf.IsCacheMode {
+	if s.IsCacheMode {
 		buf.WriteString("\n\tif err = m.QueryRowsNoCacheCtx(ctx, &resp, query, agrs...); err != nil {\n\t\treturn\n\t}")
 	} else {
 		buf.WriteString("\n\tif err = m.conn.QueryRowsCtx(ctx, &resp, query, agrs...); err != nil {\n\t\treturn\n\t}")
@@ -81,26 +82,6 @@ func (s FindList) String() string {
 	buf.WriteString("\n\treturn")
 	buf.WriteString("\n}\n")
 	return buf.String()
-}
-
-func (s FindList) FullName() string {
-	return s.fullname
-}
-
-func (s FindList) Req() string {
-	return s.req
-}
-
-func (s FindList) Resp() string {
-	return s.resp
-}
-
-func (s FindList) Name() string {
-	return s.name
-}
-
-func (s FindList) ModelName() string {
-	return s.modelName
 }
 
 func (s FindList) hasName() bool {
@@ -136,7 +117,12 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 			continue
 		}
 		buf.WriteString(fmt.Sprintf("\n\t\tif %s {", condition))
-		buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"%s = ?\", %s)", field.Name, fieldString))
+		if field.Type == "time.Time" {
+			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"%s = ?\", %s.Format(\"2006-01-02 15:04:05\"))", field.Name, fieldString))
+		} else {
+			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"%s = ?\", %s)", field.Name, fieldString))
+		}
+
 		if isNameField(field) && !hasName {
 			buf.WriteString("\n\t\t\thasName = true")
 			hasName = true
@@ -153,4 +139,8 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 
 func isNameField(field sql.Field) bool {
 	return strings.ToLower(field.Name) == "name" && field.Type == "string"
+}
+
+func (t FindList) FullName() string {
+	return t.fullName
 }

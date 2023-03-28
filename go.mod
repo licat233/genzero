@@ -3,10 +3,12 @@ module github.com/licat233/genzero
 go 1.20
 
 require (
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/chuckpreslar/inflect v0.0.0-20150228233301-423e3ac59c61
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/spf13/cobra v1.6.1
+	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/zeromicro/go-zero v1.5.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -24,6 +26,8 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
+	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect

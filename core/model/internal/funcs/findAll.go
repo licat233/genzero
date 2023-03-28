@@ -4,35 +4,36 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/licat233/genzero/core/model/conf"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
 type FindAll struct {
-	modelName string
-	name      string
-	req       string
-	resp      string
-	fullName  string
-	Table     *sql.Table
+	modelName   string
+	name        string
+	req         string
+	resp        string
+	fullName    string
+	IsCacheMode bool
+	Table       *sql.Table
 }
 
 var _ ModelFunc = (*FindAll)(nil)
 
-func NewFindAll(t *sql.Table) *FindAll {
+func NewFindAll(t *sql.Table, isCacheMode bool) *FindAll {
 	modelName := modelName(t.Name)
 	name := "FindAll"
 	req := "ctx context.Context"
 	resp := fmt.Sprintf("([]*%s, error)", tools.ToCamel(t.Name))
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
 	return &FindAll{
-		modelName: modelName,
-		name:      name,
-		req:       req,
-		resp:      resp,
-		fullName:  fullName,
-		Table:     t,
+		modelName:   modelName,
+		name:        name,
+		req:         req,
+		resp:        resp,
+		fullName:    fullName,
+		IsCacheMode: isCacheMode,
+		Table:       t,
 	}
 }
 
@@ -47,8 +48,7 @@ func (s *FindAll) String() string {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s limit 99999\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
 
-	if conf.IsCacheMode {
-		buf.WriteString("//不走缓存，会增加业务的复杂度，容易出现数据一致性问题\n")
+	if s.IsCacheMode {
 		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query)\n")
 	} else {
 		buf.WriteString("err := m.conn.QueryRowsCtx(ctx, &resp, query)\n")
@@ -65,22 +65,6 @@ func (s *FindAll) String() string {
 	return buf.String()
 }
 
-func (s *FindAll) FullName() string {
-	return s.fullName
-}
-
-func (s *FindAll) Req() string {
-	return s.req
-}
-
-func (s *FindAll) Resp() string {
-	return s.resp
-}
-
-func (s *FindAll) Name() string {
-	return s.name
-}
-
-func (s *FindAll) ModelName() string {
-	return s.modelName
+func (t *FindAll) FullName() string {
+	return t.fullName
 }

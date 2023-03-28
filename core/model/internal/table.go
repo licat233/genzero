@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"strings"
@@ -39,15 +40,27 @@ func NewTableModel(t *sql.Table) *TableModel {
 		TplContent:    conf.TplContent,
 		IsCacheMode:   false,
 		table:         t,
-		Funcs: []funcs.ModelFunc{
-			funcs.NewFindAll(t),
-			funcs.NewFindList(t),
-			funcs.NewTableName(t),
-			funcs.NewFindByUuid(t),
-			funcs.NewSoftDelete(t),
-			funcs.NewFormatUuidKey(t),
-		},
+		Funcs:         []funcs.ModelFunc{},
 	}
+}
+
+func (t *TableModel) Init() (err error) {
+	isCache, err := IsCacheMode(t.TableName)
+	if err != nil {
+		return err
+	}
+	t.IsCacheMode = isCache
+	t.Funcs = []funcs.ModelFunc{
+		funcs.NewFindAll(t.table, isCache),
+		funcs.NewFindList(t.table, isCache),
+		funcs.NewTableName(t.table, isCache),
+		// funcs.NewFindByUuid(t.table, isCache),
+		funcs.NewSoftDelete(t.table, isCache),
+		funcs.NewFormatUuidKey(t.table, isCache),
+		funcs.NewFindByAnyCollection(t.table, isCache),
+	}
+	// conf.ChangeQueryString(isCache)
+	return nil
 }
 
 func (t *TableModel) Run() error {
@@ -103,48 +116,6 @@ func (t *TableModel) Render() (string, error) {
 	return content, err
 }
 
-func (t *TableModel) Init() (err error) {
-	isCache, err := t.isCacheMode()
-	if err != nil {
-		return err
-	}
-	t.IsCacheMode = isCache
-	// conf.ChangeQueryString(isCache)
-	return nil
-}
-
-func (t *TableModel) isCacheMode() (bool, error) {
-	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(t.TableName))
-	filePath := path.Join(config.C.Model.Dir, genFilename)
-	exists, err := tools.PathExists(filePath)
-	if err != nil {
-		return false, err
-	}
-	if !exists {
-		return false, fmt.Errorf("[model core] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
-	}
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		return false, err
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		line = strings.TrimSpace(line)
-		if line == "sqlc.CachedConn" {
-			return true, nil
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return false, err
-	}
-	return false, nil
-}
-
 // 拓展原始接口，添加当前定义的接口
 func (t *TableModel) ExtendOriginalInterface() error {
 	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(t.TableName))
@@ -174,16 +145,12 @@ func (t *TableModel) ExtendOriginalInterface() error {
 	scanner := bufio.NewScanner(file)
 
 	// 读取每行内容并进行修改
-	var exist = false
+	var modified = false
 	var newContent = new(bytes.Buffer)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if exist && strings.HasSuffix(line, t.InterfaceName) {
-			//已经存在，不需要修改
-			return nil
-		}
-		if strings.HasSuffix(strings.TrimSpace(line), target) {
-			exist = true
+		if !modified && strings.HasSuffix(strings.TrimSpace(line), target) {
+			modified = true
 			line = fmt.Sprintf("%s // extends interface\n\t\t%s", line, t.InterfaceName)
 		}
 		newContent.WriteString(line + "\n")
@@ -194,8 +161,18 @@ func (t *TableModel) ExtendOriginalInterface() error {
 		return err
 	}
 
-	// 将修改后的内容写回到文件中
-	_, err = file.Seek(0, 0)
+	if !modified {
+		return nil
+	}
+
+	// 清空文件内容
+	err = file.Truncate(0)
+	if err != nil {
+		return err
+	}
+
+	// 将更新后的内容写入文件中
+	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
 		return err
 	}
@@ -207,4 +184,38 @@ func (t *TableModel) ExtendOriginalInterface() error {
 	}
 
 	return nil
+}
+
+func IsCacheMode(tableName string) (bool, error) {
+	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(tableName))
+	filePath := path.Join(config.C.Model.Dir, genFilename)
+	exists, err := tools.PathExists(filePath)
+	if err != nil {
+		return false, err
+	}
+	if !exists {
+		return false, fmt.Errorf("[model core] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return false, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = strings.TrimSpace(line)
+		if strings.HasSuffix(line, "sqlc.CachedConn") {
+			return true, nil
+		} else if strings.HasSuffix(line, "sqlc.Conn") {
+			return false, nil
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return false, err
+	}
+	return false, nil
 }

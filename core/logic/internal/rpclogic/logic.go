@@ -35,7 +35,7 @@ func NewLogic(t *sql.Table) *Logic {
 		LowerCamelName: tools.ToLowerCamel(t.Name),
 		SnakeName:      tools.ToSnake(t.Name),
 		ModelName:      tools.ToCamel(t.Name) + "Model",
-		RpcGoPkgName:   config.C.Pb.GoPackage,
+		RpcGoPkgName:   tools.PickGoPkgName(config.C.Pb.GoPackage),
 		PluralizedName: tools.PluralizedName(tools.ToCamel(t.Name)),
 		Dir:            config.C.Logic.Rpc.Dir,
 		Multiple:       config.C.Logic.Rpc.Multiple,
@@ -218,13 +218,13 @@ func (l *Logic) Del() (err error) {
 	//分为软删除和硬删除
 	var logicContentTpl string
 	if l.Table.HasDeleteFiled {
-		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.DeleteSoft(l.ctx, in.id)
+		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.DeleteSoft(l.ctx, in.Id)
 		if err != nil {
 			l.Logger.Error(err)
 			return nil, errorx.IntRpcErr(err)
 		}`
 	} else {
-		logicContentTpl = `err = l.svcCtx.{{.ModelName}}.Delete(l.ctx, in.id)
+		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.Delete(l.ctx, in.Id)
 		if err != nil {
 			l.Logger.Error(err)
 			return nil, errorx.IntRpcErr(err)
