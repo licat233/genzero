@@ -257,6 +257,7 @@ func init() {
 	modelCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
 	apilogicCmd.PersistentFlags().BoolVar(&config.C.Logic.Api.UseRpc, "use_rpc", false, "use rpc for api")
+	// apilogicCmd.PersistentFlags().BoolVar(&config.C.Logic.Api.RpcMultiple, "rpc_multiple", false, "is multiple rpc ?")
 	apilogicCmd.PersistentFlags().StringVar(&config.C.Logic.Api.Style, "style", config.LowerCamelCase, "naming style: "+config.StyleList)
 	apilogicCmd.PersistentFlags().StringVar(&config.C.Logic.Api.Dir, "dir", "", "api logic directory")
 	apilogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")

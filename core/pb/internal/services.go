@@ -26,12 +26,12 @@ func NewService(name, comment string) *Service {
 func (s *Service) initBaseServiceRpcs() {
 	name := s.Name
 	s.Rpcs = []*Rpc{
-		NewRpc("BaseAdd"+name, "Add"+name+"Req", "Add"+name+"Resp", "添加"+s.Comment),
-		NewRpc("BasePut"+name, "Put"+name+"Req", "Put"+name+"Resp", "更新"+s.Comment),
-		NewRpc("BaseGet"+name, "Get"+name+"Req", "Get"+name+"Resp", "获取"+s.Comment),
-		NewRpc("BaseDel"+name, "Del"+name+"Req", "Del"+name+"Resp", "删除"+s.Comment),
-		NewRpc("BaseGet"+name+"List", "Get"+name+"ListReq", "Get"+name+"ListResp", "获取"+s.Comment+"列表"),
-		NewRpc("BaseGet"+name+"Enums", "Get"+name+"EnumsReq", "Enums", "获取"+s.Comment+"枚举列表"),
+		NewRpc("Add"+name, "Add"+name+"Req", "Add"+name+"Resp", "添加"+s.Comment),
+		NewRpc("Put"+name, "Put"+name+"Req", "Put"+name+"Resp", "更新"+s.Comment),
+		NewRpc("Get"+name, "Get"+name+"Req", "Get"+name+"Resp", "获取"+s.Comment),
+		NewRpc("Del"+name, "Del"+name+"Req", "Del"+name+"Resp", "删除"+s.Comment),
+		NewRpc("Get"+name+"List", "Get"+name+"ListReq", "Get"+name+"ListResp", "获取"+s.Comment+"列表"),
+		NewRpc("Get"+name+"Enums", "Get"+name+"EnumsReq", "Enums", "获取"+s.Comment+"枚举列表"),
 	}
 }
 

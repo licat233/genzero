@@ -97,8 +97,9 @@ func (c *ModelConfig) Validate() error {
 type LogicConfig struct {
 	Status bool `yaml:"status"` // modify logic
 	Api    struct {
-		Status       bool     `yaml:"status"`       // generate api
-		UseRpc       bool     `yaml:"useRpc"`       // use rpc
+		Status bool `yaml:"status"` // generate api
+		UseRpc bool `yaml:"useRpc"` // use rpc
+		// RpcMultiple  bool     `yaml:"rpcMultiple"`  // is multiple rpc
 		Style        string   `yaml:"style"`        // style
 		Dir          string   `yaml:"dir"`          // api logic directory
 		Tables       []string `yaml:"tables"`       // need to generate tables, default is all tables，split multiple value by ","

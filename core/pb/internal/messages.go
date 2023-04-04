@@ -59,7 +59,7 @@ func (ms *Message) GenCommonMessages() []*Message {
 	addRespMessage.Name = "Add" + tools.ToCamel(ms.Name) + "Resp"
 	addRespMessage.Comment = "添加" + ms.Comment + "响应"
 	addRespMessage.Fields = []*MessageField{
-		NewMessageField(tools.ToCamel(ms.Name), ms.Name, 1, ms.Comment+"信息"),
+		// NewMessageField(tools.ToCamel(ms.Name), ms.Name, 1, ms.Comment+"信息"),
 	}
 	//put req
 	putReqMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns) //PutReqMessage

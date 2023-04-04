@@ -19,9 +19,9 @@ import (
 
 func (l *Logic) getLogicFilename(method string, supply string) string {
 	var filename string
-	method = tools.ToCamel(method)
+	method = tools.ToLowerCamel(method)
 	supply = tools.ToCamel(supply)
-	filename = fmt.Sprintf("base%s%s%sLogic", method, l.CamelName, supply)
+	filename = fmt.Sprintf("%s%s%sLogic", method, l.CamelName, supply)
 	switch config.C.Logic.Rpc.Style {
 	case config.CamelCase:
 		filename = tools.ToCamel(filename)

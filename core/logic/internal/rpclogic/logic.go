@@ -3,6 +3,7 @@ package rpclogic
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/utils"
@@ -129,39 +130,19 @@ func (l *Logic) Add() (err error) {
 	logicContentTpl := `data := &model.{{.CamelName}}{
 		{{.ConveFields}}
 	}
-	result, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, data)
+	_, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, data)
 	if err != nil {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		l.Logger.Error(err)
-		return nil, errorx.IntRpcErr(err)
-	}
-
-	res, err := l.svcCtx.{{.CamelName}}Model.FindOne(l.ctx, id)
-	if err != nil && err != model.ErrNotFound {
-		l.Logger.Error(err)
-		return nil, errorx.IntRpcErr(err)
-	}
-	if err == model.ErrNotFound {
-		l.Logger.Error(err)
-		return nil, errorx.IntRpcErr(err)
-	}`
+`
 
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {
 		return err
 	}
 
-	returnDataTpl := `{{.CamelName}}: dataconv.Md{{.CamelName}}ToPb{{.CamelName}}(res),`
-	returnData, err := tools.ParserTpl(returnDataTpl, l)
-	if err != nil {
-		return err
-	}
-
-	err = modifyLogicFileContent(filename, logicContent, returnData)
+	err = modifyLogicFileContent(filename, logicContent, "")
 
 	return err
 }
@@ -179,14 +160,14 @@ func (l *Logic) Put() (err error) {
 	var conveFieldsBuf bytes.Buffer
 	for _, field := range l.PutFields() {
 		if field.Type == "time.Time" {
-			conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s.Unix(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+			conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(in.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 			continue
 		}
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
 	l.ConveFields = conveFieldsBuf.String()
 
-	logicContentTpl := `data := &model.User{
+	logicContentTpl := `data := &model.{{.CamelName}}{
 		{{.ConveFields}}
 	}
 
@@ -251,16 +232,8 @@ func (l *Logic) List() (err error) {
 		return nil
 	}
 
-	logicContentTpl := `
-	var pageSize, page int64
-	var keyword string
-	if in.ListReq != nil {
-		pageSize = in.ListReq.PageSize
-		page = in.ListReq.Page
-		keyword = in.ListReq.Keyword
-	}
-	in.ListReq = tools.NewListReq(in.ListReq)
-	list, total, err := l.svcCtx.{{.ModelName}}.FindList(l.ctx, pageSize, page, keyword, Pb{{.CamelName}}ToMd{{.CamelName}}(in.{{.CamelName}}))
+	logicContentTpl := `pageSize, page, keyword := dataconv.ListReqParams(in.ListReq)
+	list, total, err := l.svcCtx.{{.ModelName}}.FindList(l.ctx, pageSize, page, keyword, dataconv.Pb{{.CamelName}}ToMd{{.CamelName}}(in.{{.CamelName}}))
 	if err != nil {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)
@@ -270,7 +243,7 @@ func (l *Logic) List() (err error) {
 	if err != nil {
 		return err
 	}
-	returnData := fmt.Sprintf("%s: dataconv.Md%sToPb%s(list),\nTotal:      total,", l.PluralizedName, l.PluralizedName, l.PluralizedName)
+	returnData := fmt.Sprintf("%s: dataconv.Md%s2Pb%s(list),\nTotal:      total,", l.PluralizedName, l.PluralizedName, l.PluralizedName)
 
 	err = modifyLogicFileContent(filename, logicContent, returnData)
 
@@ -389,4 +362,18 @@ func (l *Logic) MdList2PbList() (string, error) {
 	`
 
 	return tools.ParserTpl(tpl, l)
+}
+
+func ListReqParams(rpcGoPkgName string) string {
+	tpl := `
+	func ListReqParams(req *{{.RpcGoPkgName}}.ListReq) (pageSize int64, page int64, keyword string) {
+		if req != nil {
+			pageSize = req.PageSize
+			page = req.Page
+			keyword = req.Keyword
+		}
+		return
+	}
+`
+	return strings.ReplaceAll(tpl, "{{.RpcGoPkgName}}", rpcGoPkgName)
 }

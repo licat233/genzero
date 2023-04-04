@@ -35,6 +35,7 @@ func New() *RpcLogic {
 
 func (l *RpcLogic) Run() (err error) {
 	var buf bytes.Buffer
+	var goPkgName string
 	buf.WriteString("package dataconv\n\n")
 	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	for _, logic := range l.Logics {
@@ -45,6 +46,9 @@ func (l *RpcLogic) Run() (err error) {
 		// if err := logic.Run(); err != nil {
 		// 	return err
 		// }
+		if goPkgName == "" {
+			goPkgName = logic.RpcGoPkgName
+		}
 		buf.WriteString(logic.PbToMd())
 		buf.WriteString(logic.MdToPb())
 		if s, err := logic.PbList2MdList(); err != nil {
@@ -58,6 +62,7 @@ func (l *RpcLogic) Run() (err error) {
 			buf.WriteString(s)
 		}
 	}
+	buf.WriteString(ListReqParams(goPkgName))
 
 	filename := path.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
 	err = tools.WriteFile(filename, buf.String())

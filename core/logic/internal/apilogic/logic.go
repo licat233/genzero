@@ -33,13 +33,17 @@ type Logic struct {
 type LogicCollection []*Logic
 
 func NewLogic(t *sql.Table) *Logic {
+	// rpcSvcName := tools.ToCamel(config.C.Api.ServiceName) + "Rpc"
+	// if config.C.Logic.Api.RpcMultiple {
+	// 	rpcSvcName = tools.ToCamel(config.C.Api.ServiceName) + "BaseRpc"
+	// }
 	return &Logic{
 		CamelName:      tools.ToCamel(t.Name),
 		LowerCamelName: tools.ToLowerCamel(t.Name),
 		SnakeName:      tools.ToSnake(t.Name),
 		PluralizedName: tools.PluralizedName(tools.ToCamel(t.Name)),
 		ModelName:      tools.ToCamel(t.Name) + "Model",
-		RpcSvcName:     tools.ToCamel(t.Name) + "Rpc",
+		RpcSvcName:     tools.ToCamel(config.C.Api.ServiceName) + "Rpc",
 		RpcGoPkgName:   tools.PickGoPkgName(config.C.Pb.GoPackage),
 		Dir:            config.C.Logic.Api.Dir,
 		UseRpc:         config.C.Logic.Api.UseRpc,
@@ -141,10 +145,10 @@ func (l *Logic) Add() (err error) {
 
 	var logicContentTpl string
 	if l.UseRpc {
-		logicContentTpl = `in := &{{.RpcGoPkgName}}.{{.CamelName}}{
+		logicContentTpl = `in := &{{.RpcGoPkgName}}.Add{{.CamelName}}Req{
 			{{.ConveFields}}
 		}
-		resp, err := l.svcCtx.{{.RpcSvcName}}.Add{{.CamelName}}(l.ctx, in)
+		_, err := l.svcCtx.{{.RpcSvcName}}.Add{{.CamelName}}(l.ctx, in)
 		if err != nil {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可
 			return nil, err
@@ -193,10 +197,10 @@ func (l *Logic) Put() (err error) {
 
 	var logicContentTpl string
 	if l.UseRpc {
-		logicContentTpl = `in := &{{.RpcGoPkgName}}.{{.CamelName}}{
+		logicContentTpl = `in := &{{.RpcGoPkgName}}.Put{{.CamelName}}Req{
 			{{.ConveFields}}
 		}
-		resp, err := l.svcCtx.{{.RpcSvcName}}.Put{{.CamelName}}(l.ctx, in)
+		_, err := l.svcCtx.{{.RpcSvcName}}.Put{{.CamelName}}(l.ctx, in)
 		if err != nil {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可
 			return nil, err
@@ -239,7 +243,7 @@ func (l *Logic) Del() (err error) {
 
 	var logicContentTpl string
 	if l.UseRpc {
-		logicContentTpl = `_, err := l.svcCtx.{{.RpcSvcName}}.Del{{.CamelName}}(l.ctx, &{{.RpcGoPkgName}}.DelAdminerReq{
+		logicContentTpl = `_, err := l.svcCtx.{{.RpcSvcName}}.Del{{.CamelName}}(l.ctx, &{{.RpcGoPkgName}}.Del{{.CamelName}}Req{
 			Id: req.Id,
 		})
 		if err != nil {
@@ -349,8 +353,8 @@ func (l *Logic) Enums() (err error) {
 
 	var logicContentTpl string
 	if l.UseRpc {
-		logicContentTpl = `rpcResp, err := l.svcCtx.{{.RpcSvcName}}.Get{{.ModelName}}EnumList(l.ctx, &{{.RpcGoPkgName}}.Get{{.ModelName}}EnumsReq{
-			Id: req.ParentId,
+		logicContentTpl = `rpcResp, err := l.svcCtx.{{.RpcSvcName}}.Get{{.CamelName}}Enums(l.ctx, &{{.RpcGoPkgName}}.Get{{.CamelName}}EnumsReq{
+			ParentId: req.ParentId,
 		})
 	if err != nil {
 		return nil, err
