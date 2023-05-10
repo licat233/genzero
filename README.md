@@ -1,5 +1,6 @@
 # genzero
 
+根据mysql，一键生成增删改查等相关代码，涉及*.api与*.proto文件的生成，以及model代码的生成，api logic代码的生成，rpc logic代码的生成。
 This is a tool to generate gozero service based on mysql.
 
 ## Install
