@@ -53,11 +53,13 @@ func (t *TableModel) Init() (err error) {
 	t.Funcs = []funcs.ModelFunc{
 		funcs.NewFindAll(t.table, isCache),
 		funcs.NewFindList(t.table, isCache),
+		funcs.NewFindsByIds(t.table, isCache),
 		funcs.NewTableName(t.table, isCache),
 		// funcs.NewFindByUuid(t.table, isCache),
 		funcs.NewSoftDelete(t.table, isCache),
 		funcs.NewFormatUuidKey(t.table, isCache),
 		funcs.NewFindByAnyCollection(t.table, isCache),
+		funcs.NewFindsByAnyCollection(t.table, isCache),
 	}
 	// conf.ChangeQueryString(isCache)
 	return nil

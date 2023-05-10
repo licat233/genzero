@@ -9,7 +9,7 @@ import (
 	"github.com/licat233/genzero/tools"
 )
 
-type FindByAny struct {
+type FindsByAny struct {
 	field       sql.Field
 	modelName   string
 	name        string
@@ -20,24 +20,24 @@ type FindByAny struct {
 	Table       *sql.Table
 }
 
-var _ ModelFunc = (*FindByAny)(nil)
+var _ ModelFunc = (*FindsByAny)(nil)
 
-type FindByAnyCollection []*FindByAny
+type FindsByAnyCollection []*FindsByAny
 
-var _ ModelFunc = (FindByAnyCollection)(nil)
+var _ ModelFunc = (FindsByAnyCollection)(nil)
 
-func NewFindByAnyCollection(table *sql.Table, isCacheMode bool) FindByAnyCollection {
-	var res FindByAnyCollection = make([]*FindByAny, 0)
+func NewFindsByAnyCollection(table *sql.Table, isCacheMode bool) FindsByAnyCollection {
+	var res FindsByAnyCollection = make([]*FindsByAny, 0)
 	for _, field := range table.Fields {
 		if strings.ToLower(field.Name) == "id" {
 			continue
 		}
-		res = append(res, NewFindByAny(table, isCacheMode, field))
+		res = append(res, NewFindsByAny(table, isCacheMode, field))
 	}
 	return res
 }
 
-func (f FindByAnyCollection) String() string {
+func (f FindsByAnyCollection) String() string {
 	var buf = new(bytes.Buffer)
 	for _, findByAny := range f {
 		buf.WriteString(findByAny.String() + "\n")
@@ -45,7 +45,7 @@ func (f FindByAnyCollection) String() string {
 	return buf.String()
 }
 
-func (f FindByAnyCollection) FullName() string {
+func (f FindsByAnyCollection) FullName() string {
 	var buf = new(bytes.Buffer)
 	for _, findByAny := range f {
 		buf.WriteString(findByAny.FullName() + "\n")
@@ -53,13 +53,13 @@ func (f FindByAnyCollection) FullName() string {
 	return buf.String()
 }
 
-func NewFindByAny(t *sql.Table, isCacheMode bool, field sql.Field) *FindByAny {
+func NewFindsByAny(t *sql.Table, isCacheMode bool, field sql.Field) *FindsByAny {
 	modelName := modelName(t.Name)
-	name := fmt.Sprintf("FindBy%s", field.UpperCamelCaseName)
+	name := fmt.Sprintf("FindsBy%s", field.UpperCamelCaseName)
 	req := fmt.Sprintf("ctx context.Context, %s %s", tools.ToLowerCamel(field.Name), field.Type)
-	resp := fmt.Sprintf("(*%s, error)", tools.ToCamel(t.Name))
+	resp := fmt.Sprintf("([]*%s, error)", tools.ToCamel(t.Name))
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
-	return &FindByAny{
+	return &FindsByAny{
 		field:       field,
 		modelName:   modelName,
 		name:        name,
@@ -71,14 +71,14 @@ func NewFindByAny(t *sql.Table, isCacheMode bool, field sql.Field) *FindByAny {
 	}
 }
 
-func (s *FindByAny) String() string {
+func (s *FindsByAny) String() string {
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
-	buf.WriteString(fmt.Sprintf("var resp %s\n", tools.ToCamel(s.Table.Name)))
+	buf.WriteString(fmt.Sprintf("var resp = make([]*%s, 0)\n", tools.ToCamel(s.Table.Name)))
 	if s.Table.HasDeleteFiled {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? and `is_deleted` = '0' limit 1\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? and `is_deleted` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? limit 1\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
 
 	fieldV := tools.ToLowerCamel(s.field.Name)
@@ -91,18 +91,11 @@ func (s *FindByAny) String() string {
 	} else {
 		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &resp, query, " + fieldV + ")\n")
 	}
-	buf.WriteString(`switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}`)
+	buf.WriteString("return resp, err")
 	buf.WriteString("\n}\n")
 	return buf.String()
 }
 
-func (t *FindByAny) FullName() string {
+func (t *FindsByAny) FullName() string {
 	return t.fullName
 }
