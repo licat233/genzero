@@ -221,7 +221,7 @@ func init() {
 
 	initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "src", config.DefaultConfigFileName, "file location for yaml configuration")
 
-	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode")
+	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode, print error message")
 
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.DSN, "dsn", "", "data source name (DSN) to use when connecting to the database")
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.Src, "src", "", "sql file to use when connecting to the database")

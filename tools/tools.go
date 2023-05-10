@@ -40,7 +40,7 @@ func PluralizedName(name string) string {
 
 func HasInSlice(slice []string, s string) bool {
 	for _, v := range slice {
-		if v == s {
+		if strings.EqualFold(v, s) {
 			return true
 		}
 	}
