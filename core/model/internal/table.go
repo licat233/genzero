@@ -55,13 +55,14 @@ func (t *TableModel) Init() (err error) {
 		funcs.NewFindList(t.table, isCache),
 		funcs.NewFindsByIds(t.table, isCache),
 		funcs.NewTableName(t.table, isCache),
-		// funcs.NewFindByUuid(t.table, isCache),
-		funcs.NewSoftDelete(t.table, isCache),
-		funcs.NewFormatUuidKey(t.table, isCache),
 		funcs.NewFindByAnyCollection(t.table, isCache),
-		funcs.NewFindsByAnyCollection(t.table, isCache),
 	}
-	// conf.ChangeQueryString(isCache)
+	if t.table.HasUuid {
+		t.Funcs = append(t.Funcs, funcs.NewFormatUuidKey(t.table, isCache))
+	}
+	if t.table.HasDeleteFiled {
+		t.Funcs = append(t.Funcs, funcs.NewSoftDelete(t.table, isCache))
+	}
 	return nil
 }
 
