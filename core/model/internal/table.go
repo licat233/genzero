@@ -26,6 +26,7 @@ type TableModel struct {
 	IsCacheMode   bool
 	table         *sql.Table
 	Funcs         []funcs.ModelFunc
+	FuncNameList  []string
 }
 
 type TableModelCollection []*TableModel
@@ -41,6 +42,7 @@ func NewTableModel(t *sql.Table) *TableModel {
 		IsCacheMode:   false,
 		table:         t,
 		Funcs:         []funcs.ModelFunc{},
+		FuncNameList:  []string{},
 	}
 }
 
@@ -62,6 +64,9 @@ func (t *TableModel) Init() (err error) {
 	}
 	if t.table.HasDeleteFiled {
 		t.Funcs = append(t.Funcs, funcs.NewSoftDelete(t.table, isCache))
+	}
+	for _, f := range t.Funcs {
+		t.FuncNameList = append(t.FuncNameList, f.FullName())
 	}
 	return nil
 }

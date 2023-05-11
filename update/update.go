@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 
 	"github.com/licat233/genzero/config"
@@ -32,7 +31,7 @@ func Update() {
 		tools.Error("更新失败：%s\n", err)
 		os.Exit(1)
 	}
-	tools.Success("更新成功，重新启动程序...")
+	tools.Success("更新成功!")
 	// 重新启动程序
 	os.Exit(0)
 }
@@ -63,44 +62,44 @@ func updateSelf(latestVersion string) error {
 	return nil
 }
 
-func compareVersions(oldVer, newVer string) bool {
-	oldVer, newVer = strings.TrimSpace(oldVer), strings.TrimSpace(newVer)
-	oldLen, newLen := len(oldVer), len(newVer)
-	minLen := oldLen
-	if oldLen > newLen {
-		minLen = newLen
-	}
+// func compareVersions(oldVer, newVer string) bool {
+// 	oldVer, newVer = strings.TrimSpace(oldVer), strings.TrimSpace(newVer)
+// 	oldLen, newLen := len(oldVer), len(newVer)
+// 	minLen := oldLen
+// 	if oldLen > newLen {
+// 		minLen = newLen
+// 	}
 
-	var oldVerScore, newVerScore int
-	for i := 0; i < minLen; i++ {
-		oldV, newV := oldVer[i], newVer[i]
-		if oldV == newV {
-			continue
-		}
-		oldDigit, oldErr := strconv.Atoi(string(oldV))
-		newDigit, newErr := strconv.Atoi(string(newV))
-		if oldErr != nil && newErr == nil {
-			return true
-		}
-		if newErr != nil && oldErr == nil {
-			return false
-		}
-		if oldErr != nil && newErr != nil {
-			return true
-		}
-		if oldErr == nil && newErr == nil {
-			if newDigit > oldDigit {
-				newVerScore++
-			} else if newDigit < oldDigit {
-				oldVerScore++
-			} else {
-				continue
-			}
-		}
-	}
-	if oldVerScore == newVerScore {
-		return oldLen > newLen
-	}
+// 	var oldVerScore, newVerScore int
+// 	for i := 0; i < minLen; i++ {
+// 		oldV, newV := oldVer[i], newVer[i]
+// 		if oldV == newV {
+// 			continue
+// 		}
+// 		oldDigit, oldErr := strconv.Atoi(string(oldV))
+// 		newDigit, newErr := strconv.Atoi(string(newV))
+// 		if oldErr != nil && newErr == nil {
+// 			return true
+// 		}
+// 		if newErr != nil && oldErr == nil {
+// 			return false
+// 		}
+// 		if oldErr != nil && newErr != nil {
+// 			return true
+// 		}
+// 		if oldErr == nil && newErr == nil {
+// 			if newDigit > oldDigit {
+// 				newVerScore++
+// 			} else if newDigit < oldDigit {
+// 				oldVerScore++
+// 			} else {
+// 				continue
+// 			}
+// 		}
+// 	}
+// 	if oldVerScore == newVerScore {
+// 		return oldLen > newLen
+// 	}
 
-	return oldVerScore < newVerScore
-}
+// 	return oldVerScore < newVerScore
+// }

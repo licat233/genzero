@@ -12,6 +12,8 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 )
 
+var AdminerTableName = "adminer"
+
 type adminer_model interface {
 	FindAll(ctx context.Context) ([]*Adminer, error)
 	FindList(ctx context.Context, pageSize, page int64, keyword string, adminer *Adminer) (resp []*Adminer, total int64, err error)
@@ -27,7 +29,6 @@ type adminer_model interface {
 	FindByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) (*Adminer, error)
 	FindByLoginCount(ctx context.Context, loginCount int64) (*Adminer, error)
 	FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error)
-
 	formatUuidKey(uuid string) string
 	SoftDelete(ctx context.Context, id int64) error
 }

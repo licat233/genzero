@@ -10,9 +10,11 @@ import (
 	"github.com/Masterminds/squirrel"
 )
 
+var {{ToCamel .TableName}}TableName = "{{.TableName}}"
+
 type {{.InterfaceName}} interface {
-	{{range .Funcs}}
-	{{ .FullName | printf "%s"  }}
+	{{- range $.FuncNameList}}
+	{{. -}}
 	{{end}}
 }
 

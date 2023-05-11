@@ -46,11 +46,11 @@ func (f FindByAnyCollection) String() string {
 }
 
 func (f FindByAnyCollection) FullName() string {
-	var buf = new(bytes.Buffer)
+	var list []string
 	for _, findByAny := range f {
-		buf.WriteString(findByAny.FullName() + "\n")
+		list = append(list, findByAny.FullName())
 	}
-	return buf.String()
+	return strings.Join(list, "\n")
 }
 
 func NewFindByAny(t *sql.Table, isCacheMode bool, field sql.Field) *FindByAny {
