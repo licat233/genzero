@@ -43,6 +43,9 @@ func (s *FindsByIds) String() string {
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
 	buf.WriteString(fmt.Sprintf("var resp = make([]*%s, 0)\n", tools.ToCamel(s.Table.Name)))
+	buf.WriteString("if len(ids) == 0 {\n")
+	buf.WriteString("return resp, nil\n")
+	buf.WriteString("}\n")
 	if s.Table.HasDeleteFiled {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `id` in(?) and `is_deleted` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {

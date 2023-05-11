@@ -120,7 +120,7 @@ func (t *TableModel) Render() (string, error) {
 
 // 拓展原始接口，添加当前定义的接口
 func (t *TableModel) ExtendOriginalInterface() error {
-	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(t.TableName))
+	genFilename := fmt.Sprintf("%sModel.go", tools.ToLowerCamel(t.TableName))
 	filePath, err := tools.FindFile(config.C.Model.Dir, genFilename)
 	if err != nil {
 		return err
@@ -141,7 +141,8 @@ func (t *TableModel) ExtendOriginalInterface() error {
 	defer file.Close()
 
 	table := tools.ToLowerCamel(t.TableName)
-	target := fmt.Sprintf("%sModel interface {", table)
+	findLine := fmt.Sprintf("%sModel", table)
+	insertLine := fmt.Sprintf("%s // extended interface by genzero", t.InterfaceName)
 
 	// 使用bufio.Scanner获取文件中每一行的内容
 	scanner := bufio.NewScanner(file)
@@ -151,9 +152,9 @@ func (t *TableModel) ExtendOriginalInterface() error {
 	var newContent = new(bytes.Buffer)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if !modified && strings.HasSuffix(strings.TrimSpace(line), target) {
+		if !modified && strings.TrimSpace(line) == findLine {
 			modified = true
-			line = fmt.Sprintf("%s // extends interface\n\t\t%s", line, t.InterfaceName)
+			line = fmt.Sprintf("%s // extended interface by gozero\n\t\t%s", line, insertLine)
 		}
 		newContent.WriteString(line + "\n")
 	}

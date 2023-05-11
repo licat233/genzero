@@ -124,6 +124,9 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 
 func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
+	if len(ids) == 0 {
+		return resp, nil
+	}
 	query := fmt.Sprintf("select %s from %s where `id` in(?) and `is_deleted` = '0' ", adminerRows, m.table)
 	err := m.conn.QueryRowCtx(ctx, &resp, query, ids)
 	return resp, err

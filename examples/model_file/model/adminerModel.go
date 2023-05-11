@@ -8,7 +8,8 @@ type (
 	// AdminerModel is an interface to be customized, add more methods here,
 	// and implement the added methods in customAdminerModel.
 	AdminerModel interface {
-		adminerModel
+		adminerModel  // extended interface by gozero
+		adminer_model // extended interface by genzero
 	}
 
 	customAdminerModel struct {

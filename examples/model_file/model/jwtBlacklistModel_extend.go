@@ -99,6 +99,9 @@ func (m *defaultJwtBlacklistModel) FindList(ctx context.Context, pageSize, page 
 
 func (m *defaultJwtBlacklistModel) FindsByIds(ctx context.Context, ids []int64) ([]*JwtBlacklist, error) {
 	var resp = make([]*JwtBlacklist, 0)
+	if len(ids) == 0 {
+		return resp, nil
+	}
 	query := fmt.Sprintf("select %s from %s where `id` in(?) ", jwtBlacklistRows, m.table)
 	err := m.conn.QueryRowCtx(ctx, &resp, query, ids)
 	return resp, err

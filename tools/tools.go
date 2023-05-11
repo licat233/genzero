@@ -300,6 +300,7 @@ func FindFilename(dir string, file string) (string, error) {
 	return "", nil
 }
 
+// 查找文件，以忽略文件名大小写的方式查找匹配
 func FindFile(dir string, file string) (string, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {

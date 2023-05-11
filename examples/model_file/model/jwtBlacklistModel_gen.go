@@ -23,8 +23,7 @@ var (
 )
 
 type (
-	jwtBlacklistModel interface { // extends interface
-		jwtBlacklist_model
+	jwtBlacklistModel interface {
 		Insert(ctx context.Context, data *JwtBlacklist) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*JwtBlacklist, error)
 		Update(ctx context.Context, data *JwtBlacklist) error
