@@ -22,7 +22,7 @@ func Update() {
 	currentVersion := config.CurrentVersion
 	latestVersion := getLatestVersion()
 
-	if !compareVersions(currentVersion, latestVersion) {
+	if strings.EqualFold(currentVersion, latestVersion) {
 		tools.Success("当前版本%s已是最新.", currentVersion)
 		return
 	}
