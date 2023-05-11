@@ -15,6 +15,7 @@ import (
 var JwtBlacklistTableName = "jwt_blacklist"
 
 type jwtBlacklist_model interface {
+	FindCount(ctx context.Context) (int64, error)
 	FindAll(ctx context.Context) ([]*JwtBlacklist, error)
 	FindList(ctx context.Context, pageSize, page int64, keyword string, jwtBlacklist *JwtBlacklist) (resp []*JwtBlacklist, total int64, err error)
 	FindsByIds(ctx context.Context, ids []int64) ([]*JwtBlacklist, error)
@@ -26,6 +27,13 @@ type jwtBlacklist_model interface {
 	FindByIp(ctx context.Context, ip string) (*JwtBlacklist, error)
 	FindByExpireAt(ctx context.Context, expireAt time.Time) (*JwtBlacklist, error)
 	formatUuidKey(uuid string) string
+}
+
+func (m *defaultJwtBlacklistModel) FindCount(ctx context.Context) (int64, error) {
+	var count int64
+	query := fmt.Sprintf("select count(*) as count from %s", m.table)
+	err := m.conn.QueryRowCtx(ctx, &count, query)
+	return count, err
 }
 
 func (m *defaultJwtBlacklistModel) FindAll(ctx context.Context) ([]*JwtBlacklist, error) {

@@ -53,6 +53,7 @@ func (t *TableModel) Init() (err error) {
 	}
 	t.IsCacheMode = isCache
 	t.Funcs = []funcs.ModelFunc{
+		funcs.NewFindCount(t.table, isCache),
 		funcs.NewFindAll(t.table, isCache),
 		funcs.NewFindList(t.table, isCache),
 		funcs.NewFindsByIds(t.table, isCache),

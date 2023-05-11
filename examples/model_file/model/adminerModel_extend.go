@@ -15,6 +15,7 @@ import (
 var AdminerTableName = "adminer"
 
 type adminer_model interface {
+	FindCount(ctx context.Context) (int64, error)
 	FindAll(ctx context.Context) ([]*Adminer, error)
 	FindList(ctx context.Context, pageSize, page int64, keyword string, adminer *Adminer) (resp []*Adminer, total int64, err error)
 	FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error)
@@ -31,6 +32,13 @@ type adminer_model interface {
 	FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error)
 	formatUuidKey(uuid string) string
 	SoftDelete(ctx context.Context, id int64) error
+}
+
+func (m *defaultAdminerModel) FindCount(ctx context.Context) (int64, error) {
+	var count int64
+	query := fmt.Sprintf("select count(*) as count from %s where `is_deleted` = '0'", m.table)
+	err := m.conn.QueryRowCtx(ctx, &count, query)
+	return count, err
 }
 
 func (m *defaultAdminerModel) FindAll(ctx context.Context) ([]*Adminer, error) {
