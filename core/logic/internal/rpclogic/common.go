@@ -132,7 +132,8 @@ func (l *Logic) PbFields() []sql.Field {
 func (l *Logic) AddFields() []sql.Field {
 	res := make([]sql.Field, 0)
 	for _, field := range l.Table.Fields {
-		if tools.HasInSlice(moreIgnoreColumns, field.Name) {
+		// 添加record，需要忽略id字段
+		if tools.HasInSlice([]string{"id"}, field.Name) {
 			continue
 		}
 		res = append(res, field)

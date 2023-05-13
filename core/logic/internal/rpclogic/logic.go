@@ -123,6 +123,10 @@ func (l *Logic) Add() (err error) {
 			conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(in.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 			continue
 		}
+		if strings.ToLower(field.Name) == "uuid" {
+			conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
+			continue
+		}
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
 	l.ConveFields = conveFieldsBuf.String()
