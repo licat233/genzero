@@ -55,7 +55,7 @@ func (s *FindsByIds) String() string {
 	if s.IsCacheMode {
 		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, ids)\n")
 	} else {
-		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &resp, query, ids)\n")
+		buf.WriteString("err := m.conn.QueryRowsCtx(ctx, &resp, query, ids)\n")
 	}
 	buf.WriteString("return resp, err")
 	buf.WriteString("\n}\n")

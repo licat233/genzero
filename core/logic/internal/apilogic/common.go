@@ -77,7 +77,6 @@ func modifyLogicFileContent(filename string, logicContent string, returnContent 
 		}
 
 		// 更改 resp 类型
-		//TODO: 这里有Bug
 		if !findedFunc && tools.IsFunction(line) { //函数声明行
 			//替换响应体
 			line = tools.ReplaceFuncResp(line, "(any, error)")

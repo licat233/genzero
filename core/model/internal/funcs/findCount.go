@@ -49,7 +49,7 @@ func (s *FindCount) String() string {
 	}
 
 	if s.IsCacheMode {
-		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &count, query)\n")
+		buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &count, query)\n")
 	} else {
 		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &count, query)\n")
 	}

@@ -54,7 +54,7 @@ func (s *FindByUuid) String() string {
 		// buf.WriteString("err := m.QueryRowCtx(ctx, &resp, uuidKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {")
 		// buf.WriteString("return conn.QueryRowCtx(ctx, v, query, uuid)")
 		// buf.WriteString("})")
-		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, uuid)\n")
+		buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &resp, query, uuid)\n")
 	} else {
 		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &resp, query, uuid)\n")
 	}

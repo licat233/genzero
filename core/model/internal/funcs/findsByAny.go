@@ -87,7 +87,7 @@ func (s *FindsByAny) String() string {
 	}
 
 	if s.IsCacheMode {
-		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, " + fieldV + ")\n")
+		buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &resp, query, " + fieldV + ")\n")
 	} else {
 		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &resp, query, " + fieldV + ")\n")
 	}
