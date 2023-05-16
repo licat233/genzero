@@ -22,11 +22,11 @@ func Update() {
 	latestVersion := getLatestVersion()
 
 	if strings.EqualFold(currentVersion, latestVersion) {
-		tools.Success("当前版本%s已是最新.", currentVersion)
+		tools.Success("当前版本[%s]已是最新.", currentVersion)
 		return
 	}
 
-	tools.Success("新版本%s可用!", latestVersion)
+	tools.Success("新版本[%s]可用!", latestVersion)
 	if err := updateSelf(latestVersion); err != nil {
 		tools.Error("更新失败：%s\n", err)
 		os.Exit(1)
