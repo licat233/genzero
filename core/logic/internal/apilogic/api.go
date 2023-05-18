@@ -3,6 +3,7 @@ package apilogic
 import (
 	"bytes"
 	"path"
+	"strings"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/core/utils"
@@ -14,6 +15,8 @@ import (
 type ApiLogic struct {
 	Logics   LogicCollection
 	DbTables sql.TableCollection
+
+	RpcGoPkgName string
 }
 
 func New() *ApiLogic {
@@ -26,14 +29,16 @@ func New() *ApiLogic {
 		logics = append(logics, NewLogic(t.Copy()))
 	}
 	return &ApiLogic{
-		Logics:   logics,
-		DbTables: dbTables,
+		Logics:       logics,
+		DbTables:     dbTables,
+		RpcGoPkgName: tools.PickGoPkgName(config.C.Pb.GoPackage),
 	}
 }
 
 func (l *ApiLogic) Run() error {
 	var buf bytes.Buffer
 	buf.WriteString("package dataconv\n\n")
+	buf.WriteString(l.commonConvert())
 	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	for _, logic := range l.Logics {
 		localLogic := logic // 为每个任务创建一个本地变量
@@ -72,4 +77,48 @@ func (l *ApiLogic) Run() error {
 	}
 
 	return nil
+}
+
+func (l *ApiLogic) commonConvert() string {
+	tpl := `
+	func PbEnumToApiEnum(in *__GORPCNAME__.Enum) *types.Enum {
+		if in == nil {
+			return nil
+		}
+		return &types.Enum{
+			Label: in.Label,
+			Value: in.Value,
+		}
+	}
+
+	func PbEnumsToApiEnums(list []*__GORPCNAME__.Enum) []*types.Enum {
+		res := []*types.Enum{}
+		for _, v := range list {
+			res = append(res, PbEnumToApiEnum(v))
+		}
+		return res
+	}
+
+	func PbOptionToApiOption(in *__GORPCNAME__.Option) *types.Option {
+		if in == nil {
+			return nil
+		}
+		return &types.Option{
+			Title: in.Title,
+			Value: in.Value,
+		}
+	}
+
+	func PbOptionsToApiOptions(list []*__GORPCNAME__.Option) []*types.Option {
+		res := []*types.Option{}
+		for _, v := range list {
+			res = append(res, PbOptionToApiOption(v))
+		}
+		return res
+	}
+	`
+
+	res := strings.ReplaceAll(tpl, "__GORPCNAME__", l.RpcGoPkgName)
+
+	return res
 }
