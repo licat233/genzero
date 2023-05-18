@@ -116,6 +116,25 @@ func (l *ApiLogic) commonConvert() string {
 		}
 		return res
 	}
+
+	func PbTreeOptionToApiTreeOption(in *luckydraw_pb.TreeOption) *types.TreeOption {
+		if in == nil {
+			return nil
+		}
+		return &types.TreeOption{
+			Title:    in.Title,
+			Value:    in.Value,
+			Children: PbTreeOptionsToApiTreeOptions(in.Children),
+		}
+	}
+
+	func PbTreeOptionsToApiTreeOptions(list []*luckydraw_pb.TreeOption) []types.TreeOption {
+		res := []types.TreeOption{}
+		for _, v := range list {
+			res = append(res, *PbTreeOptionToApiTreeOption(v))
+		}
+		return res
+	}
 	`
 
 	res := strings.ReplaceAll(tpl, "__GORPCNAME__", l.RpcGoPkgName)
