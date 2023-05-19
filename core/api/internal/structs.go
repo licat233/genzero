@@ -51,16 +51,23 @@ func (st *Struct) IgnoreStructFields(needIgnoreFields []string, more ...string) 
 }
 
 func (st *Struct) GenCommonStructs() []*Struct {
+	res := []*Struct{}
 	//default
 	defaultStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns)
+	res = append(res, defaultStruct)
+
 	//add req
 	addReqStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns, conf.MoreIgnoreColumns...) //AddReqStruct
 	addReqStruct.Name = "Add" + tools.ToCamel(st.Name) + "Req"
 	addReqStruct.Comment = "添加" + st.Comment + "请求"
+	res = append(res, addReqStruct)
+
 	//put req
 	putReqStruct := st.Copy().IgnoreStructFields(config.C.Api.IgnoreColumns) //PutReqStruct
 	putReqStruct.Name = "Put" + tools.ToCamel(st.Name) + "Req"
 	putReqStruct.Comment = "更新" + st.Comment + "请求"
+	res = append(res, putReqStruct)
+
 	//del req
 	delReqStruct := st.Copy() //DelReqStruct
 	delReqStruct.Name = "Del" + tools.ToCamel(st.Name) + "Req"
@@ -68,6 +75,8 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	delReqStruct.Fields = []*StructField{
 		NewStructField("Id", "int64", "json", "id", "", st.Comment+" ID"),
 	}
+	res = append(res, delReqStruct)
+
 	//get req
 	getReqStruct := st.Copy() //GetReqStruct
 	getReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "Req"
@@ -75,31 +84,35 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	getReqStruct.Fields = []*StructField{
 		NewStructField("Id", "int64", "form", "id", "", st.Comment+" ID"),
 	}
+	res = append(res, getReqStruct)
+
 	//list req
 	listReqStruct := st.Copy() //ListReqStruct
 	listReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "ListReq"
 	listReqStruct.Comment = "获取" + st.Comment + "列表请求"
 	listReqStruct.TagType = "form"
-	listReqStruct.Fields = GenListReqFields().PutTagType(st.TagType)
-	for _, field := range st.Fields {
+	for _, field := range listReqStruct.Fields {
 		if tools.HasInSlice(config.C.Api.IgnoreColumns, field.Name) {
 			continue
 		}
-		field.TagType = st.TagType
 		if !strings.Contains(field.TagOpt, "optional") {
 			field.TagOpt += ",optional"
-			if field.Typ == "int64" {
+			switch field.Typ {
+			case "int64":
 				if strings.Contains(field.TagOpt, "Time") {
 					field.TagOpt += ",default=0"
 				} else {
 					field.TagOpt += ",default=-1"
 				}
-			} else if field.Typ == "float64" {
+			case "float64":
 				field.TagOpt += ",default=-1"
 			}
 		}
-		listReqStruct.Fields = append(listReqStruct.Fields, field)
 	}
+	listReqStruct.Fields = append(GenListReqFields(), listReqStruct.Fields...)
+	listReqStruct.Fields.PutTagType("form")
+	res = append(res, listReqStruct)
+
 	//enums req
 	enumsReqStruct := st.Copy() //EnumsReqStruct
 	enumsReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "EnumsReq"
@@ -107,16 +120,8 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	enumsReqStruct.Fields = []*StructField{
 		NewStructField("ParentId", "int64", "form", "parent_id", "optional,default=-1", "父级ID"),
 	}
+	res = append(res, enumsReqStruct)
 
-	res := []*Struct{
-		defaultStruct,
-		addReqStruct,
-		putReqStruct,
-		delReqStruct,
-		getReqStruct,
-		listReqStruct,
-		enumsReqStruct,
-	}
 	return res
 }
 
@@ -135,13 +140,13 @@ func (mc StructCollection) Swap(i, j int) {
 }
 
 type StructField struct {
-	Name      string
-	Typ       string
-	TagType   string
-	TagName   string
-	TagOpt    string
-	TagString string
-	Comment   string
+	Name    string
+	Typ     string
+	TagType string
+	TagName string
+	TagOpt  string
+	// TagString string
+	Comment string
 }
 
 func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *StructField {
@@ -157,17 +162,24 @@ func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *Struct
 	}
 
 	tagName = utils.ConvertStringStyle(config.C.Api.Style, tagName)
-	tagOptString := utils.HandleOptContent(tagName, tagOpt)
-	tagString := fmt.Sprintf("`%s:\"%s\"`", tagType, tagOptString)
 	return &StructField{
-		Name:      name,
-		Typ:       typ,
-		TagType:   tagType,
-		TagName:   tagName,
-		TagOpt:    tagOpt,
-		TagString: tagString,
-		Comment:   comment,
+		Name:    name,
+		Typ:     typ,
+		TagType: tagType,
+		TagName: tagName,
+		TagOpt:  tagOpt,
+		// TagString: tagString,
+		Comment: comment,
 	}
+}
+
+func (sf *StructField) GetTagString() string {
+	tagOptString := utils.HandleOptContent(sf.TagName, sf.TagOpt)
+	return fmt.Sprintf("`%s:\"%s\"`", sf.TagType, tagOptString)
+}
+
+func (sf *StructField) Copy() *StructField {
+	return NewStructField(sf.Name, sf.Typ, sf.TagType, sf.TagName, sf.TagOpt, sf.Comment)
 }
 
 type StructFieldCollection []*StructField
@@ -192,6 +204,7 @@ func (mfc StructFieldCollection) Copy() StructFieldCollection {
 func (sfc StructFieldCollection) PutTagType(tagType string) StructFieldCollection {
 	for k := range sfc {
 		sfc[k].TagType = tagType
+		// sfc[k].TagString = sfc[k].GetTagString()
 	}
 	return sfc
 }

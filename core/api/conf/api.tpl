@@ -33,7 +33,7 @@ info (
 //{{.Comment}}
 type {{.Name}} {
   {{- range .Fields}}
-  {{printf "%s %s %s //%s" .Name .Typ .TagString .Comment -}}
+  {{printf "%s %s %s //%s" .Name .Typ .GetTagString .Comment -}}
   {{end}}
 }
 
@@ -48,7 +48,7 @@ type {{.Name}} {
 //{{.Comment}}
 type {{.Name}} {
   {{- range .Fields}}
-  {{printf "%s %s %s //%s" .Name .Typ .TagString .Comment -}}
+  {{printf "%s %s %s //%s" .Name .Typ .GetTagString .Comment -}}
   {{end}}
 }
 {{end}}
