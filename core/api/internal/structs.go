@@ -107,6 +107,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 			case "float64":
 				field.TagOpt += ",default=-1"
 			}
+			field.TagOpt += ",omitempty"
 		}
 	}
 	listReqStruct.Fields = append(GenListReqFields(), listReqStruct.Fields...)
