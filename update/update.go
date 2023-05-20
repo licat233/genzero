@@ -54,8 +54,7 @@ func updateSelf(latestVersion string) error {
 	}
 	url := strings.ReplaceAll(config.ProjectURL, "http://", "")
 	url = strings.ReplaceAll(url, "https://", "") + "@" + latestVersion
-	tools.Success("正在更新...")
-	tools.Success("更新命令: go install %s", url)
+	tools.Success("更新命令: go install %s\n正在更新...", url)
 	// 构建并安装最新版本的程序
 	if err := exec.Command(goBinary, "install", url).Run(); err != nil {
 		return fmt.Errorf("%w", err)

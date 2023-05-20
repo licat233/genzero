@@ -82,7 +82,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	getReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "Req"
 	getReqStruct.Comment = "获取" + st.Comment + "请求"
 	getReqStruct.Fields = []*StructField{
-		NewStructField("Id", "int64", "form", "id", "", st.Comment+" ID"),
+		NewStructField("Id", "int64", "json", "id", "", st.Comment+" ID"),
 	}
 	res = append(res, getReqStruct)
 
@@ -118,7 +118,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	enumsReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "EnumsReq"
 	enumsReqStruct.Comment = "获取" + st.Comment + "枚举请求"
 	enumsReqStruct.Fields = []*StructField{
-		NewStructField("ParentId", "int64", "form", "parent_id", "optional,default=-1", "父级ID"),
+		NewStructField("ParentId", "int64", "json", "parent_id", "optional,default=-1", "父级ID"),
 	}
 	res = append(res, enumsReqStruct)
 
