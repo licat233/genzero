@@ -229,7 +229,7 @@ func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&config.C.DB.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
 	rootCmd.PersistentFlags().StringSliceVar(&config.C.DB.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Style, "style", config.LowerCamelCase, "proto style: "+config.StyleList)
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.FileStyle, "file_style", config.LowerCamelCase, "proto file style: "+config.StyleList)
 	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Package, "pkg", "", "proto package")
 	pbCmd.PersistentFlags().StringVar(&config.C.Pb.GoPackage, "gopkg", "", "proto go package")
 	pbCmd.PersistentFlags().BoolVar(&config.C.Pb.Multiple, "multiple", false, "proto multiple")
@@ -239,7 +239,7 @@ func init() {
 	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
 	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.Style, "style", config.LowerCamelCase, "api style: "+config.StyleList)
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.JsonStyle, "json_style", config.LowerCamelCase, "api json style: "+config.StyleList)
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Jwt, "jwt", "", "api jwt")
 	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Middleware, "middleware", []string{}, "api middleware")
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Prefix, "prefix", "", "api prefix")

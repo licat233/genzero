@@ -25,7 +25,7 @@ func (c *DatabaseConfig) Validate() error {
 // api配置
 type ApiConfig struct {
 	Status        bool     `yaml:"status"` // generate api
-	Style         string   `yaml:"style"`
+	JsonStyle     string   `yaml:"jsonStyle"`
 	Jwt           string   `yaml:"jwt"`
 	Middleware    []string `yaml:"middleware"`
 	Prefix        string   `yaml:"prefix"`
@@ -53,7 +53,7 @@ func (c *ApiConfig) Validate() error {
 // pb配置
 type PbConfig struct {
 	Status        bool     `yaml:"status"` // generate proto
-	Style         string   `yaml:"style"`
+	FileStyle     string   `yaml:"style"`
 	Package       string   `yaml:"package"`
 	GoPackage     string   `yaml:"goPackage"`
 	Multiple      bool     `yaml:"multiple"`

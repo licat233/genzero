@@ -161,7 +161,7 @@ func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *Struct
 		typ = "int64"
 	}
 
-	tagName = utils.ConvertStringStyle(config.C.Api.Style, tagName)
+	tagName = utils.ConvertStringStyle(config.C.Api.JsonStyle, tagName)
 	return &StructField{
 		Name:    name,
 		Typ:     typ,
