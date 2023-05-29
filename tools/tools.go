@@ -47,6 +47,10 @@ func HasInSlice(slice []string, s string) bool {
 	return false
 }
 
+func InSlice(target string, sources ...string) bool {
+	return HasInSlice(sources, target)
+}
+
 func PickMarkContents2(startMark, endMark string, content []byte) ([][]byte, error) {
 	if len(content) == 0 {
 		return [][]byte{}, nil

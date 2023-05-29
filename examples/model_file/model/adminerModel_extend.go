@@ -280,7 +280,7 @@ func (m *defaultAdminerModel) formatUuidKey(uuid string) string {
 }
 
 func (m *defaultAdminerModel) SoftDelete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("update %s set `is_deleted` = '1', `delete_at` = now() where `id` = ?", m.table)
+	query := fmt.Sprintf("update %s set `is_deleted` = '1' where `id` = ?", m.table)
 	_, err := m.conn.ExecCtx(ctx, query, id)
 	return err
 }

@@ -45,7 +45,11 @@ func (s *SoftDelete) String() string {
 	}
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {", s.modelName, s.fullName))
-	buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `is_deleted` = '1', `delete_at` = now() where `id` = ?\", m.table)")
+	if s.Table.ExistField("deleted_at") {
+		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `is_deleted` = '1', `deleted_at`= now() where `id` = ?\", m.table)")
+	} else {
+		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `is_deleted` = '1' where `id` = ?\", m.table)")
+	}
 	if s.IsCacheMode {
 		buf.WriteString("\n_, err := m.ExecNoCacheCtx(ctx, query, id)")
 	} else {

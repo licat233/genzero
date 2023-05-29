@@ -116,12 +116,13 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 	}
 
 	for _, column := range columns {
-		if tools.ToSnake(column.ColumnName) == "is_deleted" {
+		if column.ColumnName == "is_deleted" {
 			table, ok := tableMap[column.TableName]
 			if ok {
 				table.HasDeleteFiled = true
 			}
 		}
+
 		if strings.ToLower(column.ColumnName) == "uuid" {
 			table, ok := tableMap[column.TableName]
 			if ok {

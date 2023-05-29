@@ -203,7 +203,7 @@ func (l *Logic) Del() (err error) {
 	//分为软删除和硬删除
 	var logicContentTpl string
 	if l.Table.HasDeleteFiled {
-		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.DeleteSoft(l.ctx, in.Id)
+		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.SoftDelete(l.ctx, in.Id)
 		if err != nil {
 			l.Logger.Error(err)
 			return nil, errorx.IntRpcErr(err)

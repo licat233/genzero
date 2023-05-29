@@ -85,11 +85,11 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			continue
 		}
 		if fieldName := PickFieldName(line); fieldName != "" {
-			if has := tools.ToSnake(fieldName) == "is_deleted"; has {
+			if fieldName == "is_deleted" {
 				table.HasDeleteFiled = true
 			}
 
-			if has := strings.ToLower(fieldName) == "uuid"; has {
+			if strings.ToLower(fieldName) == "uuid" {
 				table.HasUuid = true
 			}
 

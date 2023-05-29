@@ -39,6 +39,15 @@ func (t *Table) Copy() *Table {
 	}
 }
 
+func (t *Table) ExistField(fieldName string) bool {
+	for _, field := range t.Fields {
+		if field.Name == fieldName {
+			return true
+		}
+	}
+	return false
+}
+
 type TableCollection []Table
 
 func (t TableCollection) Copy() TableCollection {
