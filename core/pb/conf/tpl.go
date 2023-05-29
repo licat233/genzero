@@ -9,7 +9,6 @@ var TplContent = `
 syntax = "proto3";
 
 package {{.Package}};
-option go_package="{{.GoPackage}}";
 
 {{.ImportStartMark}}
 
@@ -26,6 +25,8 @@ option go_package="{{.GoPackage}}";
 {{.CustomImportEndMark}}
 
 {{.ImportEndMark}}
+
+option go_package="{{.GoPackage}}";
 
 {{.EnumStartMark}}
 

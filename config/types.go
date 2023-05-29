@@ -53,7 +53,7 @@ func (c *ApiConfig) Validate() error {
 // pb配置
 type PbConfig struct {
 	Status        bool     `yaml:"status"` // generate proto
-	FileStyle     string   `yaml:"style"`
+	FileStyle     string   `yaml:"fileStyle"`
 	Package       string   `yaml:"package"`
 	GoPackage     string   `yaml:"goPackage"`
 	Multiple      bool     `yaml:"multiple"`
