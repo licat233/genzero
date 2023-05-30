@@ -5,8 +5,8 @@ import (
 	"path"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
+	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )

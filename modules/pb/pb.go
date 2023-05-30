@@ -8,15 +8,15 @@ import (
 	"text/template"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/pb/conf"
-	"github.com/licat233/genzero/core/pb/internal"
-	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
+	"github.com/licat233/genzero/modules/pb/conf"
+	"github.com/licat233/genzero/modules/pb/internal"
+	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
-type PbCore struct {
+type PbModule struct {
 	ProjectAuthor  string
 	ProjectName    string
 	ProjectAddr    string
@@ -67,8 +67,8 @@ func getOutFilename(name string) string {
 	return path.Join(config.C.Pb.Dir, filename+".proto")
 }
 
-func New() *PbCore {
-	return &PbCore{
+func New() *PbModule {
+	return &PbModule{
 		ProjectAuthor:          tools.GetCurrentUserName(),
 		ProjectName:            config.ProjectName,
 		ProjectAddr:            config.ProjectURL,
@@ -111,7 +111,7 @@ func New() *PbCore {
 	}
 }
 
-func (s *PbCore) Run() error {
+func (s *PbModule) Run() error {
 	err := s.Generate()
 	if err != nil {
 		tools.Error("generate proto file faild.")
@@ -121,7 +121,7 @@ func (s *PbCore) Run() error {
 	return nil
 }
 
-func (s *PbCore) Generate() error {
+func (s *PbModule) Generate() error {
 	err := s.Init()
 	if err != nil {
 		return err
@@ -137,11 +137,11 @@ func (s *PbCore) Generate() error {
 	return nil
 }
 
-func (s *PbCore) WriteFile(content string) error {
+func (s *PbModule) WriteFile(content string) error {
 	return tools.WriteFile(s.OutFileName, content)
 }
 
-func (s *PbCore) Render() (string, error) {
+func (s *PbModule) Render() (string, error) {
 	tmpl, err := tools.Template("proto").Funcs(template.FuncMap{
 		"isEmpty": func(str string) bool {
 			return tools.TrimSpace(str) == ""
@@ -159,7 +159,7 @@ func (s *PbCore) Render() (string, error) {
 	return content, nil
 }
 
-func (s *PbCore) Init() (err error) {
+func (s *PbModule) Init() (err error) {
 	if global.Schema == nil {
 		return fmt.Errorf("schema is nil")
 	}
@@ -199,7 +199,7 @@ func (s *PbCore) Init() (err error) {
 	return nil
 }
 
-func (s *PbCore) initTplContent() error {
+func (s *PbModule) initTplContent() error {
 	// 判断当前目录下是否存在./template/proto.tpl文件
 	protoTplPath := "./template/proto.tpl"
 	exist, err := tools.PathExists(protoTplPath)
@@ -217,7 +217,7 @@ func (s *PbCore) initTplContent() error {
 	return nil
 }
 
-func (s *PbCore) initOldContent() (err error) {
+func (s *PbModule) initOldContent() (err error) {
 	exists, err := tools.PathExists(s.OutFileName)
 	if err != nil {
 		return err
@@ -228,7 +228,7 @@ func (s *PbCore) initOldContent() (err error) {
 	return
 }
 
-func (s *PbCore) initCustomImportContent() error {
+func (s *PbModule) initCustomImportContent() error {
 	customImportContent, err := utils.GetMarkContent(s.CustomImportStartMark, s.CustomImportEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -237,7 +237,7 @@ func (s *PbCore) initCustomImportContent() error {
 	return nil
 }
 
-func (s *PbCore) initCustomEnumContent() error {
+func (s *PbModule) initCustomEnumContent() error {
 	customEnumContent, err := utils.GetMarkContent(s.CustomEnumStartMark, s.CustomEnumEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -246,7 +246,7 @@ func (s *PbCore) initCustomEnumContent() error {
 	return nil
 }
 
-func (s *PbCore) initCustomMessageContent() error {
+func (s *PbModule) initCustomMessageContent() error {
 	customMessageContent, err := utils.GetMarkContent(s.CustomMessageStartMark, s.CustomMessageEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -255,7 +255,7 @@ func (s *PbCore) initCustomMessageContent() error {
 	return nil
 }
 
-func (s *PbCore) initCustomServiceContent() error {
+func (s *PbModule) initCustomServiceContent() error {
 	customServiceContent, err := utils.GetMarkContent(s.CustomServiceStartMark, s.CustomServiceEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -264,12 +264,12 @@ func (s *PbCore) initCustomServiceContent() error {
 	return nil
 }
 
-func (s *PbCore) initImports() (err error) {
+func (s *PbModule) initImports() (err error) {
 	//没有需要导入的包
 	return
 }
 
-func (s *PbCore) initEnums() (err error) {
+func (s *PbModule) initEnums() (err error) {
 	//整理出所有的枚举
 	enumsMap := map[string]bool{}
 	enums := []*internal.Enum{}
@@ -304,12 +304,12 @@ func (s *PbCore) initEnums() (err error) {
 	return
 }
 
-func (s *PbCore) initBaseMessages() (err error) {
+func (s *PbModule) initBaseMessages() (err error) {
 	s.BaseMessages = internal.GenBaseMessages()
 	return nil
 }
 
-func (s *PbCore) initMessages() (err error) {
+func (s *PbModule) initMessages() (err error) {
 	//整理出所有的消息
 	messages := []*internal.Message{}
 	messagesMap := map[string]bool{}
@@ -350,7 +350,7 @@ func (s *PbCore) initMessages() (err error) {
 	return
 }
 
-func (s *PbCore) initServices() (err error) {
+func (s *PbModule) initServices() (err error) {
 	//整理出所有的服务
 	services := []*internal.Service{}
 	servicesMap := map[string]bool{}

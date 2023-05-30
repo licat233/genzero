@@ -2,24 +2,24 @@ package logic
 
 import (
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/logic/internal/apilogic"
-	"github.com/licat233/genzero/core/logic/internal/rpclogic"
+	"github.com/licat233/genzero/modules/logic/internal/apilogic"
+	"github.com/licat233/genzero/modules/logic/internal/rpclogic"
 	"github.com/licat233/genzero/tools"
 )
 
-type LogicCore struct {
+type LogicModule struct {
 	RpcLogic *rpclogic.RpcLogic
 	ApiLogic *apilogic.ApiLogic
 }
 
-func New() *LogicCore {
-	return &LogicCore{
+func New() *LogicModule {
+	return &LogicModule{
 		RpcLogic: rpclogic.New(),
 		ApiLogic: apilogic.New(),
 	}
 }
 
-func (l *LogicCore) Run() (err error) {
+func (l *LogicModule) Run() (err error) {
 	//务必先执行 Rpc
 	if config.C.Logic.Rpc.Status {
 		if err = l.RpcLogic.Run(); err != nil {

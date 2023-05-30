@@ -2,6 +2,7 @@ api:
     dir: ""
     ignoreColumns: []
     ignoreTables: []
+    jsonStyle: gen_zero
     jwt: ""
     middleware: ""
     multiple: false
@@ -19,6 +20,7 @@ database:
 logic:
     api:
         dir: ""
+        fileStyle: genZero
         ignoreTables: []
         status: false
         style: genZero
@@ -26,6 +28,7 @@ logic:
         useRpc: false
     rpc:
         dir: ""
+        fileStyle: genZero
         ignoreTables: []
         multiple: false
         status: false
@@ -40,6 +43,7 @@ model:
     tables: []
 proto:
     dir: ""
+    fileStyle: genZero
     goPackage: ""
     ignoreColumns: []
     ignoreTables: []

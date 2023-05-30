@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/model/conf"
-	"github.com/licat233/genzero/core/model/internal/funcs"
+	"github.com/licat233/genzero/modules/model/conf"
+	"github.com/licat233/genzero/modules/model/internal/funcs"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )

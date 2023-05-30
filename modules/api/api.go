@@ -6,15 +6,15 @@ import (
 	"text/template"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/api/conf"
-	"github.com/licat233/genzero/core/api/internal"
-	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
+	"github.com/licat233/genzero/modules/api/conf"
+	"github.com/licat233/genzero/modules/api/internal"
+	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
 
-type ApiCore struct {
+type ApiModule struct {
 	ProjectAuthor  string
 	ProjectName    string
 	ProjectAddr    string
@@ -57,8 +57,8 @@ func getOutFilename(name string) string {
 	return path.Join(config.C.Api.Dir, tools.ToLowerCamel(name)+".api")
 }
 
-func New() *ApiCore {
-	return &ApiCore{
+func New() *ApiModule {
+	return &ApiModule{
 		ProjectAuthor:          tools.GetCurrentUserName(),
 		ProjectName:            config.ProjectName,
 		ProjectAddr:            config.ProjectURL,
@@ -94,7 +94,7 @@ func New() *ApiCore {
 	}
 }
 
-func (s *ApiCore) Run() error {
+func (s *ApiModule) Run() error {
 	//分两种情况，是否为多文件模式
 	if !s.Multiple {
 		return s.Generate(s.DbTables...)
@@ -124,7 +124,7 @@ func (s *ApiCore) Run() error {
 	return nil
 }
 
-func (s *ApiCore) Generate(tables ...sql.Table) error {
+func (s *ApiModule) Generate(tables ...sql.Table) error {
 	s.DbTables = tables
 	err := s.Init()
 	if err != nil {
@@ -141,11 +141,11 @@ func (s *ApiCore) Generate(tables ...sql.Table) error {
 	return nil
 }
 
-func (s *ApiCore) WriteFile(content string) error {
+func (s *ApiModule) WriteFile(content string) error {
 	return tools.WriteFile(s.OutFileName, content)
 }
 
-func (s *ApiCore) Render() (string, error) {
+func (s *ApiModule) Render() (string, error) {
 	tmpl, err := tools.Template("api").Funcs(template.FuncMap{
 		"NeedRenderStruct": func(isMultiple, isCoreFile bool) bool {
 			return !isMultiple || (isMultiple && !isCoreFile)
@@ -166,7 +166,7 @@ func (s *ApiCore) Render() (string, error) {
 	return content, nil
 }
 
-func (s *ApiCore) Init() (err error) {
+func (s *ApiModule) Init() (err error) {
 
 	if err = s.initTplContent(); err != nil {
 		return
@@ -195,7 +195,7 @@ func (s *ApiCore) Init() (err error) {
 	return nil
 }
 
-func (s *ApiCore) initTplContent() error {
+func (s *ApiModule) initTplContent() error {
 	// 判断当前目录下是否存在./template/api.tpl文件
 	protoTplPath := "./template/api.tpl"
 	exist, err := tools.PathExists(protoTplPath)
@@ -213,7 +213,7 @@ func (s *ApiCore) initTplContent() error {
 	return nil
 }
 
-func (s *ApiCore) initOldContent() (err error) {
+func (s *ApiModule) initOldContent() (err error) {
 	exists, err := tools.PathExists(s.OutFileName)
 	if err != nil {
 		return err
@@ -226,7 +226,7 @@ func (s *ApiCore) initOldContent() (err error) {
 	return
 }
 
-func (s *ApiCore) initCustomImportContent() error {
+func (s *ApiModule) initCustomImportContent() error {
 	customImportContent, err := utils.GetMarkContent(s.CustomImportStartMark, s.CustomImportEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -235,7 +235,7 @@ func (s *ApiCore) initCustomImportContent() error {
 	return nil
 }
 
-func (s *ApiCore) initCustomStructContent() error {
+func (s *ApiModule) initCustomStructContent() error {
 	customStructContent, err := utils.GetMarkContent(s.CustomStructStartMark, s.CustomStructEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func (s *ApiCore) initCustomStructContent() error {
 	return nil
 }
 
-func (s *ApiCore) initCustomServiceContent() error {
+func (s *ApiModule) initCustomServiceContent() error {
 	customServiceContent, err := utils.GetMarkContent(s.CustomServiceStartMark, s.CustomServiceEndMark, s.OldContent)
 	if err != nil {
 		return err
@@ -253,12 +253,12 @@ func (s *ApiCore) initCustomServiceContent() error {
 	return nil
 }
 
-func (s *ApiCore) initImports() (err error) {
+func (s *ApiModule) initImports() (err error) {
 	//没有需要导入的包
 	return
 }
 
-func (s *ApiCore) initStructs() (err error) {
+func (s *ApiModule) initStructs() (err error) {
 	//整理出所有的消息
 	structs := []*internal.Struct{}
 	structsMap := map[string]bool{}
@@ -283,7 +283,7 @@ func (s *ApiCore) initStructs() (err error) {
 	return
 }
 
-func (s *ApiCore) initServices() (err error) {
+func (s *ApiModule) initServices() (err error) {
 	//整理出所有的服务
 	services := []*internal.Service{}
 	servicesMap := map[string]bool{}

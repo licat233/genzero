@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/pb/conf"
+	"github.com/licat233/genzero/modules/pb/conf"
 	"github.com/licat233/genzero/tools"
 )
 

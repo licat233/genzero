@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/logic/conf"
-	pbconf "github.com/licat233/genzero/core/pb/conf"
-	"github.com/licat233/genzero/core/utils"
+	"github.com/licat233/genzero/modules/logic/conf"
+	pbconf "github.com/licat233/genzero/modules/pb/conf"
+	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )

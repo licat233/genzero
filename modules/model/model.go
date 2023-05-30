@@ -2,29 +2,29 @@ package model
 
 import (
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/core/model/conf"
-	"github.com/licat233/genzero/core/model/internal"
-	"github.com/licat233/genzero/core/utils"
 	"github.com/licat233/genzero/global"
+	"github.com/licat233/genzero/modules/model/conf"
+	"github.com/licat233/genzero/modules/model/internal"
+	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/tools"
 )
 
-type ModelCore struct {
+type ModelModule struct {
 	Tables internal.TableModelCollection
 }
 
-func New() *ModelCore {
+func New() *ModelModule {
 	dbTables := utils.FilterTables(global.Schema.Tables, config.C.Model.Tables, utils.MergeSlice(config.C.Model.IgnoreTables, conf.BaseIgnoreTables))
 	tables := make(internal.TableModelCollection, 0, len(dbTables))
 	for _, t := range dbTables {
 		tables = append(tables, internal.NewTableModel(t.Copy()))
 	}
-	return &ModelCore{
+	return &ModelModule{
 		Tables: tables,
 	}
 }
 
-func (m *ModelCore) Run() (err error) {
+func (m *ModelModule) Run() (err error) {
 	err = m.Generate()
 	if err != nil {
 		tools.Error("generate model extend file faild.")
@@ -34,7 +34,7 @@ func (m *ModelCore) Run() (err error) {
 	return
 }
 
-func (m *ModelCore) Generate() (err error) {
+func (m *ModelModule) Generate() (err error) {
 	if err = m.initTplContent(); err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (m *ModelCore) Generate() (err error) {
 	return nil
 }
 
-func (m *ModelCore) initTplContent() (err error) {
+func (m *ModelModule) initTplContent() (err error) {
 	// 判断当前目录下是否存在./template/model.tpl文件
 	protoTplPath := "./template/model.tpl"
 	exist, err := tools.PathExists(protoTplPath)

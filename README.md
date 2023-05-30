@@ -36,6 +36,7 @@ Available Commands:
   version     Print the version number of genzero
 
 Flags:
+      --dev                      dev mode, print error message
       --dsn string               data source name (DSN) to use when connecting to the database
   -h, --help                     help for genzero
       --ignore_columns strings   ignore column string, default is none，split multiple value by ','
@@ -117,7 +118,7 @@ If there is a yaml configuration file, the configuration data in the file will b
 
 The content in this block will not be updated
 
-```protobuf
+```proto
 // The content in this block will not be updated
 // 此区块内的内容不会被更新
 //[custom messages start]
