@@ -239,7 +239,7 @@ func init() {
 	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
 	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.JsonStyle, "json_style", config.LowerCamelCase, "api json style: "+config.StyleList)
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.JsonStyle, "json_style", config.SnakeCase, "api json style: "+config.StyleList)
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Jwt, "jwt", "", "api jwt")
 	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Middleware, "middleware", []string{}, "api middleware")
 	apiCmd.PersistentFlags().StringVar(&config.C.Api.Prefix, "prefix", "", "api prefix")
