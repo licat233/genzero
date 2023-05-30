@@ -23,7 +23,7 @@ func (l *Logic) getLogicFilename(method string, supply string) string {
 	method = tools.ToLowerCamel(method)
 	supply = tools.ToCamel(supply)
 	filename = fmt.Sprintf("%s%s%sLogic", method, l.CamelName, supply)
-	switch config.C.Logic.Rpc.Style {
+	switch config.C.Logic.Api.FileStyle {
 	case config.CamelCase:
 		filename = tools.ToCamel(filename)
 	case config.LowerCamelCase:

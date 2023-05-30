@@ -63,7 +63,8 @@ type PbCore struct {
 }
 
 func getOutFilename(name string) string {
-	return path.Join(config.C.Pb.Dir, tools.ToLowerCamel(name)+".proto")
+	filename := utils.ConvertStringStyle(config.C.Pb.FileStyle, name)
+	return path.Join(config.C.Pb.Dir, filename+".proto")
 }
 
 func New() *PbCore {

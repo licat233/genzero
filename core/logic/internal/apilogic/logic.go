@@ -72,7 +72,7 @@ func (l *Logic) Run() (err error) {
 	if err = l.Enums(); err != nil {
 		return err
 	}
-	dirname := path.Join(l.Dir, utils.ConvertStringStyle(config.C.Logic.Api.Style, l.CamelName))
+	dirname := path.Join(l.Dir, utils.ConvertStringStyle(config.C.Logic.Api.FileStyle, l.CamelName))
 	if err := tools.FormatGoFile(dirname); err != nil {
 		tools.Error("[logic api core] format go content error, in dir: %s", dirname)
 	}
