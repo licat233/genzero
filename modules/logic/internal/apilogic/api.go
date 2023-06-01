@@ -117,7 +117,7 @@ func (l *ApiLogic) commonConvert() string {
 		return res
 	}
 
-	func PbTreeOptionToApiTreeOption(in *luckydraw_pb.TreeOption) *types.TreeOption {
+	func PbTreeOptionToApiTreeOption(in *__GORPCNAME__.TreeOption) *types.TreeOption {
 		if in == nil {
 			return nil
 		}
@@ -128,7 +128,7 @@ func (l *ApiLogic) commonConvert() string {
 		}
 	}
 
-	func PbTreeOptionsToApiTreeOptions(list []*luckydraw_pb.TreeOption) []types.TreeOption {
+	func PbTreeOptionsToApiTreeOptions(list []*__GORPCNAME__.TreeOption) []types.TreeOption {
 		res := []types.TreeOption{}
 		for _, v := range list {
 			res = append(res, *PbTreeOptionToApiTreeOption(v))
