@@ -71,7 +71,7 @@ func (l *RpcLogic) Run() (err error) {
 	}
 
 	if err := tools.FormatGoFile(filename); err != nil {
-		tools.Error("[logic rpc core] format go content error\n in file: %s\n error: %v", filename, err)
+		tools.Error("[logic rpc] format go content error\n in file: %s\n error: %v", filename, err)
 	}
 
 	err = tools.RunConcurrentTasks(tasks)
@@ -86,7 +86,7 @@ func (l *RpcLogic) Run() (err error) {
 	}
 
 	if err := tools.FormatGoFile(filename); err != nil {
-		tools.Error("[logic rpc core] format go content error\n in file: %s\n error: %v", filename, err)
+		tools.Error("[logic rpc] format go content error\n in file: %s\n error: %v", filename, err)
 	}
 
 	return nil

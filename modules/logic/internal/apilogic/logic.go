@@ -74,7 +74,7 @@ func (l *Logic) Run() (err error) {
 	}
 	dirname := path.Join(l.Dir, utils.ConvertStringStyle(config.C.Logic.Api.FileStyle, l.CamelName))
 	if err := tools.FormatGoFile(dirname); err != nil {
-		tools.Error("[logic api core] format go content error, in dir: %s", dirname)
+		tools.Error("[logic api] format go content error, in dir: %s", dirname)
 	}
 	return
 }

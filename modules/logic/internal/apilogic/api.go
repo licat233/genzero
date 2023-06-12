@@ -68,7 +68,7 @@ func (l *ApiLogic) Run() error {
 	}
 
 	if err := tools.FormatGoFile(filename); err != nil {
-		tools.Error("[logic api core] format go content error\n in file: %s\n error: %v", filename, err)
+		tools.Error("[logic api] format go content error\n in file: %s\n error: %v", filename, err)
 	}
 
 	err = tools.RunConcurrentTasks(tasks)

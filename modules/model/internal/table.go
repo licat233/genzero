@@ -101,7 +101,7 @@ func (t *TableModel) Generate() error {
 	}
 	err = tools.FormatGoFile(t.OutFileName)
 	if err != nil {
-		tools.Error("[model core] format go content error, in file: %s", t.OutFileName)
+		tools.Error("[model] format go content error, in file: %s", t.OutFileName)
 	}
 	return err
 }
@@ -137,7 +137,7 @@ func (t *TableModel) ExtendOriginalInterface() error {
 		return err
 	}
 	if !has {
-		return fmt.Errorf("[model core] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
+		return fmt.Errorf("[model] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
 	}
 
 	// 打开文件以供读取
@@ -204,7 +204,7 @@ func IsCacheMode(tableName string) (bool, error) {
 		return false, err
 	}
 	if !exists {
-		return false, fmt.Errorf("[model core] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
+		return false, fmt.Errorf("[model] Initialization failed: the (%s) file does not exist. Please use the goctl tool to create it first.\n - goctl: https://go-zero.dev/cn/docs/goctl/goctl/", filePath)
 	}
 
 	file, err := os.Open(filePath)
