@@ -43,7 +43,7 @@ func (l *Logic) getLogicFileContent(filename string) (string, error) {
 		return "", err
 	}
 	if !exists {
-		tools.Warning("logic file not exists: %s", filename)
+		tools.Warning("[logic api]logic file not exists: %s", filename)
 		return "", nil
 	}
 	body, err := tools.ReadFile(filename)
