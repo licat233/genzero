@@ -10,7 +10,7 @@ var (
 
 const (
 	// CurrentVersion 当前项目版本
-	CurrentVersion = "v1.1.2"
+	CurrentVersion = "v1.1.3-bate.1"
 
 	// ProjectName 当前项目名称
 	ProjectName = "genzero"
@@ -21,7 +21,9 @@ const (
 	ProjectInfoURL = "https://api.github.com/repos/licat233/" + ProjectName + "/releases/latest"
 
 	// DefaultConfigFileName 配置文件名称
-	DefaultConfigFileName = ProjectName + "Config.yaml"
+	DefaultConfigFileName = ProjectName + ".yaml"
+	// OldConfigFileName 旧的配置文件名称
+	OldConfigFileName = ProjectName + "Config.yaml"
 
 	CamelCase      = "GenZero"
 	LowerCamelCase = "genZero"

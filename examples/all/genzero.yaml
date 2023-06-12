@@ -3,6 +3,7 @@ api:
     ignoreColumns: []
     ignoreTables:
         - jwt_blacklist
+    jsonStyle: gen_zero
     jwt: ""
     middleware: []
     multiple: true
@@ -20,6 +21,7 @@ database:
 logic:
     api:
         dir: api/internal/logic
+        fileStyle: genZero
         ignoreTables: []
         status: true
         style: genZero
@@ -27,6 +29,7 @@ logic:
         useRpc: true
     rpc:
         dir: rpc/internal/logic
+        fileStyle: genZero
         ignoreTables: []
         multiple: true
         status: true
@@ -41,6 +44,7 @@ model:
     tables: []
 proto:
     dir: ""
+    fileStyle: genZero
     goPackage: ""
     ignoreColumns: []
     ignoreTables: []

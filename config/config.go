@@ -26,11 +26,14 @@ func New() *Config {
 }
 
 func (c *Config) CreateYaml() error {
+	if err := RenameOldConfigFile(); err != nil {
+		return err
+	}
 	yamlBytes, err := yaml.Marshal(c)
 	if err != nil {
 		return err
 	}
-	//先判断是否已经存在，存在则合并内容
+	//先判断配置文件是否已经存在，存在则合并内容
 	exists, err := tools.PathExists(InitConfSrc)
 	if err != nil {
 		return err
@@ -56,11 +59,10 @@ func (c *Config) CreateYaml() error {
 }
 
 func (c *Config) ConfigureByYaml() error {
-	err := ConfigureByYaml(ConfSrc, c)
-	if err != nil {
+	if err := RenameOldConfigFile(); err != nil {
 		return err
 	}
-	return nil
+	return ConfigureByYaml(ConfSrc, c)
 }
 
 func (c *Config) Validate() error {
