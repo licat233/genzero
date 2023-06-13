@@ -26,6 +26,6 @@ rm -f ./*.proto
 # fi
 
 # 会根据yaml配置文件来生成服务的配置文件
-if ! ../genzero start --src="./config.yaml" --dev; then
+if ! ../genzero start --src="./genzero.yaml" --dev; then
     exit 1
 fi
