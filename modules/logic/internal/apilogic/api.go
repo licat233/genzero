@@ -38,7 +38,9 @@ func New() *ApiLogic {
 func (l *ApiLogic) Run() error {
 	var buf bytes.Buffer
 	buf.WriteString("package dataconv\n\n")
-	buf.WriteString(l.commonConvert())
+	if config.C.Logic.Api.UseRpc {
+		buf.WriteString(l.commonPbToApi())
+	}
 	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	for _, logic := range l.Logics {
 		localLogic := logic // 为每个任务创建一个本地变量
@@ -49,16 +51,18 @@ func (l *ApiLogic) Run() error {
 		// 	return err
 		// }
 		buf.WriteString(logic.MdToApi())
-		buf.WriteString(logic.PbToApi())
 		if s, err := logic.MdList2ApiList(); err != nil {
 			return err
 		} else {
 			buf.WriteString(s)
 		}
-		if s, err := logic.PbList2ApiList(); err != nil {
-			return err
-		} else {
-			buf.WriteString(s)
+		if config.C.Logic.Api.UseRpc {
+			buf.WriteString(logic.PbToApi())
+			if s, err := logic.PbList2ApiList(); err != nil {
+				return err
+			} else {
+				buf.WriteString(s)
+			}
 		}
 	}
 	filename := path.Join(config.C.Logic.Api.Dir, "dataconv/dataconv.go")
@@ -79,7 +83,7 @@ func (l *ApiLogic) Run() error {
 	return nil
 }
 
-func (l *ApiLogic) commonConvert() string {
+func (l *ApiLogic) commonPbToApi() string {
 	tpl := `
 	func PbEnumToApiEnum(in *__GORPCNAME__.Enum) *types.Enum {
 		if in == nil {

@@ -68,20 +68,20 @@ genzero model --src="../sql/admin.sql" --service_name="admin" --dir="model"
 
 ### Generate a configuration file
 
-genzeroConfig.yaml will be created in the current directory
+genzero.yaml will be created in the current directory
 
 ```shell
 genzero init config
 ```
 
-A genzeroConfig.yaml configuration file will be created. [Sample file](./examples/genzeroConfig.yaml)
+A genzero.yaml configuration file will be created. [Sample file](./examples/genzero.yaml)
 
 ### By configuration file, generate the gozero and update it
 
 Please ensure that genzeroConfig.yaml already exists in the current directory
 
 ```shell
-genzero start --src=./genzeroConfig.yaml
+genzero start --src=./genzero.yaml
 ```
 
 ### Use [goZero](https://github.com/zeromicro/go-zero)'s goctl tool to generate service code
