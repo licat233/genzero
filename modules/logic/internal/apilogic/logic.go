@@ -169,7 +169,7 @@ func (l *Logic) Add() (err error) {
 		return err
 	}
 
-	returnContent := `return respx.DefaultStateResp(nil)`
+	returnContent := `return respx.DefaultStatusResp(nil)`
 
 	err = modifyLogicFileContent(filename, logicContent, returnContent)
 	if err != nil {
@@ -221,7 +221,7 @@ func (l *Logic) Put() (err error) {
 		return err
 	}
 
-	returnContent := `return respx.DefaultStateResp(nil)`
+	returnContent := `return respx.DefaultStatusResp(nil)`
 
 	err = modifyLogicFileContent(filename, logicContent, returnContent)
 	if err != nil {
@@ -263,7 +263,7 @@ func (l *Logic) Del() (err error) {
 		return err
 	}
 
-	returnContent := `return respx.DefaultStateResp(nil)`
+	returnContent := `return respx.DefaultStatusResp(nil)`
 
 	err = modifyLogicFileContent(filename, logicContent, returnContent)
 	if err != nil {

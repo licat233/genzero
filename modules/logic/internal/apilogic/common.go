@@ -95,7 +95,7 @@ func modifyLogicFileContent(filename string, logicContent string, returnContent 
 		if !findedReturn && findedTodo && IsReturn(line) {
 			returnContent = tools.TrimSpace(returnContent)
 			if returnContent == "" {
-				returnContent = "return respx.DefaultStateResp(nil)"
+				returnContent = "return respx.DefaultStatusResp(nil)"
 			}
 			line = returnContent
 			findedReturn = true
