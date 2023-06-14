@@ -209,8 +209,7 @@ func (l *Logic) Put() (err error) {
 		logicContentTpl = `in := &model.{{.CamelName}}{
 			{{.ConveFields}}
 		}
-		_, err := l.svcCtx.{{.ModelName}}.Update(l.ctx, in)
-	    if err != nil {
+		if err := l.svcCtx.{{.ModelName}}.Update(l.ctx, in); err != nil {
 		    l.Logger.Error("failed to update {{.LowerCamelName}}, error: ", err)
 		    return nil, errorx.InternalError(err)
 	    }
@@ -251,12 +250,18 @@ func (l *Logic) Del() (err error) {
 			return nil, err
 		}`
 	} else {
-		logicContentTpl = `_, err := l.svcCtx.{{.ModelName}}.Update(l.ctx, req.Id)
-	    if err != nil {
-		    l.Logger.Error("failed to delete {{.LowerCamelName}}, error: ", err)
-		    return nil, errorx.InternalError(err)
-	    }
-		`
+		//分为软删除和硬删除
+		if l.Table.HasDeleteFiled {
+			logicContentTpl = `if err := l.svcCtx.{{.ModelName}}.SoftDelete(l.ctx, req.Id); err != nil {
+				l.Logger.Error("failed to soft delete {{.LowerCamelName}}, error: ", err)
+				return nil, errorx.InternalError(err)
+			}`
+		} else {
+			logicContentTpl = `if err := l.svcCtx.{{.ModelName}}.Delete(l.ctx, req.Id); err != nil {
+				l.Logger.Error("failed to delete {{.LowerCamelName}}, error: ", err)
+				return nil, errorx.InternalError(err)
+			}`
+		}
 	}
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {
