@@ -148,8 +148,7 @@ func (l *Logic) Add() (err error) {
 		logicContentTpl = `in := &{{.RpcGoPkgName}}.Add{{.CamelName}}Req{
 			{{.ConveFields}}
 		}
-		_, err := l.svcCtx.{{.RpcSvcName}}.Add{{.CamelName}}(l.ctx, in)
-		if err != nil {
+		if _, err := l.svcCtx.{{.RpcSvcName}}.Add{{.CamelName}}(l.ctx, in); err != nil {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可
 			return nil, err
 		}`
@@ -157,8 +156,7 @@ func (l *Logic) Add() (err error) {
 		logicContentTpl = `in := &model.{{.CamelName}}{
 			{{.ConveFields}}
 		}
-		_, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, in)
-	    if err != nil {
+		if _, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, in); err != nil {
 		    l.Logger.Error("failed to insert {{.LowerCamelName}}, error: ", err)
 		    return nil, errorx.InternalError(err)
 	    }
@@ -200,8 +198,7 @@ func (l *Logic) Put() (err error) {
 		logicContentTpl = `in := &{{.RpcGoPkgName}}.Put{{.CamelName}}Req{
 			{{.ConveFields}}
 		}
-		_, err := l.svcCtx.{{.RpcSvcName}}.Put{{.CamelName}}(l.ctx, in)
-		if err != nil {
+		if _, err := l.svcCtx.{{.RpcSvcName}}.Put{{.CamelName}}(l.ctx, in); err != nil {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可
 			return nil, err
 		}`
@@ -295,6 +292,7 @@ func (l *Logic) List() (err error) {
 	l.ConveFields = conveFieldsBuf.String()
 
 	var logicContentTpl string
+	var returnContent string
 	if l.UseRpc {
 		logicContentTpl = `in := &{{.RpcGoPkgName}}.Get{{.CamelName}}ListReq{
 			ListReq: &{{.RpcGoPkgName}}.ListReq{
@@ -314,6 +312,7 @@ func (l *Logic) List() (err error) {
 		pbList := rpcResp.{{.PluralizedName}}
 		data := dataconv.Pb{{.PluralizedName}}2Api{{.PluralizedName}}(pbList)
 		`
+		returnContent = `return respx.DefaultListResp(data, rpcResp.Total, req.PageSize, req.Page, nil)`
 	} else {
 		logicContentTpl = `in := &model.{{.CamelName}}{
 			{{.ConveFields}}
@@ -323,15 +322,14 @@ func (l *Logic) List() (err error) {
 			l.Logger.Error("failed to query {{.LowerCamelName}} list, error: ", err)
 			return nil, errorx.InternalError(err)
 		}
-		data := dataconv.Pb{{.PluralizedName}}2Api{{.PluralizedName}}(mdList)
+		data := dataconv.Md{{.PluralizedName}}2Api{{.PluralizedName}}(mdList)
 		`
+		returnContent = `return respx.DefaultListResp(data, total, req.PageSize, req.Page, nil)`
 	}
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {
 		return err
 	}
-
-	returnContent := `return respx.DefaultListResp(data, rpcResp.Total, req.PageSize, req.Page, nil)`
 
 	err = modifyLogicFileContent(filename, logicContent, returnContent)
 	if err != nil {

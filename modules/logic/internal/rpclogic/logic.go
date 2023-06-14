@@ -134,8 +134,7 @@ func (l *Logic) Add() (err error) {
 	logicContentTpl := `data := &model.{{.CamelName}}{
 		{{.ConveFields}}
 	}
-	_, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, data)
-	if err != nil {
+	if _, err := l.svcCtx.{{.ModelName}}.Insert(l.ctx, data); err != nil {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)
 	}
@@ -203,14 +202,12 @@ func (l *Logic) Del() (err error) {
 	//分为软删除和硬删除
 	var logicContentTpl string
 	if l.Table.HasDeleteFiled {
-		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.SoftDelete(l.ctx, in.Id)
-		if err != nil {
+		logicContentTpl = `if err := l.svcCtx.{{.ModelName}}.SoftDelete(l.ctx, in.Id); err != nil {
 			l.Logger.Error(err)
 			return nil, errorx.IntRpcErr(err)
 		}`
 	} else {
-		logicContentTpl = `err := l.svcCtx.{{.ModelName}}.Delete(l.ctx, in.Id)
-		if err != nil {
+		logicContentTpl = `if err := l.svcCtx.{{.ModelName}}.Delete(l.ctx, in.Id); err != nil {
 			l.Logger.Error(err)
 			return nil, errorx.IntRpcErr(err)
 		}`
