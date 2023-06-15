@@ -42,8 +42,8 @@ func (s *FindAll) String() string {
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
 	// buf.WriteString("uuidKey := m.formatUuidKey(uuid)\n")
 	buf.WriteString(fmt.Sprintf("var resp = make([]*%s, 0)\n", tools.ToCamel(s.Table.Name)))
-	if s.Table.HasDeleteFiled {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `is_deleted` = '0' limit 99999\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+	if delField := s.Table.GetIsDeletedField(); delField != nil {
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + delField.Name + "` = '0' limit 99999\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s limit 99999\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}

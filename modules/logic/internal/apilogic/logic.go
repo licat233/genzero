@@ -248,7 +248,7 @@ func (l *Logic) Del() (err error) {
 		}`
 	} else {
 		//分为软删除和硬删除
-		if l.Table.HasDeleteFiled {
+		if l.Table.ExistIsDelField() {
 			logicContentTpl = `if err := l.svcCtx.{{.ModelName}}.SoftDelete(l.ctx, req.Id); err != nil {
 				l.Logger.Error("failed to soft delete {{.LowerCamelName}}, error: ", err)
 				return nil, errorx.InternalError(err)

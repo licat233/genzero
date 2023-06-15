@@ -115,23 +115,9 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 		table.Fields = append(table.Fields, field)
 	}
 
-	for _, column := range columns {
-		if column.ColumnName == "is_deleted" {
-			table, ok := tableMap[column.TableName]
-			if ok {
-				table.HasDeleteFiled = true
-			}
-		}
-
-		if strings.ToLower(column.ColumnName) == "uuid" {
-			table, ok := tableMap[column.TableName]
-			if ok {
-				table.HasUuid = true
-			}
-		}
-	}
-
 	for _, table := range tableMap {
+		// table.HasDeleteField = table.ExistIsDelField()
+		// table.HasUuid = table.ExistUuidField()
 		schema.Tables = append(schema.Tables, *table)
 	}
 

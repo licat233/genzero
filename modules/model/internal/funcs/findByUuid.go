@@ -44,8 +44,8 @@ func (s *FindByUuid) String() string {
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
 	// buf.WriteString("uuidKey := m.formatUuidKey(uuid)\n")
 	buf.WriteString(fmt.Sprintf("var resp %s\n", tools.ToCamel(s.Table.Name)))
-	if s.Table.HasDeleteFiled {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `uuid` = ? and `is_deleted` = '0' limit 1\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+	if delField := s.Table.GetIsDeletedField(); delField != nil {
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `uuid` = ? and `" + delField.Name + "` = '0' limit 1\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `uuid` = ? limit 1\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}

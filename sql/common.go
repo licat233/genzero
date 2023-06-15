@@ -121,3 +121,24 @@ func IsFieldDefineString(line string) bool {
 	ok := reg.MatchString(line)
 	return ok
 }
+
+var DelFieldNames = []string{"is_deleted", "is_delete", "is_del", "deleted", "delete_flag", "del_flag"}
+
+func IsDeleteField(fieldName string) bool {
+	snake_name := tools.ToSnake(fieldName)
+	return tools.HasInSlice(DelFieldNames, snake_name)
+}
+
+var DelAtFieldNames = []string{"deleted_at", "delete_at", "deleted_time", "delete_time", "del_at", "del_time"}
+
+func IsDelAtField(fieldName string) bool {
+	snake_name := tools.ToSnake(fieldName)
+	return tools.HasInSlice(DelAtFieldNames, snake_name)
+}
+
+var UuidFieldNames = []string{"uuid"}
+
+func IsUuidField(fieldName string) bool {
+	snake_name := tools.ToSnake(fieldName)
+	return tools.HasInSlice(UuidFieldNames, snake_name)
+}

@@ -2,6 +2,8 @@ package sql
 
 import (
 	"database/sql"
+
+	"github.com/licat233/genzero/tools"
 )
 
 type Schema struct {
@@ -19,10 +21,10 @@ func (s *Schema) Copy() *Schema {
 }
 
 type Table struct {
-	Name           string `sql:"name"`
-	Comment        string `sql:"comment"`
-	HasDeleteFiled bool   `sql:"is_deleted"`
-	HasUuid        bool   `sql:"uuid"`
+	Name    string `sql:"name"`
+	Comment string `sql:"comment"`
+	// HasDeleteField bool   `sql:"is_deleted"`
+	// HasUuid        bool   `sql:"uuid"`
 
 	Fields FieldCollection `sql:"fields"`
 	Enums  EnumCollection  `sql:"enums"`
@@ -30,12 +32,12 @@ type Table struct {
 
 func (t *Table) Copy() *Table {
 	return &Table{
-		Name:           t.Name,
-		Comment:        t.Comment,
-		HasDeleteFiled: t.HasDeleteFiled,
-		HasUuid:        t.HasUuid,
-		Fields:         t.Fields.Copy(),
-		Enums:          t.Enums.Copy(),
+		Name:    t.Name,
+		Comment: t.Comment,
+		// HasDeleteField: t.HasDeleteField,
+		// HasUuid:        t.HasUuid,
+		Fields: t.Fields.Copy(),
+		Enums:  t.Enums.Copy(),
 	}
 }
 
@@ -46,6 +48,48 @@ func (t *Table) ExistField(fieldName string) bool {
 		}
 	}
 	return false
+}
+
+func (t *Table) GetIsDeletedField() *Field {
+	for _, field := range t.Fields {
+		snake_name := tools.ToSnake(field.Name)
+		if tools.HasInSlice(DelFieldNames, snake_name) {
+			return &field
+		}
+	}
+	return nil
+}
+
+func (t *Table) ExistIsDelField() bool {
+	return t.GetIsDeletedField() != nil
+}
+
+func (t *Table) GetUuidField() *Field {
+	for _, field := range t.Fields {
+		snake_name := tools.ToSnake(field.Name)
+		if tools.HasInSlice(UuidFieldNames, snake_name) {
+			return &field
+		}
+	}
+	return nil
+}
+
+func (t *Table) ExistUuidField() bool {
+	return t.GetUuidField() != nil
+}
+
+func (t *Table) GetDelAtField() *Field {
+	for _, field := range t.Fields {
+		snake_name := tools.ToSnake(field.Name)
+		if tools.HasInSlice(DelAtFieldNames, snake_name) {
+			return &field
+		}
+	}
+	return nil
+}
+
+func (t *Table) ExistDelAtField() bool {
+	return t.GetDelAtField() != nil
 }
 
 type TableCollection []Table

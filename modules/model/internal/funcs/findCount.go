@@ -42,8 +42,8 @@ func (s *FindCount) String() string {
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
 	buf.WriteString("var count int64\n")
-	if s.Table.HasDeleteFiled {
-		buf.WriteString("query := fmt.Sprintf(\"select count(*) as count from %s where `is_deleted` = '0'\", m.table)\n")
+	if delField := s.Table.GetIsDeletedField(); delField != nil {
+		buf.WriteString("query := fmt.Sprintf(\"select count(*) as count from %s where `" + delField.Name + "` = '0'\", m.table)\n")
 	} else {
 		buf.WriteString("query := fmt.Sprintf(\"select count(*) as count from %s\", m.table)\n")
 	}

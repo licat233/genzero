@@ -34,13 +34,13 @@ func (ms *Message) Copy() *Message {
 func (ms *Message) IgnoreMessageFields(needIgnoreFields []string, more ...string) *Message {
 	all := append(needIgnoreFields, more...)
 	curFields := []*MessageField{}
-	var filedTag int
+	var fieldTag int
 	for _, field := range ms.Fields {
 		if tools.HasInSlice(all, field.Name) {
 			continue
 		}
-		filedTag++
-		field.Tag = filedTag
+		fieldTag++
+		field.Tag = fieldTag
 		curFields = append(curFields, field)
 	}
 	ms.Fields = curFields

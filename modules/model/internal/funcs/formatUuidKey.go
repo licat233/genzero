@@ -38,7 +38,7 @@ func NewFormatUuidKey(t *sql.Table, isCacheMode bool) *FormatUuidKey {
 }
 
 func (t *FormatUuidKey) String() string {
-	if !t.Table.HasUuid {
+	if !t.Table.ExistUuidField() {
 		return ""
 	}
 	var buf = new(bytes.Buffer)
@@ -49,7 +49,7 @@ func (t *FormatUuidKey) String() string {
 }
 
 func (t *FormatUuidKey) FullName() string {
-	if !t.Table.HasUuid {
+	if !t.Table.ExistUuidField() {
 		return ""
 	}
 	return t.fullName

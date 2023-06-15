@@ -60,10 +60,10 @@ func (t *TableModel) Init() (err error) {
 		funcs.NewTableName(t.table, isCache),
 		funcs.NewFindByAnyCollection(t.table, isCache),
 	}
-	if t.table.HasUuid {
+	if t.table.ExistUuidField() {
 		t.Funcs = append(t.Funcs, funcs.NewFormatUuidKey(t.table, isCache))
 	}
-	if t.table.HasDeleteFiled {
+	if t.table.ExistIsDelField() {
 		t.Funcs = append(t.Funcs, funcs.NewSoftDelete(t.table, isCache))
 	}
 	for _, f := range t.Funcs {

@@ -85,14 +85,6 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			continue
 		}
 		if fieldName := PickFieldName(line); fieldName != "" {
-			if fieldName == "is_deleted" {
-				table.HasDeleteFiled = true
-			}
-
-			if strings.ToLower(fieldName) == "uuid" {
-				table.HasUuid = true
-			}
-
 			if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
 				continue
 			}
@@ -147,5 +139,11 @@ func ParseSqlFile(filename string) (*Schema, error) {
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
+
+	// for index := range schema.Tables {
+	// 	schema.Tables[index].HasDeleteField = table.ExistIsDelField()
+	// 	schema.Tables[index].HasUuid = table.ExistUuidField()
+	// }
+
 	return schema, nil
 }

@@ -25,7 +25,7 @@ func NewSoftDelete(t *sql.Table, isCacheMode bool) *SoftDelete {
 	req := "ctx context.Context, id int64"
 	resp := "error"
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
-	if !t.HasDeleteFiled {
+	if !t.ExistIsDelField() {
 		fullName = ""
 	}
 	return &SoftDelete{
@@ -40,15 +40,16 @@ func NewSoftDelete(t *sql.Table, isCacheMode bool) *SoftDelete {
 }
 
 func (s *SoftDelete) String() string {
-	if !s.Table.HasDeleteFiled {
+	delField := s.Table.GetIsDeletedField()
+	if delField == nil {
 		return ""
 	}
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {", s.modelName, s.fullName))
-	if s.Table.ExistField("deleted_at") {
-		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `is_deleted` = '1', `deleted_at`= now() where `id` = ?\", m.table)")
+	if delAtField := s.Table.GetDelAtField(); delAtField != nil {
+		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `" + delField.Name + "` = '1', `" + delAtField.Name + "`= now() where `id` = ?\", m.table)")
 	} else {
-		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `is_deleted` = '1' where `id` = ?\", m.table)")
+		buf.WriteString("\nquery := fmt.Sprintf(\"update %s set `" + delField.Name + "` = '1' where `id` = ?\", m.table)")
 	}
 	if s.IsCacheMode {
 		buf.WriteString("\n_, err := m.ExecNoCacheCtx(ctx, query, id)")
@@ -71,7 +72,7 @@ func (s *SoftDelete) String() string {
 }
 
 func (s *SoftDelete) FullName() string {
-	if !s.Table.HasDeleteFiled {
+	if !s.Table.ExistIsDelField() {
 		return ""
 	}
 	return s.fullName

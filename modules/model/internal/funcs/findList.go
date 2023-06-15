@@ -50,8 +50,8 @@ func (s FindList) String() string {
 	if hasName {
 		buf.WriteString("\n\thasName := false")
 	}
-	if s.Table.HasDeleteFiled {
-		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table).Where(\"`is_deleted`= '0'\")", lowerName))
+	if delField := s.Table.GetIsDeletedField(); delField != nil {
+		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table).Where(\"`%s`= '0'\")", lowerName, delField))
 	} else {
 		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table)", lowerName))
 	}
