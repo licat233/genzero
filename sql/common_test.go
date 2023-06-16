@@ -15,3 +15,8 @@ func TestIsDeleteField(t *testing.T) {
 	ok := IsDeleteField("is_deleted")
 	fmt.Println(ok)
 }
+
+func TestIsNameField(t *testing.T) {
+	ok := IsNameField("username")
+	fmt.Println(ok)
+}

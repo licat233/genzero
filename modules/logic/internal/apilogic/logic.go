@@ -33,10 +33,6 @@ type Logic struct {
 type LogicCollection []*Logic
 
 func NewLogic(t *sql.Table) *Logic {
-	// rpcSvcName := tools.ToCamel(config.C.Api.ServiceName) + "Rpc"
-	// if config.C.Logic.Api.RpcMultiple {
-	// 	rpcSvcName = tools.ToCamel(config.C.Api.ServiceName) + "BaseRpc"
-	// }
 	return &Logic{
 		CamelName:      tools.ToCamel(t.Name),
 		LowerCamelName: tools.ToLowerCamel(t.Name),
@@ -386,6 +382,7 @@ func (l *Logic) Enums() (err error) {
 		`
 		logicContentTpl = strings.ReplaceAll(logicContentTpl, "__NAME__", nameField.UpperCamelCaseName)
 	}
+
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {
 		return err

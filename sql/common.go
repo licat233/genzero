@@ -130,8 +130,6 @@ func IsDelAtField(fieldName string) bool {
 	return tools.SliceContain(DelAtFieldNames, fieldName)
 }
 
-var UuidFieldNames = []string{"uuid"}
-
 func IsUuidField(fieldName string) bool {
 	return tools.SliceContain(UuidFieldNames, fieldName)
 }

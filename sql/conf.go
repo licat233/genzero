@@ -38,14 +38,16 @@ var (
 		"name",
 		"username",
 		"nickname",
+		"user_name",
+		"nick_name",
+	}
+	UuidFieldNames = []string{
+		"uuid",
 	}
 )
 
 func InitConfig() {
-	// baseIgnoreColumns = append(baseIgnoreColumns, DelFieldNames...)
-	// baseIgnoreColumns = append(baseIgnoreColumns, DelAtFieldNames...)
 	config.C.DB.IgnoreColumns = append(config.C.DB.IgnoreColumns, append(append(baseIgnoreColumns, DelAtFieldNames...), DelFieldNames...)...)
 
 	config.C.DB.IgnoreTables = append(config.C.DB.IgnoreTables, baseIgnoreTables...)
-
 }

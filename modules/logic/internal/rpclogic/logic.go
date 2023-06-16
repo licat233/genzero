@@ -21,7 +21,6 @@ type Logic struct {
 	Multiple       bool
 
 	ConveFields string //注意：每个方法的数据不一样，会变，用来做临时模版渲染数据
-	// HasUuid     bool
 
 	Table *sql.Table
 }
@@ -39,8 +38,7 @@ func NewLogic(t *sql.Table) *Logic {
 		Dir:            config.C.Logic.Rpc.Dir,
 		Multiple:       config.C.Logic.Rpc.Multiple,
 		ConveFields:    "",
-		// HasUuid:        t.ExistUuidField(),
-		Table: t,
+		Table:          t,
 	}
 }
 
