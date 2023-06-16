@@ -51,7 +51,7 @@ func (s FindList) String() string {
 		buf.WriteString("\n\thasName := false")
 	}
 	if delField := s.Table.GetIsDeletedField(); delField != nil {
-		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table).Where(\"`%s`= '0'\")", lowerName, delField))
+		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table).Where(\"`%s`= '0'\")", lowerName, delField.Name))
 	} else {
 		buf.WriteString(fmt.Sprintf("\n\tsq := squirrel.Select(%sRows).From(m.table)", lowerName))
 	}
@@ -85,7 +85,7 @@ func (s FindList) String() string {
 }
 
 func (s FindList) hasName() bool {
-	for _, field := range s.Table.Fields {
+	for _, field := range s.Table.GetFields() {
 		if isNameField(field) {
 			return true
 		}
@@ -98,7 +98,7 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 
 	hasName := false
 	buf.WriteString(fmt.Sprintf("\n\tif %s != nil {", lowerName))
-	for _, field := range s.Table.Fields {
+	for _, field := range s.Table.GetFields() {
 		var condition string
 		fieldString := fmt.Sprintf("%s.%s", lowerName, tools.ToCamel(field.Name))
 		//判断是字符串，还是数字
@@ -113,7 +113,7 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 		} else if field.Type == "time.Time" {
 			condition = fieldString + ".IsZero()"
 		} else {
-			tools.Warning("unknow column type:", s.Table.Name, "-", field.Name, "-", field.Type)
+			tools.Warning("unknow column type: %s-%s-%s", s.Table.Name, field.Name, field.Type)
 			continue
 		}
 		buf.WriteString(fmt.Sprintf("\n\t\tif %s {", condition))

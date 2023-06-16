@@ -116,7 +116,7 @@ func modifyLogicFileContent(filename string, logicContent string, returnContent 
 
 func (l *Logic) ModelFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
+	for _, field := range l.Table.GetFields() {
 		res = append(res, field)
 	}
 	return res
@@ -124,7 +124,7 @@ func (l *Logic) ModelFields() []sql.Field {
 
 func (l *Logic) PbFields() []sql.Field {
 	pbIgnoreCol := utils.MergeSlice(config.C.Pb.IgnoreColumns, pbconf.BaseIgnoreColumns)
-	cols := utils.FilterIgnoreFields(l.Table.Fields, pbIgnoreCol)
+	cols := utils.FilterIgnoreFields(l.Table.GetFields(), pbIgnoreCol)
 	res := make([]sql.Field, 0)
 	for _, field := range cols {
 		res = append(res, field)
@@ -134,7 +134,7 @@ func (l *Logic) PbFields() []sql.Field {
 
 func (l *Logic) ApiFields() []sql.Field {
 	apiIgnoreCol := utils.MergeSlice(config.C.Api.IgnoreColumns, apiconf.BaseIgnoreColumns)
-	cols := utils.FilterIgnoreFields(l.Table.Fields, apiIgnoreCol)
+	cols := utils.FilterIgnoreFields(l.Table.GetFields(), apiIgnoreCol)
 	res := make([]sql.Field, 0)
 	for _, field := range cols {
 		res = append(res, field)
@@ -144,8 +144,8 @@ func (l *Logic) ApiFields() []sql.Field {
 
 func (l *Logic) AddFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
-		if tools.HasInSlice(moreIgnoreColumns, field.Name) {
+	for _, field := range l.Table.GetFields() {
+		if tools.SliceContain(moreIgnoreColumns, field.Name) {
 			continue
 		}
 		res = append(res, field)
@@ -155,7 +155,7 @@ func (l *Logic) AddFields() []sql.Field {
 
 func (l *Logic) PutFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
+	for _, field := range l.Table.GetFields() {
 		res = append(res, field)
 	}
 	return res

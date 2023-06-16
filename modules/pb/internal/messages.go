@@ -36,7 +36,7 @@ func (ms *Message) IgnoreMessageFields(needIgnoreFields []string, more ...string
 	curFields := []*MessageField{}
 	var fieldTag int
 	for _, field := range ms.Fields {
-		if tools.HasInSlice(all, field.Name) {
+		if tools.SliceContain(all, field.Name) {
 			continue
 		}
 		fieldTag++

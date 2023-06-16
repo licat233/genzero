@@ -28,7 +28,7 @@ var _ ModelFunc = (FindsByAnyCollection)(nil)
 
 func NewFindsByAnyCollection(table *sql.Table, isCacheMode bool) FindsByAnyCollection {
 	var res FindsByAnyCollection = make([]*FindsByAny, 0)
-	for _, field := range table.Fields {
+	for _, field := range table.GetFields() {
 		if strings.ToLower(field.Name) == "id" {
 			continue
 		}

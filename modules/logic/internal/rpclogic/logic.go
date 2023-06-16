@@ -41,8 +41,8 @@ func NewLogic(t *sql.Table) *Logic {
 		Dir:            config.C.Logic.Rpc.Dir,
 		Multiple:       config.C.Logic.Rpc.Multiple,
 		ConveFields:    "",
-		HasUuid:        utils.HasUuid(t.Fields),
-		HasName:        utils.HasName(t.Fields),
+		HasUuid:        t.ExistUuidField(),
+		HasName:        utils.HasName(t.GetFields()),
 		Table:          t,
 	}
 }

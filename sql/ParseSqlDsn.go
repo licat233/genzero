@@ -33,11 +33,11 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 		if err != nil {
 			return nil, err
 		}
-		if tools.HasInSlice(config.C.DB.IgnoreTables, table) {
+		if tools.SliceContain(config.C.DB.IgnoreTables, table) {
 			continue
 		}
 		if mustFilter {
-			if !tools.HasInSlice(checkColumnStr, table) {
+			if !tools.SliceContain(checkColumnStr, table) {
 				continue
 			}
 		}
@@ -64,10 +64,9 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 	tableMap := map[string]*Table{}
 
 	for _, column := range columns {
-
-		if tools.HasInSlice(config.C.DB.IgnoreColumns, column.ColumnName) {
-			continue
-		}
+		// if tools.HasInSlice(config.C.DB.IgnoreColumns, column.ColumnName) {
+		// 	continue
+		// }
 
 		tableName := column.TableName
 		fieldType := column.ColumnType
@@ -103,7 +102,7 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 		}
 
 		field := Field{
-			Primary:            false,
+			Primary:            fieldName == "id",
 			Name:               fieldName,
 			UpperCamelCaseName: tools.ToCamel(fieldName),
 			Type:               goType(fieldType),
@@ -111,13 +110,12 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 			DefaultValue:       "",
 			Tag:                "db",
 			Nullable:           column.IsNullable == "YES",
+			Hide:               IsIgnoreField(fieldName),
 		}
 		table.Fields = append(table.Fields, field)
 	}
 
 	for _, table := range tableMap {
-		// table.HasDeleteField = table.ExistIsDelField()
-		// table.HasUuid = table.ExistUuidField()
 		schema.Tables = append(schema.Tables, *table)
 	}
 

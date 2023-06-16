@@ -319,7 +319,7 @@ func (s *PbModule) initMessages() (err error) {
 			continue
 		}
 
-		cols := utils.FilterIgnoreFields(table.Fields, s.DbIgoreFieldsName)
+		cols := utils.FilterIgnoreFields(table.GetFields(), s.DbIgoreFieldsName)
 
 		fields := []*internal.MessageField{}
 

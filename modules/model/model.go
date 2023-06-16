@@ -63,7 +63,7 @@ func (m *ModelModule) Generate() (err error) {
 	}
 	_, err = tools.ExecShell("go get -u github.com/Masterminds/squirrel")
 	if err != nil {
-		tools.Warning("go get github.com/Masterminds/squirrel failed: %v", err)
+		tools.Warning("command `go get -u github.com/Masterminds/squirrel` failed: %v", err)
 	}
 	return nil
 }

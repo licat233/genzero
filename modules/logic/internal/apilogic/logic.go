@@ -47,7 +47,7 @@ func NewLogic(t *sql.Table) *Logic {
 		RpcGoPkgName:   tools.PickGoPkgName(config.C.Pb.GoPackage),
 		Dir:            config.C.Logic.Api.Dir,
 		UseRpc:         config.C.Logic.Api.UseRpc,
-		HasName:        utils.HasName(t.Fields),
+		HasName:        utils.HasName(t.GetFields()),
 		ConveFields:    "",
 		Table:          t,
 	}

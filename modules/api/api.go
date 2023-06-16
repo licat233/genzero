@@ -268,7 +268,7 @@ func (s *ApiModule) initStructs() (err error) {
 			continue
 		}
 
-		cols := utils.FilterIgnoreFields(table.Fields, s.DbIgoreFieldsName)
+		cols := utils.FilterIgnoreFields(table.GetFields(), s.DbIgoreFieldsName)
 
 		fields := []*internal.StructField{}
 		for _, field := range cols {

@@ -56,11 +56,11 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			}
 			tableName := strings.Trim(chips[2], "`")
 			currentTableName = tableName
-			if tools.HasInSlice(config.C.DB.IgnoreTables, tableName) {
+			if tools.SliceContain(config.C.DB.IgnoreTables, tableName) {
 				continue
 			}
 			if mustFilter {
-				if !tools.HasInSlice(checkColumnStr, tableName) {
+				if !tools.SliceContain(checkColumnStr, tableName) {
 					continue
 				}
 			}
@@ -85,9 +85,9 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			continue
 		}
 		if fieldName := PickFieldName(line); fieldName != "" {
-			if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
-				continue
-			}
+			// if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
+			// 	continue
+			// }
 
 			fieldComment := PickFieldComment(line)
 			fieldType := PickFieldType(line)
@@ -112,7 +112,7 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			}
 
 			field := Field{
-				Primary:            false,
+				Primary:            fieldName == "id",
 				Name:               fieldName,
 				UpperCamelCaseName: "",
 				Type:               fieldType,
@@ -120,6 +120,7 @@ func ParseSqlFile(filename string) (*Schema, error) {
 				DefaultValue:       "",
 				Tag:                "db",
 				Nullable:           false,
+				Hide:               IsIgnoreField(fieldName),
 			}
 
 			field.Name = fieldName
@@ -139,11 +140,6 @@ func ParseSqlFile(filename string) (*Schema, error) {
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
-
-	// for index := range schema.Tables {
-	// 	schema.Tables[index].HasDeleteField = table.ExistIsDelField()
-	// 	schema.Tables[index].HasUuid = table.ExistUuidField()
-	// }
 
 	return schema, nil
 }

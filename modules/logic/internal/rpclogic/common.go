@@ -113,7 +113,7 @@ func modifyLogicFileContent(filename string, logicContent string, returnData str
 
 func (l *Logic) ModelFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
+	for _, field := range l.Table.GetFields() {
 		res = append(res, field)
 	}
 	return res
@@ -121,7 +121,7 @@ func (l *Logic) ModelFields() []sql.Field {
 
 func (l *Logic) PbFields() []sql.Field {
 	pbIgnoreCol := utils.MergeSlice(config.C.Pb.IgnoreColumns, pbconf.BaseIgnoreColumns)
-	cols := utils.FilterIgnoreFields(l.Table.Fields, pbIgnoreCol)
+	cols := utils.FilterIgnoreFields(l.Table.GetFields(), pbIgnoreCol)
 	res := make([]sql.Field, 0)
 	for _, field := range cols {
 		res = append(res, field)
@@ -131,9 +131,9 @@ func (l *Logic) PbFields() []sql.Field {
 
 func (l *Logic) AddFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
+	for _, field := range l.Table.GetFields() {
 		// 添加record，需要忽略id字段
-		if tools.HasInSlice([]string{"id"}, field.Name) {
+		if tools.SliceContain([]string{"id"}, field.Name) {
 			continue
 		}
 		res = append(res, field)
@@ -143,7 +143,7 @@ func (l *Logic) AddFields() []sql.Field {
 
 func (l *Logic) PutFields() []sql.Field {
 	res := make([]sql.Field, 0)
-	for _, field := range l.Table.Fields {
+	for _, field := range l.Table.GetFields() {
 		res = append(res, field)
 	}
 	return res

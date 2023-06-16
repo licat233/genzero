@@ -61,9 +61,12 @@ func FilterIgnoreFields(source sql.FieldCollection, ignoreFields []string) sql.F
 		fieldsMap[t] = true
 	}
 	var result sql.FieldCollection
-	for _, t := range source {
-		if _, ok := fieldsMap[t.Name]; !ok {
-			result = append(result, t)
+	for _, f := range source {
+		if f.Hide {
+			continue
+		}
+		if _, ok := fieldsMap[f.Name]; !ok {
+			result = append(result, f)
 		}
 	}
 	return result
@@ -95,17 +98,20 @@ func SliceContains(slice []string, v string) bool {
 	return false
 }
 
-func HasUuid(fields sql.FieldCollection) bool {
-	for _, field := range fields {
-		if strings.ToLower(field.Name) == "uuid" {
-			return true
-		}
-	}
-	return false
-}
+// func HasUuid(fields sql.FieldCollection) bool {
+// 	for _, field := range fields {
+// 		if strings.ToLower(field.Name) == "uuid" {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
 func HasName(fields sql.FieldCollection) bool {
 	for _, field := range fields {
+		if field.Hide {
+			continue
+		}
 		if strings.ToLower(field.Name) == "name" {
 			return true
 		}
@@ -113,11 +119,11 @@ func HasName(fields sql.FieldCollection) bool {
 	return false
 }
 
-func HasIsDeleted(fields sql.FieldCollection) bool {
-	for _, field := range fields {
-		if strings.ToLower(field.Name) == "is_deleted" {
-			return true
-		}
-	}
-	return false
-}
+// func HasIsDeleted(fields sql.FieldCollection) bool {
+// 	for _, field := range fields {
+// 		if strings.ToLower(field.Name) == "is_deleted" {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

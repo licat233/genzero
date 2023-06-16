@@ -122,23 +122,28 @@ func IsFieldDefineString(line string) bool {
 	return ok
 }
 
-var DelFieldNames = []string{"is_deleted", "is_delete", "is_del", "deleted", "delete_flag", "del_flag"}
-
 func IsDeleteField(fieldName string) bool {
-	snake_name := tools.ToSnake(fieldName)
-	return tools.HasInSlice(DelFieldNames, snake_name)
+	// snake_name := tools.ToSnake(fieldName)
+	return tools.SliceContain(DelFieldNames, fieldName)
 }
 
-var DelAtFieldNames = []string{"deleted_at", "delete_at", "deleted_time", "delete_time", "del_at", "del_time"}
-
 func IsDelAtField(fieldName string) bool {
-	snake_name := tools.ToSnake(fieldName)
-	return tools.HasInSlice(DelAtFieldNames, snake_name)
+	// snake_name := tools.ToSnake(fieldName)
+	return tools.SliceContain(DelAtFieldNames, fieldName)
 }
 
 var UuidFieldNames = []string{"uuid"}
 
 func IsUuidField(fieldName string) bool {
-	snake_name := tools.ToSnake(fieldName)
-	return tools.HasInSlice(UuidFieldNames, snake_name)
+	// snake_name := tools.ToSnake(fieldName)
+	return tools.SliceContain(UuidFieldNames, fieldName)
+}
+
+func IsIgnoreField(fieldName string) bool {
+	// snake_name := tools.ToSnake(fieldName)
+	ok := tools.SliceContain(config.C.DB.IgnoreColumns, fieldName)
+	// if snake_name == "is_deleted" {
+	// 	fmt.Println("结果:", ok)
+	// }
+	return ok
 }

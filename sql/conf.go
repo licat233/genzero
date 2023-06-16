@@ -14,17 +14,33 @@ var (
 		"updated_time",
 		"update_at",
 		"updated_at",
-		"delete_time",
-		"deleted_time",
-		"delete_at",
-		"deleted_at",
-		"del_state",
+	}
+	DelFieldNames = []string{
 		"is_deleted",
 		"is_delete",
+		"is_del",
+		"deleted",
+		"delete_flag",
+		"del_flag",
+		"del_state",
+		"delete_state",
+		"deleted_state",
+	}
+	DelAtFieldNames = []string{
+		"deleted_at",
+		"delete_at",
+		"deleted_time",
+		"delete_time",
+		"del_at",
+		"del_time",
 	}
 )
 
 func InitConfig() {
+	// baseIgnoreColumns = append(baseIgnoreColumns, DelFieldNames...)
+	// baseIgnoreColumns = append(baseIgnoreColumns, DelAtFieldNames...)
+	config.C.DB.IgnoreColumns = append(config.C.DB.IgnoreColumns, append(append(baseIgnoreColumns, DelAtFieldNames...), DelFieldNames...)...)
+
 	config.C.DB.IgnoreTables = append(config.C.DB.IgnoreTables, baseIgnoreTables...)
-	config.C.DB.IgnoreColumns = append(config.C.DB.IgnoreColumns, baseIgnoreColumns...)
+
 }

@@ -38,18 +38,24 @@ func PluralizedName(name string) string {
 	}
 }
 
-func HasInSlice(slice []string, s string) bool {
+// 不区分大小写查找
+func SliceContain(slice []string, s string) bool {
+	s = ToSnake(s)
 	for _, v := range slice {
-		if strings.EqualFold(v, s) {
+		// if strings.EqualFold(v, s) {
+		// 	return true
+		// }
+		if ToSnake(v) == s {
 			return true
 		}
 	}
+
 	return false
 }
 
-func InSlice(target string, sources ...string) bool {
-	return HasInSlice(sources, target)
-}
+// func InSlice(target string, sources ...string) bool {
+// 	return HasInSlice(sources, target)
+// }
 
 func PickMarkContents2(startMark, endMark string, content []byte) ([][]byte, error) {
 	if len(content) == 0 {

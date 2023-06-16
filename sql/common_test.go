@@ -10,3 +10,8 @@ func TestPick(t *testing.T) {
 	res := PickFieldType(line)
 	fmt.Println(res)
 }
+
+func TestIsDeleteField(t *testing.T) {
+	ok := IsDeleteField("is_deleted")
+	fmt.Println(ok)
+}

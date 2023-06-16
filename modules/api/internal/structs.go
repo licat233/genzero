@@ -40,7 +40,7 @@ func (st *Struct) IgnoreStructFields(needIgnoreFields []string, more ...string) 
 	all := append(needIgnoreFields, more...)
 	filterFields := []*StructField{}
 	for _, field := range st.Fields {
-		if tools.HasInSlice(all, field.Name) {
+		if tools.SliceContain(all, field.Name) {
 			continue
 		}
 		field.TagType = st.TagType
@@ -92,7 +92,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	listReqStruct.Comment = "获取" + st.Comment + "列表请求"
 	listReqStruct.TagType = "form"
 	for _, field := range listReqStruct.Fields {
-		if tools.HasInSlice(config.C.Api.IgnoreColumns, field.Name) {
+		if tools.SliceContain(config.C.Api.IgnoreColumns, field.Name) {
 			continue
 		}
 		if !strings.Contains(field.TagOpt, "optional") {

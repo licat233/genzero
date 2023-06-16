@@ -2,8 +2,6 @@ package sql
 
 import (
 	"database/sql"
-
-	"github.com/licat233/genzero/tools"
 )
 
 type Schema struct {
@@ -23,8 +21,9 @@ func (s *Schema) Copy() *Schema {
 type Table struct {
 	Name    string `sql:"name"`
 	Comment string `sql:"comment"`
-	// HasDeleteField bool   `sql:"is_deleted"`
-	// HasUuid        bool   `sql:"uuid"`
+	// DelStateFieldName string
+	// DelTimeFieldName  string
+	// HasUuidField      bool
 
 	Fields FieldCollection `sql:"fields"`
 	Enums  EnumCollection  `sql:"enums"`
@@ -34,8 +33,9 @@ func (t *Table) Copy() *Table {
 	return &Table{
 		Name:    t.Name,
 		Comment: t.Comment,
-		// HasDeleteField: t.HasDeleteField,
-		// HasUuid:        t.HasUuid,
+		// DelStateFieldName: "",
+		// DelTimeFieldName:  "",
+		// HasUuidField:      false,
 		Fields: t.Fields.Copy(),
 		Enums:  t.Enums.Copy(),
 	}
@@ -52,8 +52,7 @@ func (t *Table) ExistField(fieldName string) bool {
 
 func (t *Table) GetIsDeletedField() *Field {
 	for _, field := range t.Fields {
-		snake_name := tools.ToSnake(field.Name)
-		if tools.HasInSlice(DelFieldNames, snake_name) {
+		if IsDeleteField(field.Name) {
 			return &field
 		}
 	}
@@ -66,8 +65,7 @@ func (t *Table) ExistIsDelField() bool {
 
 func (t *Table) GetUuidField() *Field {
 	for _, field := range t.Fields {
-		snake_name := tools.ToSnake(field.Name)
-		if tools.HasInSlice(UuidFieldNames, snake_name) {
+		if IsUuidField(field.Name) {
 			return &field
 		}
 	}
@@ -80,8 +78,7 @@ func (t *Table) ExistUuidField() bool {
 
 func (t *Table) GetDelAtField() *Field {
 	for _, field := range t.Fields {
-		snake_name := tools.ToSnake(field.Name)
-		if tools.HasInSlice(DelAtFieldNames, snake_name) {
+		if IsDelAtField(field.Name) {
 			return &field
 		}
 	}
@@ -90,6 +87,17 @@ func (t *Table) GetDelAtField() *Field {
 
 func (t *Table) ExistDelAtField() bool {
 	return t.GetDelAtField() != nil
+}
+
+func (t *Table) GetFields() FieldCollection {
+	res := []Field{}
+	for _, field := range t.Fields {
+		if field.Hide {
+			continue
+		}
+		res = append(res, field)
+	}
+	return res
 }
 
 type TableCollection []Table
@@ -111,6 +119,7 @@ type Field struct {
 	DefaultValue       string `json:"default_value"`
 	Tag                string `json:"tag"`
 	Nullable           bool   `json:"nullable"`
+	Hide               bool   `json:"hide"`
 }
 
 func (f *Field) Copy() *Field {
@@ -123,6 +132,7 @@ func (f *Field) Copy() *Field {
 		DefaultValue:       f.DefaultValue,
 		Tag:                f.Tag,
 		Nullable:           f.Nullable,
+		Hide:               f.Hide,
 	}
 }
 
