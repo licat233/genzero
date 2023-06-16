@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"path"
+	"strings"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/modules/utils"
@@ -22,8 +23,7 @@ type Logic struct {
 	RpcGoPkgName string
 	Dir          string
 
-	UseRpc  bool
-	HasName bool
+	UseRpc bool
 
 	ConveFields string //注意：每个方法的数据不一样，会变
 
@@ -47,7 +47,6 @@ func NewLogic(t *sql.Table) *Logic {
 		RpcGoPkgName:   tools.PickGoPkgName(config.C.Pb.GoPackage),
 		Dir:            config.C.Logic.Api.Dir,
 		UseRpc:         config.C.Logic.Api.UseRpc,
-		HasName:        utils.HasName(t.GetFields()),
 		ConveFields:    "",
 		Table:          t,
 	}
@@ -340,8 +339,9 @@ func (l *Logic) List() (err error) {
 }
 
 func (l *Logic) Enums() (err error) {
-	//前提是要存在name字段
-	if !l.HasName {
+	//前提是要存在name字段，或者username，亦或是 nickname
+	nameField := l.Table.GetNameField()
+	if nameField == nil {
 		return nil
 	}
 
@@ -379,11 +379,12 @@ func (l *Logic) Enums() (err error) {
 		data := make([]*types.Enum, 0)
 	for _, v := range md{{.CamelName}}List {
 		data = append(data, &types.Enum{
-			Label: v.Name,
+			Label: v.__NAME__,
 			Value: v.Id,
 		})
 	}
 		`
+		logicContentTpl = strings.ReplaceAll(logicContentTpl, "__NAME__", nameField.UpperCamelCaseName)
 	}
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {

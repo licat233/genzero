@@ -34,6 +34,11 @@ var (
 		"del_at",
 		"del_time",
 	}
+	NameFieldNames = []string{
+		"name",
+		"username",
+		"nickname",
+	}
 )
 
 func InitConfig() {

@@ -112,26 +112,16 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			}
 
 			field := Field{
-				Primary:            fieldName == "id",
+				Primary:            strings.Contains(line, "PRIMARY KEY"),
 				Name:               fieldName,
-				UpperCamelCaseName: "",
-				Type:               fieldType,
+				UpperCamelCaseName: tools.ToCamel(fieldName),
+				Type:               goType(fieldType),
 				Comment:            fieldComment,
-				DefaultValue:       "",
+				DefaultValue:       PickFieldDefaultValue(line),
 				Tag:                "db",
-				Nullable:           false,
+				Nullable:           !strings.Contains(line, "NOT NULL"),
 				Hide:               IsIgnoreField(fieldName),
 			}
-
-			field.Name = fieldName
-			field.UpperCamelCaseName = tools.ToCamel(field.Name)
-
-			field.Type = goType(fieldType)
-
-			field.DefaultValue = PickFieldDefaultValue(line)
-
-			field.Primary = strings.Contains(line, "PRIMARY KEY")
-			field.Nullable = !strings.Contains(line, "NOT NULL")
 
 			table.Fields = append(table.Fields, field)
 		}

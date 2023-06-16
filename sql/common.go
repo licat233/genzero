@@ -123,27 +123,23 @@ func IsFieldDefineString(line string) bool {
 }
 
 func IsDeleteField(fieldName string) bool {
-	// snake_name := tools.ToSnake(fieldName)
 	return tools.SliceContain(DelFieldNames, fieldName)
 }
 
 func IsDelAtField(fieldName string) bool {
-	// snake_name := tools.ToSnake(fieldName)
 	return tools.SliceContain(DelAtFieldNames, fieldName)
 }
 
 var UuidFieldNames = []string{"uuid"}
 
 func IsUuidField(fieldName string) bool {
-	// snake_name := tools.ToSnake(fieldName)
 	return tools.SliceContain(UuidFieldNames, fieldName)
 }
 
 func IsIgnoreField(fieldName string) bool {
-	// snake_name := tools.ToSnake(fieldName)
-	ok := tools.SliceContain(config.C.DB.IgnoreColumns, fieldName)
-	// if snake_name == "is_deleted" {
-	// 	fmt.Println("结果:", ok)
-	// }
-	return ok
+	return tools.SliceContain(config.C.DB.IgnoreColumns, fieldName)
+}
+
+func IsNameField(fieldName string) bool {
+	return tools.SliceContain(NameFieldNames, fieldName)
 }

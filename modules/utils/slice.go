@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"strings"
-
 	"github.com/licat233/genzero/sql"
 )
 
@@ -97,33 +95,3 @@ func SliceContains(slice []string, v string) bool {
 	}
 	return false
 }
-
-// func HasUuid(fields sql.FieldCollection) bool {
-// 	for _, field := range fields {
-// 		if strings.ToLower(field.Name) == "uuid" {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-func HasName(fields sql.FieldCollection) bool {
-	for _, field := range fields {
-		if field.Hide {
-			continue
-		}
-		if strings.ToLower(field.Name) == "name" {
-			return true
-		}
-	}
-	return false
-}
-
-// func HasIsDeleted(fields sql.FieldCollection) bool {
-// 	for _, field := range fields {
-// 		if strings.ToLower(field.Name) == "is_deleted" {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/licat233/genzero/config"
-	"github.com/licat233/genzero/modules/utils"
 	"github.com/licat233/genzero/sql"
 	"github.com/licat233/genzero/tools"
 )
@@ -21,9 +20,8 @@ type Logic struct {
 	Dir            string
 	Multiple       bool
 
-	ConveFields string //注意：每个方法的数据不一样，会变
-	HasUuid     bool
-	HasName     bool
+	ConveFields string //注意：每个方法的数据不一样，会变，用来做临时模版渲染数据
+	// HasUuid     bool
 
 	Table *sql.Table
 }
@@ -41,9 +39,8 @@ func NewLogic(t *sql.Table) *Logic {
 		Dir:            config.C.Logic.Rpc.Dir,
 		Multiple:       config.C.Logic.Rpc.Multiple,
 		ConveFields:    "",
-		HasUuid:        t.ExistUuidField(),
-		HasName:        utils.HasName(t.GetFields()),
-		Table:          t,
+		// HasUuid:        t.ExistUuidField(),
+		Table: t,
 	}
 }
 
@@ -252,8 +249,9 @@ func (l *Logic) List() (err error) {
 }
 
 func (l *Logic) Enums() (err error) {
-	//前提是要存在name字段
-	if !l.HasName {
+	//前提是要存在name字段，或者username，亦或是 nickname
+	nameField := l.Table.GetNameField()
+	if nameField == nil {
 		return nil
 	}
 
@@ -274,10 +272,12 @@ func (l *Logic) Enums() (err error) {
 	enums := []*{{.RpcGoPkgName}}.Enum{}
 	for _, item := range list {
 		enums = append(enums, &{{.RpcGoPkgName}}.Enum{
-			Label: item.Name,
+			Label: item.__NAME__,
 			Value: item.Id,
 		})
 	}`
+
+	logicContentTpl = strings.ReplaceAll(logicContentTpl, "__NAME__", nameField.UpperCamelCaseName)
 
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
 	if err != nil {

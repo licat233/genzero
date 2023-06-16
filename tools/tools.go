@@ -38,6 +38,10 @@ func PluralizedName(name string) string {
 	}
 }
 
+func StringEqual(a, b string) bool {
+	return ToSnake(a) == ToSnake(b)
+}
+
 // 不区分大小写查找
 func SliceContain(slice []string, s string) bool {
 	s = ToSnake(s)

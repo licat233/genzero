@@ -19,25 +19,18 @@ func (s *Schema) Copy() *Schema {
 }
 
 type Table struct {
-	Name    string `sql:"name"`
-	Comment string `sql:"comment"`
-	// DelStateFieldName string
-	// DelTimeFieldName  string
-	// HasUuidField      bool
-
-	Fields FieldCollection `sql:"fields"`
-	Enums  EnumCollection  `sql:"enums"`
+	Name    string          `sql:"name"`
+	Comment string          `sql:"comment"`
+	Fields  FieldCollection `sql:"fields"`
+	Enums   EnumCollection  `sql:"enums"`
 }
 
 func (t *Table) Copy() *Table {
 	return &Table{
 		Name:    t.Name,
 		Comment: t.Comment,
-		// DelStateFieldName: "",
-		// DelTimeFieldName:  "",
-		// HasUuidField:      false,
-		Fields: t.Fields.Copy(),
-		Enums:  t.Enums.Copy(),
+		Fields:  t.Fields.Copy(),
+		Enums:   t.Enums.Copy(),
 	}
 }
 
@@ -98,6 +91,19 @@ func (t *Table) GetFields() FieldCollection {
 		res = append(res, field)
 	}
 	return res
+}
+
+func (t *Table) ExistNameField() bool {
+	return t.GetNameField() != nil
+}
+
+func (t *Table) GetNameField() *Field {
+	for _, field := range t.Fields {
+		if IsNameField(field.Name) {
+			return &field
+		}
+	}
+	return nil
 }
 
 type TableCollection []Table
