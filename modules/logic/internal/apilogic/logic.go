@@ -194,6 +194,12 @@ func (l *Logic) Put() (err error) {
 
 	var conveFieldsBuf bytes.Buffer
 	for _, field := range l.PutFields() {
+		if !l.UseRpc {
+			if field.Type == "time.Time" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				continue
+			}
+		}
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: req.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
 	l.ConveFields = conveFieldsBuf.String()
