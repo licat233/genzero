@@ -299,7 +299,7 @@ func (l *Logic) List() (err error) {
 	for _, field := range l.ApiFields() {
 		if !l.UseRpc {
 			if field.Type == "time.Time" {
-				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(in.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 				continue
 			}
 		}
