@@ -138,8 +138,7 @@ func (l *Logic) Add() (err error) {
 			if field.Type == "time.Time" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 				continue
-			}
-			if strings.ToLower(field.Name) == "uuid" {
+			} else if strings.ToLower(field.Name) == "uuid" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
 				continue
 			}

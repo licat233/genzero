@@ -26,13 +26,13 @@ logic:
         status: true
         style: genZero
         tables: []
-        useRpc: true
+        useRpc: false
     rpc:
         dir: rpc/internal/logic
         fileStyle: genZero
         ignoreTables: []
         multiple: true
-        status: true
+        status: false
         style: genZero
         tables: []
     status: false
@@ -51,6 +51,6 @@ proto:
     multiple: true
     package: ""
     serviceName: admin
-    status: true
+    status: false
     style: genZero
     tables: []
