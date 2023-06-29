@@ -134,6 +134,16 @@ func (l *Logic) Add() (err error) {
 
 	var conveFieldsBuf bytes.Buffer
 	for _, field := range l.AddFields() {
+		if !l.UseRpc {
+			if field.Type == "time.Time" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				continue
+			}
+			if strings.ToLower(field.Name) == "uuid" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
+				continue
+			}
+		}
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: req.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
 	l.ConveFields = conveFieldsBuf.String()
