@@ -82,9 +82,9 @@ func (s *FindsByAny) String() string {
 	}
 
 	fieldV := tools.ToLowerCamel(s.field.Name)
-	if s.field.Type == "time.Time" {
-		fieldV = fieldV + ".Format(\"2006-01-02 15:04:05\")"
-	}
+	// if s.field.Type == "time.Time" {
+	// 	fieldV = fieldV + ".Format(\"2006-01-02 15:04:05\")"
+	// }
 
 	if s.IsCacheMode {
 		buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &resp, query, " + fieldV + ")\n")

@@ -56,9 +56,9 @@ func (t *TableModel) Init() (err error) {
 		funcs.NewFindCount(t.table, isCache),
 		funcs.NewFindAll(t.table, isCache),
 		funcs.NewFindList(t.table, isCache),
-		funcs.NewFindsByIds(t.table, isCache),
 		funcs.NewTableName(t.table, isCache),
 		funcs.NewFindByAnyCollection(t.table, isCache),
+		funcs.NewFindsByFieldsCollection(t.table, isCache),
 	}
 	if t.table.ExistUuidField() {
 		t.Funcs = append(t.Funcs, funcs.NewFormatUuidKey(t.table, isCache))

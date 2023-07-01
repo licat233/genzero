@@ -24,6 +24,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
+// 名词复数形式
 func PluralizedName(name string) string {
 	chip := name[len(name)-1:]
 	switch chip {

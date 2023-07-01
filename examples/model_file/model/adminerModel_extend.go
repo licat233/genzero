@@ -18,7 +18,6 @@ type adminer_model interface {
 	FindCount(ctx context.Context) (int64, error)
 	FindAll(ctx context.Context) ([]*Adminer, error)
 	FindList(ctx context.Context, pageSize, page int64, keyword string, adminer *Adminer) (resp []*Adminer, total int64, err error)
-	FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error)
 	TableName() string
 	FindByUuid(ctx context.Context, uuid string) (*Adminer, error)
 	FindByName(ctx context.Context, name string) (*Adminer, error)
@@ -30,6 +29,18 @@ type adminer_model interface {
 	FindByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) (*Adminer, error)
 	FindByLoginCount(ctx context.Context, loginCount int64) (*Adminer, error)
 	FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error)
+	FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error)
+	FindsByUuids(ctx context.Context, uuids []string) ([]*Adminer, error)
+	FindsByNames(ctx context.Context, names []string) ([]*Adminer, error)
+	FindsByAvatars(ctx context.Context, avatars []string) ([]*Adminer, error)
+	FindsByPassports(ctx context.Context, passports []string) ([]*Adminer, error)
+	FindsByPasswords(ctx context.Context, passwords []string) ([]*Adminer, error)
+	FindsByEmails(ctx context.Context, emails []string) ([]*Adminer, error)
+	FindsByStatus(ctx context.Context, status []int64) ([]*Adminer, error)
+	FindsByIsSuperAdmins(ctx context.Context, isSuperAdmins []int64) ([]*Adminer, error)
+	FindsByLoginCounts(ctx context.Context, loginCounts []int64) ([]*Adminer, error)
+	FindsByLastLogins(ctx context.Context, lastLogins []time.Time) ([]*Adminer, error)
+
 	formatUuidKey(uuid string) string
 	SoftDelete(ctx context.Context, id int64) error
 }
@@ -119,16 +130,6 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 		return
 	}
 	return
-}
-
-func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error) {
-	var resp = make([]*Adminer, 0)
-	if len(ids) == 0 {
-		return resp, nil
-	}
-	query := fmt.Sprintf("select %s from %s where `id` in(?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, ids)
-	return resp, err
 }
 
 func (m *defaultAdminerModel) TableName() string {
@@ -273,6 +274,116 @@ func (m *defaultAdminerModel) FindByLastLogin(ctx context.Context, lastLogin tim
 	default:
 		return nil, err
 	}
+}
+
+func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(ids) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, ids)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByUuids(ctx context.Context, uuids []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(uuids) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `uuid` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, uuids)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByNames(ctx context.Context, names []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(names) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `name` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, names)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByAvatars(ctx context.Context, avatars []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(avatars) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `avatar` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, avatars)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByPassports(ctx context.Context, passports []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(passports) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `passport` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, passports)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByPasswords(ctx context.Context, passwords []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(passwords) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `password` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, passwords)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByEmails(ctx context.Context, emails []string) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(emails) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `email` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, emails)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByStatus(ctx context.Context, status []int64) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(status) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `status` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, status)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByIsSuperAdmins(ctx context.Context, isSuperAdmins []int64) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(isSuperAdmins) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `is_super_admin` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, isSuperAdmins)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByLoginCounts(ctx context.Context, loginCounts []int64) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(loginCounts) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `login_count` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, loginCounts)
+	return resp, err
+}
+
+func (m *defaultAdminerModel) FindsByLastLogins(ctx context.Context, lastLogins []time.Time) ([]*Adminer, error) {
+	var resp = make([]*Adminer, 0)
+	if len(lastLogins) == 0 {
+		return resp, nil
+	}
+	query := fmt.Sprintf("select %s from %s where `last_login` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, lastLogins)
+	return resp, err
 }
 
 func (m *defaultAdminerModel) formatUuidKey(uuid string) string {
