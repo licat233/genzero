@@ -134,12 +134,21 @@ func (l *Logic) Add() (err error) {
 
 	var conveFieldsBuf bytes.Buffer
 	for _, field := range l.AddFields() {
+		// 注意：不管有没有使用rpc，请求参数里面都不应该有uuid字段，应该有api服务或者rpc服务生成
 		if !l.UseRpc {
+			// 如果没有使用 rpc 服务
 			if field.Type == "time.Time" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 				continue
 			} else if strings.ToLower(field.Name) == "uuid" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
+				continue
+			}
+		} else {
+			//如果使用了 rpc 服务， 此处不应该再有uuid字段
+			if strings.ToLower(field.Name) == "uuid" {
+				continue
+			} else if strings.ToLower(field.Name) == "id" {
 				continue
 			}
 		}
