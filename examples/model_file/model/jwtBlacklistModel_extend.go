@@ -69,25 +69,25 @@ func (m *defaultJwtBlacklistModel) FindList(ctx context.Context, pageSize, page 
 	sq := squirrel.Select(jwtBlacklistRows).From(m.table)
 	if jwtBlacklist != nil {
 		if jwtBlacklist.Id >= 0 {
-			sq = sq.Where("id = ?", jwtBlacklist.Id)
+			sq = sq.Where("`id` = ?", jwtBlacklist.Id)
 		}
 		if jwtBlacklist.AdminerId > 0 {
-			sq = sq.Where("adminer_id = ?", jwtBlacklist.AdminerId)
+			sq = sq.Where("`adminer_id` = ?", jwtBlacklist.AdminerId)
 		}
 		if jwtBlacklist.Uuid != "" {
-			sq = sq.Where("uuid = ?", jwtBlacklist.Uuid)
+			sq = sq.Where("`uuid` = ?", jwtBlacklist.Uuid)
 		}
 		if jwtBlacklist.Token != "" {
-			sq = sq.Where("token = ?", jwtBlacklist.Token)
+			sq = sq.Where("`token` = ?", jwtBlacklist.Token)
 		}
 		if jwtBlacklist.Platform != "" {
-			sq = sq.Where("platform = ?", jwtBlacklist.Platform)
+			sq = sq.Where("`platform` = ?", jwtBlacklist.Platform)
 		}
 		if jwtBlacklist.Ip != "" {
-			sq = sq.Where("ip = ?", jwtBlacklist.Ip)
+			sq = sq.Where("`ip` = ?", jwtBlacklist.Ip)
 		}
 		if jwtBlacklist.ExpireAt.IsZero() {
-			sq = sq.Where("expire_at = ?", jwtBlacklist.ExpireAt.Format("2006-01-02 15:04:05"))
+			sq = sq.Where("`expire_at` = ?", jwtBlacklist.ExpireAt.Format("2006-01-02 15:04:05"))
 		}
 	}
 	if pageSize > 0 && page > 0 {

@@ -119,9 +119,9 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 		}
 		buf.WriteString(fmt.Sprintf("\n\t\tif %s {", condition))
 		if field.Type == "time.Time" {
-			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"%s = ?\", %s.Format(\"2006-01-02 15:04:05\"))", field.Name, fieldString))
+			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"`%s` = ?\", %s.Format(\"2006-01-02 15:04:05\"))", field.Name, fieldString))
 		} else {
-			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"%s = ?\", %s)", field.Name, fieldString))
+			buf.WriteString(fmt.Sprintf("\n\t\t\tsq = sq.Where(\"`%s` = ?\", %s)", field.Name, fieldString))
 		}
 
 		if isNameField(field) && !hasName {
@@ -133,7 +133,7 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 	buf.WriteString("\n\t}")
 	if hasName {
 		buf.WriteString("\n\tif keyword != \"\" && hasName {")
-		buf.WriteString("\n\t\tsq = sq.Where(\"name LIKE ?\", fmt.Sprintf(\"%%%s%%\", keyword))")
+		buf.WriteString("\n\t\tsq = sq.Where(\"`name` LIKE ?\", fmt.Sprintf(\"%%%s%%\", keyword))")
 		buf.WriteString("\n\t}")
 	}
 }

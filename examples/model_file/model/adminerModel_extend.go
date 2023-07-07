@@ -83,42 +83,42 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 	sq := squirrel.Select(adminerRows).From(m.table).Where("`is_deleted`= '0'")
 	if adminer != nil {
 		if adminer.Id >= 0 {
-			sq = sq.Where("id = ?", adminer.Id)
+			sq = sq.Where("`id` = ?", adminer.Id)
 		}
 		if adminer.Uuid != "" {
-			sq = sq.Where("uuid = ?", adminer.Uuid)
+			sq = sq.Where("`uuid` = ?", adminer.Uuid)
 		}
 		if adminer.Name != "" {
-			sq = sq.Where("name = ?", adminer.Name)
+			sq = sq.Where("`name` = ?", adminer.Name)
 			hasName = true
 		}
 		if adminer.Avatar != "" {
-			sq = sq.Where("avatar = ?", adminer.Avatar)
+			sq = sq.Where("`avatar` = ?", adminer.Avatar)
 		}
 		if adminer.Passport != "" {
-			sq = sq.Where("passport = ?", adminer.Passport)
+			sq = sq.Where("`passport` = ?", adminer.Passport)
 		}
 		if adminer.Password != "" {
-			sq = sq.Where("password = ?", adminer.Password)
+			sq = sq.Where("`password` = ?", adminer.Password)
 		}
 		if adminer.Email != "" {
-			sq = sq.Where("email = ?", adminer.Email)
+			sq = sq.Where("`email` = ?", adminer.Email)
 		}
 		if adminer.Status >= 0 {
-			sq = sq.Where("status = ?", adminer.Status)
+			sq = sq.Where("`status` = ?", adminer.Status)
 		}
 		if adminer.IsSuperAdmin >= 0 {
-			sq = sq.Where("is_super_admin = ?", adminer.IsSuperAdmin)
+			sq = sq.Where("`is_super_admin` = ?", adminer.IsSuperAdmin)
 		}
 		if adminer.LoginCount >= 0 {
-			sq = sq.Where("login_count = ?", adminer.LoginCount)
+			sq = sq.Where("`login_count` = ?", adminer.LoginCount)
 		}
 		if adminer.LastLogin.IsZero() {
-			sq = sq.Where("last_login = ?", adminer.LastLogin.Format("2006-01-02 15:04:05"))
+			sq = sq.Where("`last_login` = ?", adminer.LastLogin.Format("2006-01-02 15:04:05"))
 		}
 	}
 	if keyword != "" && hasName {
-		sq = sq.Where("name LIKE ?", fmt.Sprintf("%%%s%%", keyword))
+		sq = sq.Where("`name` LIKE ?", fmt.Sprintf("%%%s%%", keyword))
 	}
 	if pageSize > 0 && page > 0 {
 		sqCount := sq.RemoveLimit().RemoveOffset()
