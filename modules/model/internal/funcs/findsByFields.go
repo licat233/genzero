@@ -80,7 +80,7 @@ func (s *findsByFields) String() string {
 	if delField := s.Table.GetIsDeletedField(); delField != nil {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?) and `" + delField.Name + "` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "`  in (?) \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?) \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
 
 	if s.IsCacheMode {
