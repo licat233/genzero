@@ -36,7 +36,7 @@ func PluralizedName(name string) string {
 		// return name + "es"
 	case "y":
 		if name[len(name)-2:] == "ey" {
-			return name[:len(name)-1] + "s"
+			return name + "s"
 		}
 		return name[:len(name)-1] + "ies"
 	case "_":
