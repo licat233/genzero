@@ -8,7 +8,7 @@ import (
 	"github.com/licat233/genzero/tools"
 )
 
-type findsByFields struct {
+type findsByField struct {
 	field        sql.Field
 	modelName    string
 	name         string
@@ -20,44 +20,44 @@ type findsByFields struct {
 	reqFieldName string
 }
 
-var _ ModelFunc = (*findsByFields)(nil)
+var _ ModelFunc = (*findsByField)(nil)
 
-type FindsByFieldsCollection []*findsByFields
+type FindsByFieldCollection []*findsByField
 
-var _ ModelFunc = (FindsByFieldsCollection)(nil)
+var _ ModelFunc = (FindsByFieldCollection)(nil)
 
-func NewFindsByFieldsCollection(table *sql.Table, isCacheMode bool) FindsByFieldsCollection {
-	var res FindsByFieldsCollection = make([]*findsByFields, 0)
+func NewFindsByFieldCollection(table *sql.Table, isCacheMode bool) FindsByFieldCollection {
+	var res FindsByFieldCollection = make([]*findsByField, 0)
 	for _, field := range table.GetFields() {
-		res = append(res, newFindsByFields(table, isCacheMode, field))
+		res = append(res, newFindsByField(table, isCacheMode, field))
 	}
 	return res
 }
 
-func (f FindsByFieldsCollection) String() string {
+func (f FindsByFieldCollection) String() string {
 	var buf = new(bytes.Buffer)
-	for _, findByFields := range f {
-		buf.WriteString(findByFields.String() + "\n")
+	for _, findByField := range f {
+		buf.WriteString(findByField.String() + "\n")
 	}
 	return buf.String()
 }
 
-func (f FindsByFieldsCollection) FullName() string {
+func (f FindsByFieldCollection) FullName() string {
 	var buf = new(bytes.Buffer)
-	for _, findByFields := range f {
-		buf.WriteString(findByFields.FullName() + "\n")
+	for _, findByField := range f {
+		buf.WriteString(findByField.FullName() + "\n")
 	}
 	return buf.String()
 }
 
-func newFindsByFields(t *sql.Table, isCacheMode bool, field sql.Field) *findsByFields {
+func newFindsByField(t *sql.Table, isCacheMode bool, field sql.Field) *findsByField {
 	modelName := modelName(t.Name)
-	reqFieldName := tools.ToLowerCamel(tools.PluralizedName(field.Name))
+	reqFieldName := tools.ToLowerCamel(field.Name)
 	name := fmt.Sprintf("FindsBy%s", tools.ToCamel(reqFieldName))
-	req := fmt.Sprintf("ctx context.Context, %s []%s", reqFieldName, field.Type)
+	req := fmt.Sprintf("ctx context.Context, %s %s", reqFieldName, field.Type)
 	resp := fmt.Sprintf("([]*%s, error)", tools.ToCamel(t.Name))
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
-	return &findsByFields{
+	return &findsByField{
 		field:        field,
 		modelName:    modelName,
 		name:         name,
@@ -70,17 +70,14 @@ func newFindsByFields(t *sql.Table, isCacheMode bool, field sql.Field) *findsByF
 	}
 }
 
-func (s *findsByFields) String() string {
+func (s *findsByField) String() string {
 	var buf = new(bytes.Buffer)
 	buf.WriteString(fmt.Sprintf("\nfunc (m *%s) %s {\n", s.modelName, s.fullName))
 	buf.WriteString(fmt.Sprintf("var resp = make([]*%s, 0)\n", tools.ToCamel(s.Table.Name)))
-	buf.WriteString(fmt.Sprintf("if len(%s) == 0 {\n", s.reqFieldName))
-	buf.WriteString("return resp, nil\n")
-	buf.WriteString("}\n")
 	if delField := s.Table.GetIsDeletedField(); delField != nil {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?) and `" + delField.Name + "` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? and `" + delField.Name + "` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
-		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "`  in (?) \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
+		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` = ? \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
 
 	if s.IsCacheMode {
@@ -93,6 +90,6 @@ func (s *findsByFields) String() string {
 	return buf.String()
 }
 
-func (t *findsByFields) FullName() string {
+func (t *findsByField) FullName() string {
 	return t.fullName
 }

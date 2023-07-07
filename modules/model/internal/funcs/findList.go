@@ -26,6 +26,7 @@ func NewFindList(t *sql.Table, isCacheMode bool) FindList {
 	lowerName := tools.ToLowerCamel(t.Name)
 	modelName := modelName(t.Name)
 	name := "FindList"
+	// TODO: 需要修改参数录入顺序，使更人性化体验
 	req := fmt.Sprintf("ctx context.Context, pageSize, page int64, keyword string, %s *%s", lowerName, camelName)
 	resp := fmt.Sprintf("(resp []*%s, total int64, err error)", camelName)
 	fullName := fmt.Sprintf("%s(%s) %s", name, req, resp)
@@ -131,7 +132,7 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 	}
 	buf.WriteString("\n\t}")
 	if hasName {
-		buf.WriteString("\n\tif keyword != \"\" && !hasName {")
+		buf.WriteString("\n\tif keyword != \"\" && hasName {")
 		buf.WriteString("\n\t\tsq = sq.Where(\"name LIKE ?\", fmt.Sprintf(\"%%%s%%\", keyword))")
 		buf.WriteString("\n\t}")
 	}

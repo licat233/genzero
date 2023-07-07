@@ -24,13 +24,20 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-// 名词复数形式
+// 名词复数形式，不完全准
 func PluralizedName(name string) string {
 	chip := name[len(name)-1:]
 	switch chip {
 	case "s":
-		return name
+		return name + "list"
+		// if name[len(name)-2:] == "es" || name[len(name)-2:] == "ys" {
+		// 	return name + "list"
+		// }
+		// return name + "es"
 	case "y":
+		if name[len(name)-2:] == "ey" {
+			return name[:len(name)-1] + "s"
+		}
 		return name[:len(name)-1] + "ies"
 	case "_":
 		return name[:len(name)-1] + "list"

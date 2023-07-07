@@ -33,6 +33,14 @@ type jwtBlacklist_model interface {
 	FindsByIps(ctx context.Context, ips []string) ([]*JwtBlacklist, error)
 	FindsByExpireAts(ctx context.Context, expireAts []time.Time) ([]*JwtBlacklist, error)
 
+	FindsById(ctx context.Context, id int64) ([]*JwtBlacklist, error)
+	FindsByAdminerId(ctx context.Context, adminerId int64) ([]*JwtBlacklist, error)
+	FindsByUuid(ctx context.Context, uuid string) ([]*JwtBlacklist, error)
+	FindsByToken(ctx context.Context, token string) ([]*JwtBlacklist, error)
+	FindsByPlatform(ctx context.Context, platform string) ([]*JwtBlacklist, error)
+	FindsByIp(ctx context.Context, ip string) ([]*JwtBlacklist, error)
+	FindsByExpireAt(ctx context.Context, expireAt time.Time) ([]*JwtBlacklist, error)
+
 	formatUuidKey(uuid string) string
 }
 
@@ -261,6 +269,55 @@ func (m *defaultJwtBlacklistModel) FindsByExpireAts(ctx context.Context, expireA
 	}
 	query := fmt.Sprintf("select %s from %s where `expire_at`  in (?) ", jwtBlacklistRows, m.table)
 	err := m.conn.QueryRowsCtx(ctx, &resp, query, expireAts)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsById(ctx context.Context, id int64) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `id` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, id)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByAdminerId(ctx context.Context, adminerId int64) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `adminer_id` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, adminerId)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByUuid(ctx context.Context, uuid string) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `uuid` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, uuid)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByToken(ctx context.Context, token string) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `token` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, token)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByPlatform(ctx context.Context, platform string) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `platform` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, platform)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByIp(ctx context.Context, ip string) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `ip` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, ip)
+	return resp, err
+}
+
+func (m *defaultJwtBlacklistModel) FindsByExpireAt(ctx context.Context, expireAt time.Time) ([]*JwtBlacklist, error) {
+	var resp = make([]*JwtBlacklist, 0)
+	query := fmt.Sprintf("select %s from %s where `expire_at` = ? ", jwtBlacklistRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, expireAt)
 	return resp, err
 }
 
