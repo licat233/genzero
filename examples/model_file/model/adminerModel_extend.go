@@ -10,6 +10,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 var AdminerTableName = "adminer"
@@ -19,6 +20,7 @@ type adminer_model interface {
 	FindAll(ctx context.Context) ([]*Adminer, error)
 	FindList(ctx context.Context, pageSize, page int64, keyword string, adminer *Adminer) (resp []*Adminer, total int64, err error)
 	TableName() string
+	FindById(ctx context.Context, id int64) (*Adminer, error)
 	FindByUuid(ctx context.Context, uuid string) (*Adminer, error)
 	FindByName(ctx context.Context, name string) (*Adminer, error)
 	FindByAvatar(ctx context.Context, avatar string) (*Adminer, error)
@@ -60,14 +62,14 @@ type adminer_model interface {
 func (m *defaultAdminerModel) FindCount(ctx context.Context) (int64, error) {
 	var count int64
 	query := fmt.Sprintf("select count(*) as count from %s where `is_deleted` = '0'", m.table)
-	err := m.conn.QueryRowCtx(ctx, &count, query)
+	err := m.QueryRowNoCacheCtx(ctx, &count, query)
 	return count, err
 }
 
 func (m *defaultAdminerModel) FindAll(ctx context.Context) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `is_deleted` = '0' limit 99999", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query)
 	switch err {
 	case nil:
 		return resp, nil
@@ -129,7 +131,7 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 			return
 		}
 		queryCount = strings.ReplaceAll(queryCount, adminerRows, "COUNT(*)")
-		if err = m.conn.QueryRowCtx(ctx, &total, queryCount, agrsCount...); err != nil {
+		if err = m.QueryRowNoCacheCtx(ctx, &total, queryCount, agrsCount...); err != nil {
 			return
 		}
 	}
@@ -138,7 +140,7 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 		return
 	}
 	resp = make([]*Adminer, 0)
-	if err = m.conn.QueryRowsCtx(ctx, &resp, query, agrs...); err != nil {
+	if err = m.QueryRowsNoCacheCtx(ctx, &resp, query, agrs...); err != nil {
 		return
 	}
 	return
@@ -148,10 +150,27 @@ func (m *defaultAdminerModel) TableName() string {
 	return m.table
 }
 
+func (m *defaultAdminerModel) FindById(ctx context.Context, id int64) (*Adminer, error) {
+	var resp Adminer
+	query := fmt.Sprintf("select %s from %s where `id` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
+	adminerIdKey := fmt.Sprintf("%s%v", cacheAdminerIdPrefix, id)
+	err := m.QueryRowCtx(ctx, &resp, adminerIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultAdminerModel) FindByUuid(ctx context.Context, uuid string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `uuid` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, uuid)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, uuid)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -165,7 +184,7 @@ func (m *defaultAdminerModel) FindByUuid(ctx context.Context, uuid string) (*Adm
 func (m *defaultAdminerModel) FindByName(ctx context.Context, name string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `name` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, name)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, name)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -179,7 +198,7 @@ func (m *defaultAdminerModel) FindByName(ctx context.Context, name string) (*Adm
 func (m *defaultAdminerModel) FindByAvatar(ctx context.Context, avatar string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `avatar` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, avatar)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, avatar)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -193,7 +212,7 @@ func (m *defaultAdminerModel) FindByAvatar(ctx context.Context, avatar string) (
 func (m *defaultAdminerModel) FindByPassport(ctx context.Context, passport string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `passport` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, passport)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, passport)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -207,7 +226,7 @@ func (m *defaultAdminerModel) FindByPassport(ctx context.Context, passport strin
 func (m *defaultAdminerModel) FindByPassword(ctx context.Context, password string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `password` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, password)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, password)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -221,7 +240,7 @@ func (m *defaultAdminerModel) FindByPassword(ctx context.Context, password strin
 func (m *defaultAdminerModel) FindByEmail(ctx context.Context, email string) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `email` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, email)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, email)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -235,7 +254,7 @@ func (m *defaultAdminerModel) FindByEmail(ctx context.Context, email string) (*A
 func (m *defaultAdminerModel) FindByStatus(ctx context.Context, status int64) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `status` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, status)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, status)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -249,7 +268,7 @@ func (m *defaultAdminerModel) FindByStatus(ctx context.Context, status int64) (*
 func (m *defaultAdminerModel) FindByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `is_super_admin` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, isSuperAdmin)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, isSuperAdmin)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -263,7 +282,7 @@ func (m *defaultAdminerModel) FindByIsSuperAdmin(ctx context.Context, isSuperAdm
 func (m *defaultAdminerModel) FindByLoginCount(ctx context.Context, loginCount int64) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `login_count` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, loginCount)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, loginCount)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -277,7 +296,7 @@ func (m *defaultAdminerModel) FindByLoginCount(ctx context.Context, loginCount i
 func (m *defaultAdminerModel) FindByLastLogin(ctx context.Context, lastLogin time.Time) (*Adminer, error) {
 	var resp Adminer
 	query := fmt.Sprintf("select %s from %s where `last_login` = ? and `is_deleted` = '0' limit 1", adminerRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, lastLogin.Format("2006-01-02 15:04:05"))
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, lastLogin.Format("2006-01-02 15:04:05"))
 	switch err {
 	case nil:
 		return &resp, nil
@@ -294,7 +313,7 @@ func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*A
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, ids)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, ids)
 	return resp, err
 }
 
@@ -304,7 +323,7 @@ func (m *defaultAdminerModel) FindsByUuids(ctx context.Context, uuids []string) 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `uuid` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, uuids)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, uuids)
 	return resp, err
 }
 
@@ -314,7 +333,7 @@ func (m *defaultAdminerModel) FindsByNames(ctx context.Context, names []string) 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `name` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, names)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, names)
 	return resp, err
 }
 
@@ -324,7 +343,7 @@ func (m *defaultAdminerModel) FindsByAvatars(ctx context.Context, avatars []stri
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `avatar` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, avatars)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, avatars)
 	return resp, err
 }
 
@@ -334,7 +353,7 @@ func (m *defaultAdminerModel) FindsByPassports(ctx context.Context, passports []
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `passport` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, passports)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, passports)
 	return resp, err
 }
 
@@ -344,7 +363,7 @@ func (m *defaultAdminerModel) FindsByPasswords(ctx context.Context, passwords []
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `password` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, passwords)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, passwords)
 	return resp, err
 }
 
@@ -354,7 +373,7 @@ func (m *defaultAdminerModel) FindsByEmails(ctx context.Context, emails []string
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `email` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, emails)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, emails)
 	return resp, err
 }
 
@@ -364,7 +383,7 @@ func (m *defaultAdminerModel) FindsByStatuslist(ctx context.Context, statuslist 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `status` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, statuslist)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, statuslist)
 	return resp, err
 }
 
@@ -374,7 +393,7 @@ func (m *defaultAdminerModel) FindsByIsSuperAdmins(ctx context.Context, isSuperA
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `is_super_admin` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, isSuperAdmins)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, isSuperAdmins)
 	return resp, err
 }
 
@@ -384,7 +403,7 @@ func (m *defaultAdminerModel) FindsByLoginCounts(ctx context.Context, loginCount
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `login_count` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, loginCounts)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, loginCounts)
 	return resp, err
 }
 
@@ -394,84 +413,84 @@ func (m *defaultAdminerModel) FindsByLastLogins(ctx context.Context, lastLogins 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `last_login` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, lastLogins)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, lastLogins)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsById(ctx context.Context, id int64) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `id` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, id)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, id)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByUuid(ctx context.Context, uuid string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `uuid` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, uuid)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, uuid)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByName(ctx context.Context, name string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `name` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, name)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, name)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByAvatar(ctx context.Context, avatar string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `avatar` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, avatar)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, avatar)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByPassport(ctx context.Context, passport string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `passport` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, passport)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, passport)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByPassword(ctx context.Context, password string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `password` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, password)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, password)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByEmail(ctx context.Context, email string) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `email` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, email)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, email)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByStatus(ctx context.Context, status int64) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `status` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, status)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, status)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByIsSuperAdmin(ctx context.Context, isSuperAdmin int64) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `is_super_admin` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, isSuperAdmin)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, isSuperAdmin)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByLoginCount(ctx context.Context, loginCount int64) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `login_count` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, loginCount)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, loginCount)
 	return resp, err
 }
 
 func (m *defaultAdminerModel) FindsByLastLogin(ctx context.Context, lastLogin time.Time) ([]*Adminer, error) {
 	var resp = make([]*Adminer, 0)
 	query := fmt.Sprintf("select %s from %s where `last_login` = ? and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, lastLogin)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, lastLogin)
 	return resp, err
 }
 
@@ -481,6 +500,12 @@ func (m *defaultAdminerModel) formatUuidKey(uuid string) string {
 
 func (m *defaultAdminerModel) SoftDelete(ctx context.Context, id int64) error {
 	query := fmt.Sprintf("update %s set `is_deleted` = '1', `delete_at`= now() where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	_, err := m.ExecNoCacheCtx(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	// 删除缓存
+	err = m.DelCacheCtx(ctx, m.formatPrimary(id))
 	return err
 }

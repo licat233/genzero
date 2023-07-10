@@ -1,6 +1,9 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ AdminerModel = (*customAdminerModel)(nil)
 
@@ -18,8 +21,8 @@ type (
 )
 
 // NewAdminerModel returns a model for the database table.
-func NewAdminerModel(conn sqlx.SqlConn) AdminerModel {
+func NewAdminerModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) AdminerModel {
 	return &customAdminerModel{
-		defaultAdminerModel: newAdminerModel(conn),
+		defaultAdminerModel: newAdminerModel(conn, c, opts...),
 	}
 }

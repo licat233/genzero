@@ -1,6 +1,9 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ JwtBlacklistModel = (*customJwtBlacklistModel)(nil)
 
@@ -18,8 +21,8 @@ type (
 )
 
 // NewJwtBlacklistModel returns a model for the database table.
-func NewJwtBlacklistModel(conn sqlx.SqlConn) JwtBlacklistModel {
+func NewJwtBlacklistModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) JwtBlacklistModel {
 	return &customJwtBlacklistModel{
-		defaultJwtBlacklistModel: newJwtBlacklistModel(conn),
+		defaultJwtBlacklistModel: newJwtBlacklistModel(conn, c, opts...),
 	}
 }

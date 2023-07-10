@@ -26,7 +26,7 @@ fi
 # rm -rf ./model
 
 if [ ! -d model ]; then
-    if ! goctl model mysql ddl --src "../sql/admin.sql" -dir="model" --style goZero -cache=false; then
+    if ! goctl model mysql ddl --src "../sql/admin.sql" --dir="model" --style goZero --cache true; then
         exit 1
     fi
     go mod tidy

@@ -29,9 +29,9 @@ var _ ModelFunc = (FindByAnyCollection)(nil)
 func NewFindByAnyCollection(table *sql.Table, isCacheMode bool) FindByAnyCollection {
 	var res FindByAnyCollection = make([]*FindByAny, 0)
 	for _, field := range table.GetFields() {
-		if strings.ToLower(field.Name) == "id" {
-			continue
-		}
+		// if strings.ToLower(field.Name) == "id" {
+		// 	continue
+		// }
 		res = append(res, NewFindByAny(table, isCacheMode, field))
 	}
 	return res
@@ -87,7 +87,14 @@ func (s *FindByAny) String() string {
 	}
 
 	if s.IsCacheMode {
-		buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &resp, query, " + fieldV + ")\n")
+		if strings.ToLower(s.field.Name) == "id" {
+			buf.WriteString(fmt.Sprintf("%sIdKey := fmt.Sprintf(\"%%s%%v\", cache%sIdPrefix, id)\n", tools.ToLowerCamel(s.Table.Name), tools.ToCamel(s.Table.Name)))
+			buf.WriteString(fmt.Sprintf("err := m.QueryRowCtx(ctx, &resp, %sIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {\n", tools.ToLowerCamel(s.Table.Name)))
+			buf.WriteString("return conn.QueryRowCtx(ctx, v, query, id)\n")
+			buf.WriteString("})\n")
+		} else {
+			buf.WriteString("err := m.QueryRowNoCacheCtx(ctx, &resp, query, " + fieldV + ")\n")
+		}
 	} else {
 		buf.WriteString("err := m.conn.QueryRowCtx(ctx, &resp, query, " + fieldV + ")\n")
 	}
