@@ -36,9 +36,11 @@ CREATE TABLE `adminer` (
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否已被删除',
-  `delete_at` datetime NOT NULL DEFAULT '2005-01-02 15:04:05' COMMENT '删除时间',
+  `delete_at` datetime NOT NULL DEFAULT '2005-01-02 15:04:05' COMMENT `删除时间`,
   PRIMARY KEY (`id`),
-  KEY `uuid` (`uuid`)
+  KEY `uuid` (`uuid`),
+  KEY `passport` (`passport`),
+  UNIQUE ("passport")
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员';
 
 -- ----------------------------

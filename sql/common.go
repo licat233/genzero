@@ -53,6 +53,7 @@ func MutipleFindStringSubmatch(line string, patterns ...string) (string, error) 
 }
 
 func MutipleStringSubmatch(line string, patterns ...string) (bool, error) {
+	line = strings.TrimSpace(line)
 	if len(patterns) == 0 {
 		return false, nil
 	}
@@ -98,6 +99,14 @@ func PickFieldDefaultValue(line string) string {
 
 func PickFieldName(line string) string {
 	res, err := MutipleFindStringSubmatch(line, `^\s*`+"`"+`(\w+)`+"`"+`\s\w`)
+	if err != nil {
+		tools.Error(err.Error())
+	}
+	return res
+}
+
+func PickUniqueFieldName(line string) string {
+	res, err := MutipleFindStringSubmatch(line, "\\s*UNIQUE\\s*\\(`([^`]+)`\\)", "\\s*unique\\s*\\(`([^`]+)`\\)")
 	if err != nil {
 		tools.Error(err.Error())
 	}

@@ -84,6 +84,7 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			currentTableName = ""
 			continue
 		}
+
 		if fieldName := PickFieldName(line); fieldName != "" {
 			// if tools.HasInSlice(config.C.DB.IgnoreColumns, fieldName) {
 			// 	continue
@@ -124,6 +125,14 @@ func ParseSqlFile(filename string) (*Schema, error) {
 			}
 
 			table.Fields = append(table.Fields, field)
+		}
+
+		if fieldName := PickUniqueFieldName(line); fieldName != "" {
+			for i := range table.Fields {
+				if strings.EqualFold(table.Fields[i].Name, fieldName) {
+					table.Fields[i].Unique = true
+				}
+			}
 		}
 	}
 

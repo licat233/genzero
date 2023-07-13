@@ -6,9 +6,9 @@ import (
 )
 
 func TestPick(t *testing.T) {
-	line := "`id` INT NOT NULL AUTO_INCREMENT COMMENT '表主键',"
-	res := PickFieldType(line)
-	fmt.Println(res)
+	line := "unique (`passport`)"
+	res := PickUniqueFieldName(line)
+	fmt.Println("结果:", res)
 }
 
 func TestIsDeleteField(t *testing.T) {

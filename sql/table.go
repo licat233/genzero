@@ -126,6 +126,7 @@ type Field struct {
 	Tag                string `json:"tag"`
 	Nullable           bool   `json:"nullable"`
 	Hide               bool   `json:"hide"`
+	Unique             bool   `json:"unique"`
 }
 
 func (f *Field) Copy() *Field {
@@ -139,6 +140,7 @@ func (f *Field) Copy() *Field {
 		Tag:                f.Tag,
 		Nullable:           f.Nullable,
 		Hide:               f.Hide,
+		Unique:             f.Unique,
 	}
 }
 
