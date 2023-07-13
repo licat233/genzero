@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"time"
 )
 
 // 更新文件内容
@@ -98,4 +100,18 @@ func UpdateFileByLine(filePath string, updateFunc func(string) string) error {
 		}
 	}
 	return nil
+}
+
+// 备份文件
+func BackupFile(filename string, backupDir string) error {
+	timestamp := time.Now().Format("20060102150405")
+	backupFilename := fmt.Sprintf("%s_%s", timestamp, filename)
+	backupPath := filepath.Join(backupDir, backupFilename)
+
+	err := os.MkdirAll(backupDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	return os.Rename(filename, backupPath)
 }

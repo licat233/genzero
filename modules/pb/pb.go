@@ -122,6 +122,9 @@ func (s *PbModule) Run() error {
 }
 
 func (s *PbModule) Generate() error {
+	if err := utils.BackupUserFile(s.OutFileName); err != nil {
+		return err
+	}
 	err := s.Init()
 	if err != nil {
 		return err

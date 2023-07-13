@@ -125,6 +125,9 @@ func (s *ApiModule) Run() error {
 }
 
 func (s *ApiModule) Generate(tables ...sql.Table) error {
+	if err := utils.BackupUserFile(s.OutFileName); err != nil {
+		return err
+	}
 	s.DbTables = tables
 	err := s.Init()
 	if err != nil {
