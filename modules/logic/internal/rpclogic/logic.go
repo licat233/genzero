@@ -78,9 +78,6 @@ func (l *Logic) Get() (err error) {
 	if err != nil && err != model.ErrNotFound {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)
-	}
-	if err == model.ErrNotFound {
-		return nil, nil
 	}`
 
 	logicContent, err := tools.ParserTpl(logicContentTpl, l)
