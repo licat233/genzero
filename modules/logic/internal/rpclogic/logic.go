@@ -74,7 +74,7 @@ func (l *Logic) Get() (err error) {
 		return nil
 	}
 
-	logicContentTpl := `res, err := l.svcCtx.{{.ModelName}}.FindOne(l.ctx, in.Id)
+	logicContentTpl := `res, err := l.svcCtx.{{.ModelName}}.FindById(l.ctx, in.Id)
 	if err != nil && err != model.ErrNotFound {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)

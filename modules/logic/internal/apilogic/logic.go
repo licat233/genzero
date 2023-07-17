@@ -97,7 +97,7 @@ func (l *Logic) Get() (err error) {
 		data := dataconv.Pb{{.CamelName}}ToApi{{.CamelName}}(rpcResp.{{.CamelName}})
 		`
 	} else {
-		logicContentTpl = `md{{.CamelName}}, err := l.svcCtx.{{.ModelName}}.FindOne(l.ctx, req.Id)
+		logicContentTpl = `md{{.CamelName}}, err := l.svcCtx.{{.ModelName}}.FindById(l.ctx, req.Id)
 		if err != nil && err != model.ErrNotFound {
 			l.Logger.Error("failed to find {{.LowerCamelName}}, error: ", err)
 			return nil, errorx.InternalError(err)
