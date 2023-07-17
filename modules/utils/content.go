@@ -126,8 +126,7 @@ func FormatContent(str string) string {
 	newLines := []string{}
 	// 去除多余空格
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
+		if line = strings.TrimSpace(line); len(line) == 0 {
 			if isFront {
 				continue
 			}
@@ -148,14 +147,14 @@ func FormatContent(str string) string {
 	var needIndentNum int
 	// 处理{}内的缩进
 	for index, line := range newLines {
-		if len(line) == 0 {
+		if line = strings.TrimSpace(line); len(line) == 0 {
 			continue
 		}
-		if line[len(line)-1] == '{' {
+		if line[len(line)-1] == '{' && !IsAnnotation(line) {
 			needIndentNum++
 			continue
 		}
-		if strings.TrimSpace(line)[0] == '}' {
+		if strings.TrimSpace(line)[0] == '}' && !IsAnnotation(line) {
 			if needIndentNum > 0 {
 				needIndentNum--
 			}
@@ -173,11 +172,11 @@ func FormatContent(str string) string {
 		if len(line) == 0 {
 			continue
 		}
-		if line[len(line)-1] == '(' {
+		if line[len(line)-1] == '(' && !IsAnnotation(line) {
 			needIndentNum++
 			continue
 		}
-		if strings.TrimSpace(line)[0] == ')' {
+		if strings.TrimSpace(line)[0] == ')' && !IsAnnotation(line) {
 			if needIndentNum > 0 {
 				needIndentNum--
 			}
@@ -195,4 +194,12 @@ func FormatContent(str string) string {
 	re := regexp.MustCompile(`\n{2,}`)
 	newContent = re.ReplaceAllString(newContent, "\n\n")
 	return newContent
+}
+
+func IsAnnotation(line string) bool {
+	line = strings.TrimSpace(line)
+	if strings.HasPrefix(line, "//") || strings.HasPrefix(line, "/*") || strings.HasPrefix(line, "*") || strings.HasSuffix(line, "*/") {
+		return true
+	}
+	return false
 }
