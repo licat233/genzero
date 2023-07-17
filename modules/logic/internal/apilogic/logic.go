@@ -94,8 +94,7 @@ func (l *Logic) Get() (err error) {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可
 			return nil, err
 		}
-		pb{{.CamelName}} := rpcResp.{{.CamelName}}
-		data := dataconv.Pb{{.CamelName}}ToApi{{.CamelName}}(pb{{.CamelName}})
+		data := dataconv.Pb{{.CamelName}}ToApi{{.CamelName}}(rpcResp.{{.CamelName}})
 		`
 	} else {
 		logicContentTpl = `md{{.CamelName}}, err := l.svcCtx.{{.ModelName}}.FindOne(l.ctx, req.Id)
