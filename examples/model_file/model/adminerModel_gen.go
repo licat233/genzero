@@ -40,20 +40,22 @@ type (
 
 	Adminer struct {
 		Id           int64     `db:"id"`             // 表主键
-		Uuid         string    `db:"uuid"`           // 唯一识别码
+		Uuid         string    `db:"uuid"`           // UUID
 		Name         string    `db:"name"`           // 管理员名称
 		Avatar       string    `db:"avatar"`         // 头像
+		Access       string    `db:"access"`         // 身份
 		Passport     string    `db:"passport"`       // 账号
 		Password     string    `db:"password"`       // 密码
 		Email        string    `db:"email"`          // 邮箱
 		Status       int64     `db:"status"`         // 账号状态，是否可用
 		IsSuperAdmin int64     `db:"is_super_admin"` // 是否为超级管理员
+		CompanyId    int64     `db:"company_id"`     // 公司id
+		ProjectId    int64     `db:"project_id"`     // 项目id
 		LoginCount   int64     `db:"login_count"`    // 登录次数
-		LastLogin    time.Time `db:"last_login"`     // 最后一次登录时间
+		LastLoginAt  time.Time `db:"last_login_at"`  // 最后一次登录时间
 		CreateAt     time.Time `db:"create_at"`      // 创建时间
 		UpdateAt     time.Time `db:"update_at"`      // 更新时间
-		IsDeleted    int64     `db:"is_deleted"`     // 是否已被删除
-		DeleteAt     time.Time `db:"delete_at"`      // 删除时间
+		IsDeleted    int64     `db:"is_deleted"`     // 是否已删除
 	}
 )
 
@@ -100,8 +102,8 @@ func (m *defaultAdminerModel) FindOne(ctx context.Context, id int64) (*Adminer, 
 func (m *defaultAdminerModel) Insert(ctx context.Context, data *Adminer) (sql.Result, error) {
 	adminerIdKey := fmt.Sprintf("%s%v", cacheAdminerIdPrefix, data.Id)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, adminerRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Uuid, data.Name, data.Avatar, data.Passport, data.Password, data.Email, data.Status, data.IsSuperAdmin, data.LoginCount, data.LastLogin, data.IsDeleted, data.DeleteAt)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, adminerRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Uuid, data.Name, data.Avatar, data.Access, data.Passport, data.Password, data.Email, data.Status, data.IsSuperAdmin, data.CompanyId, data.ProjectId, data.LoginCount, data.LastLoginAt, data.IsDeleted)
 	}, adminerIdKey)
 	return ret, err
 }
@@ -110,7 +112,7 @@ func (m *defaultAdminerModel) Update(ctx context.Context, data *Adminer) error {
 	adminerIdKey := fmt.Sprintf("%s%v", cacheAdminerIdPrefix, data.Id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, adminerRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.Uuid, data.Name, data.Avatar, data.Passport, data.Password, data.Email, data.Status, data.IsSuperAdmin, data.LoginCount, data.LastLogin, data.IsDeleted, data.DeleteAt, data.Id)
+		return conn.ExecCtx(ctx, query, data.Uuid, data.Name, data.Avatar, data.Access, data.Passport, data.Password, data.Email, data.Status, data.IsSuperAdmin, data.CompanyId, data.ProjectId, data.LoginCount, data.LastLoginAt, data.IsDeleted, data.Id)
 	}, adminerIdKey)
 	return err
 }
