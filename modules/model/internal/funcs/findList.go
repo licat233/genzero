@@ -60,11 +60,11 @@ func (s FindList) String() string {
 	s.thanString(buf)
 
 	buf.WriteString("\n\tif pageSize > 0 && page > 0 {")
-	buf.WriteString("\n\t\tsqCount := sq.RemoveLimit().RemoveOffset()")
 	buf.WriteString("\n\t\tsq = sq.Limit(uint64(pageSize)).Offset(uint64((page - 1) * pageSize))")
-	buf.WriteString("\n\t\tqueryCount, agrsCount, e := sqCount.ToSql()")
+	buf.WriteString("\n\t\tsqCount := sq.RemoveLimit().RemoveOffset()")
+	buf.WriteString("\n\t\tqueryCount, agrsCount, e := sqCount.RemoveColumns().Column(\"COUNT(*)\").ToSql()")
 	buf.WriteString("\n\t\tif e != nil {\n\t\t\terr = e\n\t\t\treturn\n\t\t}")
-	buf.WriteString(fmt.Sprintf("\n\t\tqueryCount = strings.ReplaceAll(queryCount, %sRows, \"COUNT(*)\")", lowerName))
+	// buf.WriteString(fmt.Sprintf("\n\t\tqueryCount = strings.ReplaceAll(queryCount, %sRows, \"COUNT(*)\")", lowerName))
 	if s.IsCacheMode {
 		buf.WriteString("\n\t\tif err = m.QueryRowNoCacheCtx(ctx, &total, queryCount, agrsCount...); err != nil {\n\t\t\treturn\n\t\t}")
 	} else {
