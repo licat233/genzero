@@ -112,7 +112,7 @@ func (s FindList) thanString(buf *bytes.Buffer) {
 		} else if field.Type == "string" {
 			condition = fieldString + " != \"\""
 		} else if field.Type == "time.Time" {
-			condition = fmt.Sprintf("!%s.IsZero() && !%s.Equal(time.Unix(0, 0))", fieldString, fieldString)
+			condition = fmt.Sprintf("!%s.Before(time.Unix(0, 0))", fieldString)
 		} else {
 			tools.Warning("unknow column type: %s-%s-%s", s.Table.Name, field.Name, field.Type)
 			continue

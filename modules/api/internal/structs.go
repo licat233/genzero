@@ -99,7 +99,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 			field.TagOpt += ",optional"
 			switch field.Typ {
 			case "int64":
-				if strings.Contains(field.TagOpt, "Time") {
+				if tools.IsTimeTypeField(field.Name) {
 					field.TagOpt += ",default=0"
 				} else {
 					field.TagOpt += ",default=-1"

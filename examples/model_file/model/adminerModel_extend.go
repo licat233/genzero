@@ -115,7 +115,7 @@ func (m *defaultAdminerModel) FindList(ctx context.Context, pageSize, page int64
 		if adminer.LoginCount >= 0 {
 			sq = sq.Where("`login_count` = ?", adminer.LoginCount)
 		}
-		if !adminer.LastLogin.IsZero() && !adminer.LastLogin.Equal(time.Unix(0, 0)) {
+		if !adminer.LastLogin.Before(time.Unix(0, 0)) {
 			sq = sq.Where("`last_login` = ?", adminer.LastLogin.Format("2006-01-02 15:04:05"))
 		}
 	}

@@ -88,7 +88,7 @@ func (m *defaultJwtBlacklistModel) FindList(ctx context.Context, pageSize, page 
 		if jwtBlacklist.Ip != "" {
 			sq = sq.Where("`ip` = ?", jwtBlacklist.Ip)
 		}
-		if !jwtBlacklist.ExpireAt.IsZero() && !jwtBlacklist.ExpireAt.Equal(time.Unix(0, 0)) {
+		if !jwtBlacklist.ExpireAt.Before(time.Unix(0, 0)) {
 			sq = sq.Where("`expire_at` = ?", jwtBlacklist.ExpireAt.Format("2006-01-02 15:04:05"))
 		}
 	}

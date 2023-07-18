@@ -535,3 +535,19 @@ func PickGoPkgName(line string) string {
 	}
 	return ""
 }
+
+func IsTimeTypeField(field string) bool {
+	field = strings.TrimSpace(field)
+	parts := []string{
+		"Time",
+		"_time",
+		"At",
+		"_at",
+	}
+	for i := range parts {
+		if strings.HasSuffix(field, parts[i]) {
+			return true
+		}
+	}
+	return false
+}
