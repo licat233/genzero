@@ -2,6 +2,8 @@ package global
 
 import (
 	"errors"
+	"fmt"
+	"path/filepath"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/sql"
@@ -13,7 +15,12 @@ func InitSchema() (err error) {
 	sql.InitConfig()
 	//优先使用ddl模式
 	if config.C.DB.Src != "" {
-		Schema, err = sql.ParseSqlFile(config.C.DB.Src)
+		absPath, e := filepath.Abs(config.C.DB.Src)
+		if e != nil {
+			err = fmt.Errorf("无法获取绝对路径:%s", e)
+			return
+		}
+		Schema, err = sql.ParseSqlFile(absPath)
 		return
 	}
 	if config.C.DB.DSN != "" {

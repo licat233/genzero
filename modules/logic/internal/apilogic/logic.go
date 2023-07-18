@@ -210,11 +210,14 @@ func (l *Logic) Put() (err error) {
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: req.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
 	l.ConveFields = conveFieldsBuf.String()
+	l.ConveFields = strings.TrimSuffix(l.ConveFields, "\n")
 
 	var logicContentTpl string
 	if l.UseRpc {
 		logicContentTpl = `in := &{{.RpcGoPkgName}}.Put{{.CamelName}}Req{
-			{{.ConveFields}}
+			Adminer: &admin_pb.Adminer{
+				{{.ConveFields}}
+			},
 		}
 		if _, err := l.svcCtx.{{.RpcSvcName}}.Put{{.CamelName}}(l.ctx, in); err != nil {
 			//若rpc的错误已经包装过了，无需再处理，直接返回即可

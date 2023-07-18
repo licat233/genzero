@@ -152,20 +152,17 @@ func (l *Logic) Put() (err error) {
 		return nil
 	}
 
-	var conveFieldsBuf bytes.Buffer
-	for _, field := range l.PutFields() {
-		if field.Type == "time.Time" {
-			conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(in.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
-			continue
-		}
-		conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
-	}
-	l.ConveFields = conveFieldsBuf.String()
+	// var conveFieldsBuf bytes.Buffer
+	// for _, field := range l.PutFields() {
+	// 	if field.Type == "time.Time" {
+	// 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(in.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+	// 		continue
+	// 	}
+	// 	conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+	// }
+	// l.ConveFields = conveFieldsBuf.String()
 
-	logicContentTpl := `data := &model.{{.CamelName}}{
-		{{.ConveFields}}
-	}
-
+	logicContentTpl := `data := dataconv.Pb{{.CamelName}}ToMd{{.CamelName}}(in.{{.CamelName}})
 	if err := l.svcCtx.{{.ModelName}}.Update(l.ctx, data); err != nil {
 		l.Logger.Error(err)
 		return nil, errorx.IntRpcErr(err)

@@ -10,8 +10,10 @@ current_path=$(
 
 cd "$current_path" || exit
 
-# if ! ./goctl.sh; then
-#     exit 1
-# fi
+# ./genzero.sh
+
+if ! ./goctl.sh; then
+    exit 1
+fi
 
 ./genzero.sh

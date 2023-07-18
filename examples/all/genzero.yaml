@@ -3,7 +3,7 @@ api:
     ignoreColumns: []
     ignoreTables:
         - jwt_blacklist
-    jsonStyle: gen_zero
+    jsonStyle: genZero
     jwt: ""
     middleware: []
     multiple: true
@@ -16,7 +16,7 @@ database:
     dsn: ""
     ignoreColumns: []
     ignoreTables: []
-    src: admin.sql
+    src: ../sql/admin.sql
     tables: []
 logic:
     api:
@@ -26,21 +26,21 @@ logic:
         status: true
         style: genZero
         tables: []
-        useRpc: false
+        useRpc: true
     rpc:
         dir: rpc/internal/logic
         fileStyle: genZero
         ignoreTables: []
         multiple: true
-        status: false
+        status: true
         style: genZero
         tables: []
-    status: false
+    status: true
 model:
     dir: model
     ignoreColumns: []
     ignoreTables: []
-    status: false
+    status: true
     tables: []
 proto:
     dir: ""
@@ -51,6 +51,6 @@ proto:
     multiple: true
     package: ""
     serviceName: admin
-    status: false
+    status: true
     style: genZero
     tables: []

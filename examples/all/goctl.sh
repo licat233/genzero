@@ -10,19 +10,19 @@ current_path=$(
 
 cd "$current_path" || exit
 
-if [ -d model ]; then
-    rm -rf model/*
-fi
+# if [ -d model ]; then
+#     rm -rf model/*
+# fi
 
-if [ -d api ]; then
-    rm -rf api/*
-fi
+# if [ -d api ]; then
+#     rm -rf api/*
+# fi
 
-if [ -d rpc ]; then
-    rm -rf rpc/*
-fi
+# if [ -d rpc ]; then
+#     rm -rf rpc/*
+# fi
 
-if ! goctl model mysql ddl --src "../sql/admin.sql" -dir="model" --style goZero -cache=false; then
+if ! goctl model mysql ddl --src="../sql/admin.sql" --dir="model" --style="goZero" --cache=false; then
     exit 1
 fi
 

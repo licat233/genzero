@@ -14,8 +14,8 @@ if [ ! -f "../genzero" ]; then
     ../build.sh
 fi
 
-rm -f ./*.api
-rm -f ./*.proto
+# rm -f ./*.api
+# rm -f ./*.proto
 
 # ../build.sh
 

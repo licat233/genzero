@@ -349,7 +349,7 @@ func (s *PbModule) initMessages() (err error) {
 	}
 
 	s.Messages = messages
-	sort.Sort(s.Messages)
+	// sort.Sort(s.Messages)
 	return
 }
 

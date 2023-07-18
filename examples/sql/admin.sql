@@ -23,25 +23,28 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `adminer`;
 CREATE TABLE `adminer` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '表主键',
-  `uuid` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '唯一识别码',
-  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员名称',
+  `uuid` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'UUID',
+  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '管理员名称',
   `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '头像',
-  `passport` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '账号',
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码',
+  `access` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '身份',
+  `passport` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '账号',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '密码',
   `email` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '邮箱',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '账号状态，是否可用',
   `is_super_admin` tinyint NOT NULL DEFAULT '0' COMMENT '是否为超级管理员',
+  `company_id` int NOT NULL DEFAULT '0' COMMENT '公司id',
+  `project_id` int NOT NULL DEFAULT '0' COMMENT '项目id',
   `login_count` int NOT NULL DEFAULT '0' COMMENT '登录次数',
-  `last_login` datetime NOT NULL DEFAULT '2005-01-02 15:04:05' COMMENT '最后一次登录时间',
+  `last_login_at` datetime NOT NULL DEFAULT '2005-01-02 15:04:05' COMMENT '最后一次登录时间',
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否已被删除',
-  `delete_at` datetime NOT NULL DEFAULT '2005-01-02 15:04:05' COMMENT `删除时间`,
+  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否已删除',
   PRIMARY KEY (`id`),
   KEY `uuid` (`uuid`),
-  KEY `passport` (`passport`),
-  UNIQUE ("passport")
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员';
+  KEY `company_id` (`company_id`),
+  KEY `project_id` (`project_id`),
+  KEY `passport` (`passport`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员';
 
 -- ----------------------------
 -- Table structure for jwt_blacklist

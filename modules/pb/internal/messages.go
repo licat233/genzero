@@ -62,9 +62,21 @@ func (ms *Message) GenCommonMessages() []*Message {
 		// NewMessageField(tools.ToCamel(ms.Name), ms.Name, 1, ms.Comment+"信息"),
 	}
 	//put req
-	putReqMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns) //PutReqMessage
-	putReqMessage.Name = "Put" + tools.ToCamel(ms.Name) + "Req"
-	putReqMessage.Comment = "更新" + ms.Comment + "请求"
+	// putReqMessage := ms.Copy().IgnoreMessageFields(config.C.Pb.IgnoreColumns) //PutReqMessage
+	putReqMessage := NewMessage("Put"+tools.ToCamel(ms.Name)+"Req", "更新"+ms.Comment+"请求", []*MessageField{{
+		Typ:     tools.ToCamel(ms.Name),
+		Name:    tools.ToSnake(ms.Name),
+		Tag:     1,
+		Comment: ms.Comment,
+	}}) //PutReqMessage
+	// putReqMessage.Name = "Put" + tools.ToCamel(ms.Name) + "Req"
+	// putReqMessage.Comment = "更新" + ms.Comment + "请求"
+	// putReqMessage.Fields = []*MessageField{{
+	// 	Typ:     tools.ToCamel(ms.Name),
+	// 	Name:    tools.ToSnake(ms.Name),
+	// 	Tag:     1,
+	// 	Comment: ms.Comment,
+	// }}
 	//put resp
 	putRespMessage := ms.Copy() //PutRespMessage
 	putRespMessage.Name = "Put" + tools.ToCamel(ms.Name) + "Resp"
