@@ -215,7 +215,7 @@ func (l *Logic) Put() (err error) {
 	var logicContentTpl string
 	if l.UseRpc {
 		logicContentTpl = `in := &{{.RpcGoPkgName}}.Put{{.CamelName}}Req{
-			Adminer: &admin_pb.Adminer{
+			Adminer: &{{.RpcGoPkgName}}.Adminer{
 				{{.ConveFields}}
 			},
 		}
