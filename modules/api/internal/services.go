@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"path"
+	"path/filepath"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/tools"
@@ -19,7 +19,7 @@ func NewService(name, comment string) *Service {
 		Name:    name,
 		Comment: comment,
 		Apis:    ApiCollection{},
-		Server:  NewServer(name, config.C.Api.Jwt, tools.ToLowerCamel(name), config.C.Api.Middleware, path.Join(config.C.Api.Prefix, tools.ToLowerCamel(name))),
+		Server:  NewServer(name, config.C.Api.Jwt, tools.ToLowerCamel(name), config.C.Api.Middleware, filepath.Join(config.C.Api.Prefix, tools.ToLowerCamel(name))),
 	}
 	s.initBaseApiServiceItems()
 	return s

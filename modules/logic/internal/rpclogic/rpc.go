@@ -2,7 +2,7 @@ package rpclogic
 
 import (
 	"bytes"
-	"path"
+	"path/filepath"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/global"
@@ -65,7 +65,7 @@ func (l *RpcLogic) Run() (err error) {
 	}
 	buf.WriteString(ListReqParams(rpcGoPkgName))
 
-	filename := path.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
+	filename := filepath.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
 	err = tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err
@@ -80,11 +80,14 @@ func (l *RpcLogic) Run() (err error) {
 		return err
 	}
 
-	if l.Multiple {
-		filename = path.Join(config.C.Logic.Rpc.Dir, "base")
-	} else {
-		filename = config.C.Logic.Rpc.Dir
-	}
+	// if l.Multiple {
+	// 	filename = filepath.Join(config.C.Logic.Rpc.Dir, "base")
+	// } else {
+	// 	filename = config.C.Logic.Rpc.Dir
+	// }
+
+	filename = config.C.Logic.Rpc.Dir
+	filename, _ = filepath.Abs(filename)
 
 	if err := tools.FormatGoFile(filename); err != nil {
 		tools.Error("[logic rpc] format go content error\n in file: %s\n error: %v", filename, err)

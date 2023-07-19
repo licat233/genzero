@@ -169,7 +169,7 @@ func FileRename(oldFilepath, newname string) string {
 	// filetype := extension[1:]
 
 	newFilename := fmt.Sprintf("%s%s", newname, extension)
-	return path.Join(directory, newFilename)
+	return filepath.Join(directory, newFilename)
 }
 
 func ToCamel(s string) string {

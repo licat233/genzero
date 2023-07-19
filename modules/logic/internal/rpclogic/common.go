@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -33,9 +33,9 @@ func (l *Logic) getLogicFilename(method string, supply string) string {
 		filename = tools.ToLowerCamel(filename)
 	}
 	if l.Multiple {
-		filename = path.Join(l.Dir, "base", filename)
+		filename = filepath.Join(l.Dir, "base", filename)
 	} else {
-		filename = path.Join(l.Dir, filename)
+		filename = filepath.Join(l.Dir, filename)
 	}
 	return filename + ".go"
 }

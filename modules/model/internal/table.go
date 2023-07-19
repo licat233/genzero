@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/licat233/genzero/config"
@@ -37,7 +37,7 @@ func NewTableModel(t *sql.Table) *TableModel {
 		ProjectName:   config.ProjectName,
 		TableName:     t.Name,
 		InterfaceName: fmt.Sprintf("%s_model", lowerName),
-		OutFileName:   path.Join(config.C.Model.Dir, fmt.Sprintf("%sModel_extend.go", lowerName)),
+		OutFileName:   filepath.Join(config.C.Model.Dir, fmt.Sprintf("%sModel_extend.go", lowerName)),
 		TplContent:    conf.TplContent,
 		IsCacheMode:   false,
 		table:         t,
@@ -199,7 +199,7 @@ func (t *TableModel) ExtendOriginalInterface() error {
 
 func IsCacheMode(tableName string) (bool, error) {
 	genFilename := fmt.Sprintf("%sModel_gen.go", tools.ToLowerCamel(tableName))
-	filePath := path.Join(config.C.Model.Dir, genFilename)
+	filePath := filepath.Join(config.C.Model.Dir, genFilename)
 	exists, err := tools.PathExists(filePath)
 	if err != nil {
 		return false, err

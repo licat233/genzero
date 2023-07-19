@@ -2,7 +2,7 @@ package apilogic
 
 import (
 	"bytes"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/licat233/genzero/config"
@@ -65,7 +65,7 @@ func (l *ApiLogic) Run() error {
 			}
 		}
 	}
-	filename := path.Join(config.C.Logic.Api.Dir, "dataconv/dataconv.go")
+	filename := filepath.Join(config.C.Logic.Api.Dir, "dataconv/dataconv.go")
 	err := tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err

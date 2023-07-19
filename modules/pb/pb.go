@@ -3,7 +3,7 @@ package pb
 import (
 	"bytes"
 	"fmt"
-	"path"
+	"path/filepath"
 	"sort"
 	"text/template"
 
@@ -64,7 +64,7 @@ type PbModule struct {
 
 func getOutFilename(name string) string {
 	filename := utils.ConvertStringStyle(config.C.Pb.FileStyle, name)
-	return path.Join(config.C.Pb.Dir, filename+".proto")
+	return filepath.Join(config.C.Pb.Dir, filename+".proto")
 }
 
 func New() *PbModule {

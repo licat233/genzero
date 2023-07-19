@@ -2,7 +2,7 @@ package api
 
 import (
 	"bytes"
-	"path"
+	"path/filepath"
 	"text/template"
 
 	"github.com/licat233/genzero/config"
@@ -54,7 +54,7 @@ type ApiModule struct {
 }
 
 func getOutFilename(name string) string {
-	return path.Join(config.C.Api.Dir, tools.ToLowerCamel(name)+".api")
+	return filepath.Join(config.C.Api.Dir, tools.ToLowerCamel(name)+".api")
 }
 
 func New() *ApiModule {

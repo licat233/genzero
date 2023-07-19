@@ -3,7 +3,7 @@ package apilogic
 import (
 	"bytes"
 	"fmt"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/licat233/genzero/config"
@@ -67,7 +67,7 @@ func (l *Logic) Run() (err error) {
 	if err = l.Enums(); err != nil {
 		return err
 	}
-	dirname := path.Join(l.Dir, utils.ConvertStringStyle(config.C.Logic.Api.FileStyle, l.CamelName))
+	dirname := filepath.Join(l.Dir, utils.ConvertStringStyle(config.C.Logic.Api.FileStyle, l.CamelName))
 	if err := tools.FormatGoFile(dirname); err != nil {
 		tools.Error("[logic api] format go content error, in dir: %s", dirname)
 	}
