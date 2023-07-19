@@ -35,9 +35,10 @@ func New() *RpcLogic {
 
 func (l *RpcLogic) Run() (err error) {
 	var buf bytes.Buffer
-	var goPkgName string
+	// var goPkgName string
 	buf.WriteString("package dataconv\n\n")
 	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
+	rpcGoPkgName := tools.PickGoPkgName(config.C.Pb.GoPackage)
 	for _, logic := range l.Logics {
 		localLogic := logic // 为每个任务创建一个本地变量
 		tasks = append(tasks, func() error {
@@ -46,9 +47,9 @@ func (l *RpcLogic) Run() (err error) {
 		// if err := logic.Run(); err != nil {
 		// 	return err
 		// }
-		if goPkgName == "" {
-			goPkgName = logic.RpcGoPkgName
-		}
+		// if goPkgName == "" {
+		// 	goPkgName = logic.RpcGoPkgName
+		// }
 		buf.WriteString(logic.PbToMd())
 		buf.WriteString(logic.MdToPb())
 		if s, err := logic.PbList2MdList(); err != nil {
@@ -62,7 +63,7 @@ func (l *RpcLogic) Run() (err error) {
 			buf.WriteString(s)
 		}
 	}
-	buf.WriteString(ListReqParams(goPkgName))
+	buf.WriteString(ListReqParams(rpcGoPkgName))
 
 	filename := path.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
 	err = tools.WriteFile(filename, buf.String())
