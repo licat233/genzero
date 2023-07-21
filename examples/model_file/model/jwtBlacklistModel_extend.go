@@ -230,8 +230,8 @@ func (m *defaultJwtBlacklistModel) FindsByIds(ctx context.Context, ids []int64) 
 	for _, v := range ids {
 		strs = append(strs, strconv.FormatInt(v, 10))
 	}
-	query := fmt.Sprintf("select %s from %s where `id` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `id` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -245,8 +245,8 @@ func (m *defaultJwtBlacklistModel) FindsByAdminerIds(ctx context.Context, admine
 	for _, v := range adminerIds {
 		strs = append(strs, strconv.FormatInt(v, 10))
 	}
-	query := fmt.Sprintf("select %s from %s where `adminer_id` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `adminer_id` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -260,8 +260,8 @@ func (m *defaultJwtBlacklistModel) FindsByUuids(ctx context.Context, uuids []str
 	for _, v := range uuids {
 		strs = append(strs, v)
 	}
-	query := fmt.Sprintf("select %s from %s where `uuid` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `uuid` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -275,8 +275,8 @@ func (m *defaultJwtBlacklistModel) FindsByTokens(ctx context.Context, tokens []s
 	for _, v := range tokens {
 		strs = append(strs, v)
 	}
-	query := fmt.Sprintf("select %s from %s where `token` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `token` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -290,8 +290,8 @@ func (m *defaultJwtBlacklistModel) FindsByPlatforms(ctx context.Context, platfor
 	for _, v := range platforms {
 		strs = append(strs, v)
 	}
-	query := fmt.Sprintf("select %s from %s where `platform` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `platform` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -305,8 +305,8 @@ func (m *defaultJwtBlacklistModel) FindsByIps(ctx context.Context, ips []string)
 	for _, v := range ips {
 		strs = append(strs, v)
 	}
-	query := fmt.Sprintf("select %s from %s where `ip` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `ip` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
@@ -320,8 +320,8 @@ func (m *defaultJwtBlacklistModel) FindsByExpireAts(ctx context.Context, expireA
 	for _, v := range expireAts {
 		strs = append(strs, v.Format("2006-01-02 15:04:05"))
 	}
-	query := fmt.Sprintf("select %s from %s where `expire_at` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
+	query := fmt.Sprintf("select %s from %s where `expire_at` in (?)", jwtBlacklistRows, m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }

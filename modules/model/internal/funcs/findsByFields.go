@@ -92,13 +92,14 @@ func (s *findsByFields) String() string {
 		buf.WriteString("strs = append(strs, fmt.Sprint(v))\n")
 	}
 	buf.WriteString("}\n")
+	buf.WriteString("agr := strings.Join(strs, \",\")\n")
+
 	if delField := s.Table.GetIsDeletedField(); delField != nil {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?) and `" + delField.Name + "` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	} else {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?)\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
 
-	buf.WriteString("agr := strings.Join(strs, \",\")\n")
 	if s.IsCacheMode {
 		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)\n")
 	} else {
