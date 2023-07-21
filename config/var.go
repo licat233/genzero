@@ -10,7 +10,7 @@ var (
 
 const (
 	// CurrentVersion 当前项目版本
-	CurrentVersion = "v1.1.4-alpha.6"
+	CurrentVersion = "v1.1.4-alpha.7"
 
 	// ProjectName 当前项目名称
 	ProjectName = "genzero"

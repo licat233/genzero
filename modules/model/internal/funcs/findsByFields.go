@@ -77,22 +77,26 @@ func (s *findsByFields) String() string {
 	buf.WriteString(fmt.Sprintf("if len(%s) == 0 {\n", s.reqFieldName))
 	buf.WriteString("return resp, nil\n")
 	buf.WriteString("}\n")
-	buf.WriteString("strs := []string{}\n")
-	buf.WriteString("for _, v := range " + s.reqFieldName + " {\n")
-	switch s.field.Type {
-	case "time.Time":
-		buf.WriteString("strs = append(strs, v.Format(\"2006-01-02 15:04:05\"))\n")
-	case "string":
-		buf.WriteString("strs = append(strs, v)\n")
-	case "int64":
-		buf.WriteString("strs = append(strs, strconv.FormatInt(v,10))\n")
-	case "int":
-		buf.WriteString("strs = append(strs, strconv.Itoa(v))\n")
-	default:
-		buf.WriteString("strs = append(strs, fmt.Sprint(v))\n")
+	if s.field.Type != "string" {
+		buf.WriteString("strs := []string{}\n")
+		buf.WriteString("for _, v := range " + s.reqFieldName + " {\n")
+		switch s.field.Type {
+		case "time.Time":
+			buf.WriteString("strs = append(strs, v.Format(\"2006-01-02 15:04:05\"))\n")
+		case "string":
+			buf.WriteString("strs = append(strs, v)\n")
+		case "int64":
+			buf.WriteString("strs = append(strs, strconv.FormatInt(v,10))\n")
+		case "int":
+			buf.WriteString("strs = append(strs, strconv.Itoa(v))\n")
+		default:
+			buf.WriteString("strs = append(strs, fmt.Sprint(v))\n")
+		}
+		buf.WriteString("}\n")
+		buf.WriteString("agr := strings.Join(strs, \",\")\n")
+	} else {
+		buf.WriteString("agr := strings.Join(" + s.reqFieldName + ", \",\")\n")
 	}
-	buf.WriteString("}\n")
-	buf.WriteString("agr := strings.Join(strs, \",\")\n")
 
 	if delField := s.Table.GetIsDeletedField(); delField != nil {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?) and `" + delField.Name + "` = '0' \", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
