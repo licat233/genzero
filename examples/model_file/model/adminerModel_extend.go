@@ -5,6 +5,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -371,7 +372,12 @@ func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*A
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, ids)
+	strs := []string{}
+	for _, v := range ids {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -381,7 +387,12 @@ func (m *defaultAdminerModel) FindsByUuids(ctx context.Context, uuids []string) 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `uuid` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, uuids)
+	strs := []string{}
+	for _, v := range uuids {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -391,7 +402,12 @@ func (m *defaultAdminerModel) FindsByNames(ctx context.Context, names []string) 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `name` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, names)
+	strs := []string{}
+	for _, v := range names {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -401,7 +417,12 @@ func (m *defaultAdminerModel) FindsByAvatars(ctx context.Context, avatars []stri
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `avatar` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, avatars)
+	strs := []string{}
+	for _, v := range avatars {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -411,7 +432,12 @@ func (m *defaultAdminerModel) FindsByAccesslist(ctx context.Context, accesslist 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `access` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, accesslist)
+	strs := []string{}
+	for _, v := range accesslist {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -421,7 +447,12 @@ func (m *defaultAdminerModel) FindsByPassports(ctx context.Context, passports []
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `passport` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, passports)
+	strs := []string{}
+	for _, v := range passports {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -431,7 +462,12 @@ func (m *defaultAdminerModel) FindsByPasswords(ctx context.Context, passwords []
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `password` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, passwords)
+	strs := []string{}
+	for _, v := range passwords {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -441,7 +477,12 @@ func (m *defaultAdminerModel) FindsByEmails(ctx context.Context, emails []string
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `email` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, emails)
+	strs := []string{}
+	for _, v := range emails {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -451,7 +492,12 @@ func (m *defaultAdminerModel) FindsByStatuslist(ctx context.Context, statuslist 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `status` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, statuslist)
+	strs := []string{}
+	for _, v := range statuslist {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -461,7 +507,12 @@ func (m *defaultAdminerModel) FindsByIsSuperAdmins(ctx context.Context, isSuperA
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `is_super_admin` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, isSuperAdmins)
+	strs := []string{}
+	for _, v := range isSuperAdmins {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -471,7 +522,12 @@ func (m *defaultAdminerModel) FindsByCompanyIds(ctx context.Context, companyIds 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `company_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, companyIds)
+	strs := []string{}
+	for _, v := range companyIds {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -481,7 +537,12 @@ func (m *defaultAdminerModel) FindsByProjectIds(ctx context.Context, projectIds 
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `project_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, projectIds)
+	strs := []string{}
+	for _, v := range projectIds {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -491,7 +552,12 @@ func (m *defaultAdminerModel) FindsByLoginCounts(ctx context.Context, loginCount
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `login_count` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, loginCounts)
+	strs := []string{}
+	for _, v := range loginCounts {
+		strs = append(strs, fmt.Sprintf("'%v'", v))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 
@@ -501,7 +567,12 @@ func (m *defaultAdminerModel) FindsByLastLoginAts(ctx context.Context, lastLogin
 		return resp, nil
 	}
 	query := fmt.Sprintf("select %s from %s where `last_login_at` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, lastLoginAts)
+	strs := []string{}
+	for _, v := range lastLoginAts {
+		strs = append(strs, fmt.Sprintf("'%v'", v.Format("2006-01-02 15:04:05")))
+	}
+	agr := strings.Join(strs, ",")
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
 }
 

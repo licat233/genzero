@@ -82,11 +82,21 @@ func (s *findsByFields) String() string {
 	} else {
 		buf.WriteString("query := fmt.Sprintf(\"select %s from %s where `" + s.field.Name + "` in (?)\", " + tools.ToLowerCamel(s.Table.Name) + "Rows, m.table)\n")
 	}
+	buf.WriteString("strs := []string{}\n")
+	buf.WriteString("for _, v := range " + s.reqFieldName + " {\n")
+	if s.field.Type == "time.Time" {
+		buf.WriteString("strs = append(strs, fmt.Sprintf(\"'%v'\", v.Format(\"2006-01-02 15:04:05\")))\n")
+	} else {
+		buf.WriteString("strs = append(strs, fmt.Sprintf(\"'%v'\", v))\n")
+	}
+
+	buf.WriteString("}\n")
+	buf.WriteString("agr := strings.Join(strs, \",\")\n")
 
 	if s.IsCacheMode {
-		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, " + s.reqFieldName + ")\n")
+		buf.WriteString("err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)\n")
 	} else {
-		buf.WriteString("err := m.conn.QueryRowsCtx(ctx, &resp, query, " + s.reqFieldName + ")\n")
+		buf.WriteString("err := m.conn.QueryRowsCtx(ctx, &resp, query, agr)\n")
 	}
 	buf.WriteString("return resp, err")
 	buf.WriteString("\n}\n")
