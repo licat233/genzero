@@ -1,11 +1,4 @@
 #!/bin/bash
-###
-# @Author: licat
-# @Date: 2023-01-11 15:40:07
- # @LastEditors: licat
- # @LastEditTime: 2023-02-18 10:16:41
-# @Description: licat233@gmail.com
-###
 
 #进入monitor mode
 set -m
@@ -21,7 +14,7 @@ if [ ! -f "../genzero" ]; then
     ../build.sh
 fi
 
-../build.sh
+# ../build.sh
 
 # rm -rf ./model
 

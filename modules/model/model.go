@@ -57,13 +57,17 @@ func (m *ModelModule) Generate() (err error) {
 		return err
 	}
 
-	err = tools.ExecGoimports(config.C.Model.Dir)
-	if err != nil {
-		return err
-	}
+	// err = tools.ExecGoimports(config.C.Model.Dir)
+	// if err != nil {
+	// 	return err
+	// }
 	_, err = tools.ExecShell("go get -u github.com/Masterminds/squirrel")
 	if err != nil {
 		tools.Warning("command `go get -u github.com/Masterminds/squirrel` failed: %v", err)
+	}
+	err = tools.FormatGoFile(config.C.Model.Dir)
+	if err != nil {
+		tools.Error("[model] format go content error, in dir: %s", config.C.Model.Dir)
 	}
 	return nil
 }
