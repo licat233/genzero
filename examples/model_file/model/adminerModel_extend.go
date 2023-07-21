@@ -5,6 +5,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -371,11 +372,11 @@ func (m *defaultAdminerModel) FindsByIds(ctx context.Context, ids []int64) ([]*A
 	if len(ids) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range ids {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -386,11 +387,11 @@ func (m *defaultAdminerModel) FindsByUuids(ctx context.Context, uuids []string) 
 	if len(uuids) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `uuid` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range uuids {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `uuid` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -401,11 +402,11 @@ func (m *defaultAdminerModel) FindsByNames(ctx context.Context, names []string) 
 	if len(names) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `name` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range names {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `name` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -416,11 +417,11 @@ func (m *defaultAdminerModel) FindsByAvatars(ctx context.Context, avatars []stri
 	if len(avatars) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `avatar` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range avatars {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `avatar` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -431,11 +432,11 @@ func (m *defaultAdminerModel) FindsByAccesslist(ctx context.Context, accesslist 
 	if len(accesslist) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `access` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range accesslist {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `access` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -446,11 +447,11 @@ func (m *defaultAdminerModel) FindsByPassports(ctx context.Context, passports []
 	if len(passports) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `passport` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range passports {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `passport` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -461,11 +462,11 @@ func (m *defaultAdminerModel) FindsByPasswords(ctx context.Context, passwords []
 	if len(passwords) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `password` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range passwords {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `password` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -476,11 +477,11 @@ func (m *defaultAdminerModel) FindsByEmails(ctx context.Context, emails []string
 	if len(emails) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `email` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range emails {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `email` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -491,11 +492,11 @@ func (m *defaultAdminerModel) FindsByStatuslist(ctx context.Context, statuslist 
 	if len(statuslist) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `status` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range statuslist {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `status` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -506,11 +507,11 @@ func (m *defaultAdminerModel) FindsByIsSuperAdmins(ctx context.Context, isSuperA
 	if len(isSuperAdmins) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `is_super_admin` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range isSuperAdmins {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `is_super_admin` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -521,11 +522,11 @@ func (m *defaultAdminerModel) FindsByCompanyIds(ctx context.Context, companyIds 
 	if len(companyIds) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `company_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range companyIds {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `company_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -536,11 +537,11 @@ func (m *defaultAdminerModel) FindsByProjectIds(ctx context.Context, projectIds 
 	if len(projectIds) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `project_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range projectIds {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `project_id` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -551,11 +552,11 @@ func (m *defaultAdminerModel) FindsByLoginCounts(ctx context.Context, loginCount
 	if len(loginCounts) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `login_count` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range loginCounts {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `login_count` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -566,11 +567,11 @@ func (m *defaultAdminerModel) FindsByLastLoginAts(ctx context.Context, lastLogin
 	if len(lastLoginAts) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `last_login_at` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	strs := []string{}
 	for _, v := range lastLoginAts {
-		strs = append(strs, fmt.Sprintf("'%v'", v.Format("2006-01-02 15:04:05")))
+		strs = append(strs, v.Format("2006-01-02 15:04:05"))
 	}
+	query := fmt.Sprintf("select %s from %s where `last_login_at` in (?) and `is_deleted` = '0' ", adminerRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err

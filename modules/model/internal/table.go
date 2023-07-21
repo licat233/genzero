@@ -100,10 +100,6 @@ func (t *TableModel) Generate() error {
 	if err != nil {
 		return err
 	}
-	// err = tools.FormatGoFile(t.OutFileName)
-	// if err != nil {
-	// 	tools.Error("[model] format go content error, in file: %s", t.OutFileName)
-	// }
 	return err
 }
 

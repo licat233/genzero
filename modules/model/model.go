@@ -56,11 +56,6 @@ func (m *ModelModule) Generate() (err error) {
 	if err != nil {
 		return err
 	}
-
-	// err = tools.ExecGoimports(config.C.Model.Dir)
-	// if err != nil {
-	// 	return err
-	// }
 	_, err = tools.ExecShell("go get -u github.com/Masterminds/squirrel")
 	if err != nil {
 		tools.Warning("command `go get -u github.com/Masterminds/squirrel` failed: %v", err)

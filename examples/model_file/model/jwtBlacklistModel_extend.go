@@ -5,6 +5,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -225,11 +226,11 @@ func (m *defaultJwtBlacklistModel) FindsByIds(ctx context.Context, ids []int64) 
 	if len(ids) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `id` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range ids {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `id` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -240,11 +241,11 @@ func (m *defaultJwtBlacklistModel) FindsByAdminerIds(ctx context.Context, admine
 	if len(adminerIds) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `adminer_id` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range adminerIds {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, strconv.FormatInt(v, 10))
 	}
+	query := fmt.Sprintf("select %s from %s where `adminer_id` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -255,11 +256,11 @@ func (m *defaultJwtBlacklistModel) FindsByUuids(ctx context.Context, uuids []str
 	if len(uuids) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `uuid` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range uuids {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `uuid` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -270,11 +271,11 @@ func (m *defaultJwtBlacklistModel) FindsByTokens(ctx context.Context, tokens []s
 	if len(tokens) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `token` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range tokens {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `token` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -285,11 +286,11 @@ func (m *defaultJwtBlacklistModel) FindsByPlatforms(ctx context.Context, platfor
 	if len(platforms) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `platform` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range platforms {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `platform` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -300,11 +301,11 @@ func (m *defaultJwtBlacklistModel) FindsByIps(ctx context.Context, ips []string)
 	if len(ips) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `ip` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range ips {
-		strs = append(strs, fmt.Sprintf("'%v'", v))
+		strs = append(strs, v)
 	}
+	query := fmt.Sprintf("select %s from %s where `ip` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
@@ -315,11 +316,11 @@ func (m *defaultJwtBlacklistModel) FindsByExpireAts(ctx context.Context, expireA
 	if len(expireAts) == 0 {
 		return resp, nil
 	}
-	query := fmt.Sprintf("select %s from %s where `expire_at` in (?)", jwtBlacklistRows, m.table)
 	strs := []string{}
 	for _, v := range expireAts {
-		strs = append(strs, fmt.Sprintf("'%v'", v.Format("2006-01-02 15:04:05")))
+		strs = append(strs, v.Format("2006-01-02 15:04:05"))
 	}
+	query := fmt.Sprintf("select %s from %s where `expire_at` in (?)", jwtBlacklistRows, m.table)
 	agr := strings.Join(strs, ",")
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, agr)
 	return resp, err
