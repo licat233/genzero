@@ -22,6 +22,8 @@ type (
 
 // NewJwtBlacklistModel returns a model for the database table.
 func NewJwtBlacklistModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) JwtBlacklistModel {
+	cacheJwtBlacklistIdPrefix = "cache:admin:jwtBlacklist:id:" // modifying cache id prefix by genzero
+	cacheJwtBlacklistIdPrefix = "cache:admin:jwtBlacklist:id:" // modifying cache id prefix by genzero
 	return &customJwtBlacklistModel{
 		defaultJwtBlacklistModel: newJwtBlacklistModel(conn, c, opts...),
 	}

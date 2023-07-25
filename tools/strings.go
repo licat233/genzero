@@ -50,3 +50,17 @@ func ReplaceFuncResp(str string, repl string) string {
 	res := strings.Replace(str, resp, repl, -1)
 	return res
 }
+
+// 从DSN字符串中提取数据库名称
+func ExtractDatabaseNameFromDSN(dsn string) string {
+	// 分割DSN字符串，以"/"作为分隔符
+	parts := strings.Split(dsn, "/")
+	if len(parts) < 2 {
+		return ""
+	}
+
+	// 获取最后一个分割部分，并去除可能出现的查询参数
+	dbPart := strings.Split(parts[len(parts)-1], "?")[0]
+
+	return strings.TrimSpace(dbPart)
+}

@@ -145,20 +145,35 @@ func (t *TableModel) ExtendOriginalInterface() error {
 	defer file.Close()
 
 	table := tools.ToLowerCamel(t.TableName)
-	findLine := fmt.Sprintf("%sModel", table)
-	insertLine := fmt.Sprintf("%s // extended interface by genzero", t.InterfaceName)
+	interfaceMark := fmt.Sprintf("%sModel", table)
+	interfaceInsertLine := fmt.Sprintf("%s // extended interface by genzero", t.InterfaceName)
+	cachePrefixMark1 := fmt.Sprintf("cache%sIdPrefix", tools.ToCamel(table))
+	cachePrefixMark2 := fmt.Sprintf("&custom%sModel{", tools.ToCamel(table))
+	cachePrefixInsertLine := fmt.Sprintf("%s = \"cache:%s:%s:id:\"  // modifying cache id prefix by genzero", cachePrefixMark1, tools.ToLowerCamel(config.DatabaseName), table)
 
 	// 使用bufio.Scanner获取文件中每一行的内容
 	scanner := bufio.NewScanner(file)
 
-	// 读取每行内容并进行修改
-	var modified = false
+	//修改接口
+	var interfaceModified = false
+	//修改cache前缀
+	var prefixModified = false
 	var newContent = new(bytes.Buffer)
+	// 读取每行内容并进行修改
 	for scanner.Scan() {
 		line := scanner.Text()
-		if !modified && strings.TrimSpace(line) == findLine {
-			modified = true
-			line = fmt.Sprintf("%s // extended interface by gozero\n\t\t%s", line, insertLine)
+		lineTemp := strings.TrimSpace(line)
+		if !interfaceModified && lineTemp == interfaceMark {
+			interfaceModified = true
+			line = fmt.Sprintf("%s // extended interface by gozero\n\t\t%s", line, interfaceInsertLine)
+		} else if t.IsCacheMode && !prefixModified {
+			if strings.HasPrefix(lineTemp, cachePrefixMark1) {
+				//表示已经存在，修改过
+				prefixModified = true
+			} else if strings.HasSuffix(lineTemp, cachePrefixMark2) {
+				prefixModified = true
+				line = fmt.Sprintf("\t%s\n%s", cachePrefixInsertLine, line)
+			}
 		}
 		newContent.WriteString(line + "\n")
 	}
@@ -168,7 +183,7 @@ func (t *TableModel) ExtendOriginalInterface() error {
 		return err
 	}
 
-	if !modified {
+	if !interfaceModified && !prefixModified {
 		return nil
 	}
 

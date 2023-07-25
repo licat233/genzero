@@ -19,6 +19,12 @@ func (c *DatabaseConfig) Validate() error {
 	if c.DSN == "" && c.Src == "" {
 		return errors.New("database dsn or src must be set")
 	}
+	if c.Src != "" {
+		DatabaseName = tools.GetFilename(c.Src)
+	} else if c.DSN != "" {
+		DatabaseName = tools.ExtractDatabaseNameFromDSN(c.DSN)
+	}
+	DatabaseName = tools.ToCamel(DatabaseName)
 	return nil
 }
 
@@ -30,8 +36,8 @@ type ApiConfig struct {
 	Middleware    []string `yaml:"middleware"`
 	Prefix        string   `yaml:"prefix"`
 	Multiple      bool     `yaml:"multiple"`
-	Dir           string   `yaml:"dir"` // api output directory
-	ServiceName   string   `yaml:"serviceName"`
+	Dir           string   `yaml:"dir"`           // api output directory
+	ServiceName   string   `yaml:"serviceName"`   // default value is database name
 	Tables        []string `yaml:"tables"`        // need to generate tables, default is all tables，split multiple value by ","
 	IgnoreTables  []string `yaml:"ignoreTables"`  // ignore table string, default is none，split multiple value by ","
 	IgnoreColumns []string `yaml:"ignoreColumns"` // ignore column string, default is none，split multiple value by ","
@@ -39,7 +45,11 @@ type ApiConfig struct {
 
 func (c *ApiConfig) Validate() error {
 	if c.ServiceName == "" {
-		return errors.New("serviceName must be set")
+		if DatabaseName == "" {
+			return errors.New("serviceName must be set")
+		} else {
+			c.ServiceName = DatabaseName
+		}
 	}
 	if len(c.Middleware) != 0 {
 		for i := range c.Middleware {
@@ -57,8 +67,8 @@ type PbConfig struct {
 	Package       string   `yaml:"package"`
 	GoPackage     string   `yaml:"goPackage"`
 	Multiple      bool     `yaml:"multiple"`
-	Dir           string   `yaml:"dir"` // proto output directory
-	ServiceName   string   `yaml:"serviceName"`
+	Dir           string   `yaml:"dir"`           // proto output directory
+	ServiceName   string   `yaml:"serviceName"`   // default value is database name
 	Tables        []string `yaml:"tables"`        // need to generate tables, default is all tables，split multiple value by ","
 	IgnoreTables  []string `yaml:"ignoreTables"`  // ignore table string, default is none，split multiple value by ","
 	IgnoreColumns []string `yaml:"ignoreColumns"` // ignore column string, default is none，split multiple value by ","
@@ -66,7 +76,11 @@ type PbConfig struct {
 
 func (c *PbConfig) Validate() error {
 	if c.ServiceName == "" {
-		return errors.New("serviceName must be set")
+		if DatabaseName == "" {
+			return errors.New("serviceName must be set")
+		} else {
+			c.ServiceName = DatabaseName
+		}
 	}
 	if c.Package == "" {
 		c.Package = tools.ToLowerCamel(c.ServiceName) + "_proto"
