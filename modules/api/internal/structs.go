@@ -82,7 +82,7 @@ func (st *Struct) GenCommonStructs() []*Struct {
 	getReqStruct.Name = "Get" + tools.ToCamel(st.Name) + "Req"
 	getReqStruct.Comment = "获取" + st.Comment + "请求"
 	getReqStruct.Fields = []*StructField{
-		NewStructField("Id", "int64", "json", "id", "", st.Comment+" ID"),
+		NewStructField("Id", "int64", "form", "id", "", st.Comment+" ID"),
 	}
 	res = append(res, getReqStruct)
 
