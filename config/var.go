@@ -4,14 +4,14 @@ import "strings"
 
 var (
 	UseConf      bool
-	ConfSrc      string
-	InitConfSrc  string
+	ConfSrc      string //运行时，指定的配置文件路径
+	InitConfSrc  string //初始化配置文件所在的路径
 	DatabaseName string
 )
 
 const (
 	// CurrentVersion 当前项目版本
-	CurrentVersion = "v1.1.4-beta.2"
+	CurrentVersion = "v1.1.4-beta.3"
 
 	// ProjectName 当前项目名称
 	ProjectName = "genzero"

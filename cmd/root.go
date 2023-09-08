@@ -236,12 +236,10 @@ var IsDev bool
 func init() {
 	config.C = config.New()
 
-	// startCmd.PersistentFlags().StringVar(&config.ConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
-
-	// initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
+	initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "dir", config.DefaultConfigFileName, "file location for yaml configuration")
 
 	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode, print error message")
-	rootCmd.PersistentFlags().StringVar(&config.InitConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
+	rootCmd.PersistentFlags().StringVar(&config.ConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
 
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.DSN, "dsn", "", "data source name (DSN) to use when connecting to the database")
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.Src, "src", "", "sql file to use when connecting to the database")
@@ -307,8 +305,12 @@ func init() {
 }
 
 func Initialize() error {
+	if config.ConfSrc == "." {
+		config.ConfSrc = config.DefaultConfigFileName
+		config.UseConf = true
+	}
 	if !config.UseConf {
-		config.UseConf = strings.HasSuffix(config.InitConfSrc, ".yaml") || strings.HasSuffix(config.InitConfSrc, ".yam")
+		config.UseConf = strings.HasSuffix(config.ConfSrc, ".yaml") || strings.HasSuffix(config.ConfSrc, ".yam")
 	}
 	if config.UseConf {
 		if err := config.C.ConfigureByYaml(); err != nil {
