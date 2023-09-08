@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/licat233/genzero/config"
 	"github.com/licat233/genzero/global"
@@ -179,7 +180,7 @@ var rootCmd = &cobra.Command{
 	SuggestFor: []string{},
 	Short:      "This is a tool to generate gozero service based on mysql",
 	GroupID:    "",
-	Long:       "This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\n\nGithub: https://github.com/licat233/genzero",
+	Long:       fmt.Sprintf("This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\ncurrent version: %s\nGithub: https://github.com/licat233/genzero", config.CurrentVersion),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return fmt.Errorf("%s requires at least one argument", cmd.CommandPath())
@@ -235,11 +236,12 @@ var IsDev bool
 func init() {
 	config.C = config.New()
 
-	startCmd.PersistentFlags().StringVar(&config.ConfSrc, "src", config.DefaultConfigFileName, "file location for yaml configuration")
+	// startCmd.PersistentFlags().StringVar(&config.ConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
 
-	initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "src", config.DefaultConfigFileName, "file location for yaml configuration")
+	// initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
 
 	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode, print error message")
+	rootCmd.PersistentFlags().StringVar(&config.InitConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
 
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.DSN, "dsn", "", "data source name (DSN) to use when connecting to the database")
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.Src, "src", "", "sql file to use when connecting to the database")
@@ -305,6 +307,9 @@ func init() {
 }
 
 func Initialize() error {
+	if !config.UseConf {
+		config.UseConf = strings.HasSuffix(config.InitConfSrc, ".yaml") || strings.HasSuffix(config.InitConfSrc, ".yam")
+	}
 	if config.UseConf {
 		if err := config.C.ConfigureByYaml(); err != nil {
 			return fmt.Errorf("read config faild: %v", err)

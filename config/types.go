@@ -16,13 +16,12 @@ type DatabaseConfig struct {
 }
 
 func (c *DatabaseConfig) Validate() error {
-	if c.DSN == "" && c.Src == "" {
-		return errors.New("database dsn or src must be set")
-	}
 	if c.Src != "" {
 		DatabaseName = tools.GetFilename(c.Src)
 	} else if c.DSN != "" {
 		DatabaseName = tools.ExtractDatabaseNameFromDSN(c.DSN)
+	} else {
+		return errors.New("database dsn or src must be set")
 	}
 	DatabaseName = tools.ToCamel(DatabaseName)
 	return nil
