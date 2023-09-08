@@ -65,7 +65,10 @@ var modelCmd = &cobra.Command{
 	Short: "Generate model code",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Model.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := model.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)
@@ -79,7 +82,10 @@ var apiCmd = &cobra.Command{
 	Short: "Generate .api files",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Api.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := api.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)
@@ -94,7 +100,10 @@ var pbCmd = &cobra.Command{
 	Short:   "Generate .proto files",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Pb.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := pb.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)
@@ -108,7 +117,10 @@ var logicCmd = &cobra.Command{
 	Short: "Modify logic files, this feature has not been developed yet",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Logic.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := logic.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)
@@ -122,7 +134,10 @@ var apilogicCmd = &cobra.Command{
 	Short: "Modify api logic files",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Logic.Api.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := logic.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)
@@ -136,7 +151,10 @@ var rpclogicCmd = &cobra.Command{
 	Short: "Modify rpc logic files",
 	Run: func(cmd *cobra.Command, args []string) {
 		config.C.Logic.Rpc.Status = true
-		Initialize()
+		if err := Initialize(); err != nil {
+			tools.Error("Failed to initialize: " + err.Error())
+			os.Exit(1)
+		}
 		if err := logic.New().Run(); err != nil {
 			tools.Warning(err.Error())
 			os.Exit(1)

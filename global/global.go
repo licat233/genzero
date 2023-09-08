@@ -22,11 +22,10 @@ func InitSchema() (err error) {
 		}
 		Schema, err = sql.ParseSqlFile(absPath)
 		return
-	}
-	if config.C.DB.DSN != "" {
+	} else if config.C.DB.DSN != "" {
 		Schema, err = sql.ParseSqlDsn(config.C.DB.DSN)
 		return
+	} else {
+		return errors.New("failed to connect to the database. must set dsn or src")
 	}
-
-	return errors.New("failed to connect to the database. must set dsn or src")
 }
