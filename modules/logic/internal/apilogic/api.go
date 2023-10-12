@@ -2,6 +2,7 @@ package apilogic
 
 import (
 	"bytes"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -37,6 +38,7 @@ func New() *ApiLogic {
 
 func (l *ApiLogic) Run() error {
 	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("%s\n", config.DoNotEdit))
 	buf.WriteString("package dataconv\n\n")
 	if config.C.Logic.Api.UseRpc {
 		buf.WriteString(l.commonPbToApi())
@@ -65,7 +67,7 @@ func (l *ApiLogic) Run() error {
 			}
 		}
 	}
-	filename := filepath.Join(config.C.Logic.Api.Dir, "dataconv/dataconv.go")
+	filename := filepath.Join(config.C.Logic.Api.Dir, "dataconv/dataconv_gen.go")
 	err := tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err
@@ -78,6 +80,26 @@ func (l *ApiLogic) Run() error {
 	err = tools.RunConcurrentTasks(tasks)
 	if err != nil {
 		return err
+	}
+
+	//如果没有使用rpc服务，而是单体服务，则修改svc文件，添加model字段
+	if !config.C.Logic.Api.UseRpc {
+		var tableModelsDefin []string
+		for _, t := range l.DbTables {
+			name := tools.ToCamel(t.Name)
+			tableModelsDefin = append(tableModelsDefin, fmt.Sprintf("model.%sModel", name))
+		}
+
+		svcFilePath := fmt.Sprintf("%s/../svc/serviceContext.go", config.C.Logic.Api.Dir)
+
+		err = tools.InsertFieldsToSvcFile(svcFilePath, tableModelsDefin)
+		if err != nil {
+			return err
+		}
+
+		if err := tools.FormatGoFile(svcFilePath); err != nil {
+			tools.Error("[logic api] format go content error\n in file: %s\n error: %v", svcFilePath, err)
+		}
 	}
 
 	return nil

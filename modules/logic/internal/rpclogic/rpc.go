@@ -2,6 +2,7 @@ package rpclogic
 
 import (
 	"bytes"
+	"fmt"
 	"path/filepath"
 
 	"github.com/licat233/genzero/config"
@@ -26,6 +27,7 @@ func New() *RpcLogic {
 	for _, t := range dbTables {
 		logics = append(logics, NewLogic(t.Copy()))
 	}
+
 	return &RpcLogic{
 		Multiple: config.C.Logic.Rpc.Multiple,
 		Logics:   logics,
@@ -36,6 +38,7 @@ func New() *RpcLogic {
 func (l *RpcLogic) Run() (err error) {
 	var buf bytes.Buffer
 	// var goPkgName string
+	buf.WriteString(fmt.Sprintf("%s\n", config.DoNotEdit))
 	buf.WriteString("package dataconv\n\n")
 	tasks := make([]tools.TaskFunc, 0, len(l.Logics))
 	rpcGoPkgName := tools.PickGoPkgName(config.C.Pb.GoPackage)
@@ -65,7 +68,7 @@ func (l *RpcLogic) Run() (err error) {
 	}
 	buf.WriteString(ListReqParams(rpcGoPkgName))
 
-	filename := filepath.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv.go")
+	filename := filepath.Join(config.C.Logic.Rpc.Dir, "dataconv/dataconv_gen.go")
 	err = tools.WriteFile(filename, buf.String())
 	if err != nil {
 		return err
@@ -92,6 +95,26 @@ func (l *RpcLogic) Run() (err error) {
 	if err := tools.FormatGoFile(filename); err != nil {
 		tools.Error("[logic rpc] format go content error\n in file: %s\n error: %v", filename, err)
 	}
+
+	//修改svc文件
+	var tableModelsName []string
+	for _, t := range l.DbTables {
+		name := tools.ToCamel(t.Name)
+		tableModelsName = append(tableModelsName, fmt.Sprintf("model.%sModel", name))
+	}
+
+	svcFilePath := fmt.Sprintf("%s/../svc/serviceContext.go", config.C.Logic.Rpc.Dir)
+
+	err = tools.InsertFieldsToSvcFile(svcFilePath, tableModelsName)
+	if err != nil {
+		return err
+	}
+
+	if err := tools.FormatGoFile(svcFilePath); err != nil {
+		tools.Error("[logic rpc] format go content error\n in file: %s\n error: %v", svcFilePath, err)
+	}
+
+	tools.InstallGoImports()
 
 	return nil
 }

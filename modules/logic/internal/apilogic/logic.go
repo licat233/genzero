@@ -142,6 +142,9 @@ func (l *Logic) Add() (err error) {
 			} else if strings.ToLower(field.Name) == "uuid" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
 				continue
+			} else if field.Type == "sql.NullString" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: sql.NullString{Valid: true, String: req.%s},\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				continue
 			}
 		} else {
 			//如果使用了 rpc 服务， 此处不应该再有uuid字段
@@ -204,6 +207,9 @@ func (l *Logic) Put() (err error) {
 		if !l.UseRpc {
 			if field.Type == "time.Time" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				continue
+			} else if field.Type == "sql.NullString" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: sql.NullString{Valid: true, String: req.%s},\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 				continue
 			}
 		}
@@ -311,6 +317,9 @@ func (l *Logic) List() (err error) {
 		if !l.UseRpc {
 			if field.Type == "time.Time" {
 				conveFieldsBuf.WriteString(fmt.Sprintf("%s: time.Unix(req.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+				continue
+			} else if field.Type == "sql.NullString" {
+				conveFieldsBuf.WriteString(fmt.Sprintf("%s: sql.NullString{Valid: true, String: req.%s},\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 				continue
 			}
 		}
@@ -457,6 +466,9 @@ func (l *Logic) MdToApi() string {
 	for _, field := range l.ModelFields() {
 		if field.Type == "time.Time" {
 			buf.WriteString(fmt.Sprintf("%s: md.%s.Unix(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+			continue
+		} else if field.Type == "sql.NullString" {
+			buf.WriteString(fmt.Sprintf("%s: md.%s.String,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 			continue
 		}
 		buf.WriteString(fmt.Sprintf("%s: md.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))

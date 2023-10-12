@@ -25,6 +25,16 @@ func New() *ModelModule {
 }
 
 func (m *ModelModule) Run() (err error) {
+	//判断是否已使用goctl生成相关代码文件
+	exists, err := tools.PathExists(config.C.Model.Dir)
+	if err != nil {
+		tools.Error("[logic] checking file failed: %s", err)
+		return err
+	}
+	if !exists {
+		tools.Warning("[model] please use the goctl tool to generate the model package file first.")
+		return nil
+	}
 	err = m.Generate()
 	if err != nil {
 		tools.Error("generate model extend file faild.")

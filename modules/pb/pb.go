@@ -406,6 +406,8 @@ func GoTypeToProtoType(typeName string) (string, error) {
 		return "any", nil
 	case "time.Time":
 		return "int64", nil
+	case "sql.NullString":
+		return "string", nil
 	default:
 		return "", fmt.Errorf("unsupported type: %T", typeName)
 	}

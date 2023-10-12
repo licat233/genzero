@@ -121,6 +121,7 @@ type Field struct {
 	Name               string `json:"name"`
 	UpperCamelCaseName string `json:"upper_camel_case_name"`
 	Type               string `json:"type"`
+	RawType            string `json:"raw_type"`
 	Comment            string `json:"comment"`
 	DefaultValue       string `json:"default_value"`
 	Tag                string `json:"tag"`
@@ -135,6 +136,7 @@ func (f *Field) Copy() *Field {
 		Name:               f.Name,
 		UpperCamelCaseName: f.UpperCamelCaseName,
 		Type:               f.Type,
+		RawType:            f.RawType,
 		Comment:            f.Comment,
 		DefaultValue:       f.DefaultValue,
 		Tag:                f.Tag,
@@ -191,8 +193,8 @@ var TypeForMysqlToGo = map[string]string{
 	"char":               "string",
 	"tinytext":           "string",
 	"mediumtext":         "string",
-	"text":               "sql.NullString",
-	"longtext":           "sql.NullString",
+	"text":               "sql.NullString", //sql.NullString
+	"longtext":           "sql.NullString", //sql.NullString
 	"blob":               "string",
 	"tinyblob":           "string",
 	"mediumblob":         "string",

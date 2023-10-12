@@ -112,11 +112,19 @@ func ParseSqlFile(filename string) (*Schema, error) {
 				continue
 			}
 
+			_type := goType(fieldType)
+			if name := strings.ToLower(fieldType); name == "longtext" || name == "text" {
+				if strings.Contains(strings.ToLower(line), " not null ") {
+					_type = "string"
+				}
+			}
+
 			field := Field{
 				Primary:            strings.Contains(line, "PRIMARY KEY"),
 				Name:               fieldName,
 				UpperCamelCaseName: tools.ToCamel(fieldName),
-				Type:               goType(fieldType),
+				Type:               _type,
+				RawType:            fieldType,
 				Comment:            fieldComment,
 				DefaultValue:       PickFieldDefaultValue(line),
 				Tag:                "db",

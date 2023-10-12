@@ -72,6 +72,7 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 		fieldType := column.ColumnType
 		fieldName := column.ColumnName
 		fieldComment := column.ColumnComment
+		isNull := column.IsNullable
 
 		table, ok := tableMap[tableName]
 		if !ok {
@@ -101,11 +102,19 @@ func ParseSqlDsn(dsn string) (*Schema, error) {
 			continue
 		}
 
+		_type := goType(fieldType)
+		if name := strings.ToLower(fieldType); name == "longtext" || name == "text" {
+			if strings.Contains(strings.ToLower(isNull), "no") {
+				_type = "string"
+			}
+		}
+
 		field := Field{
 			Primary:            fieldName == "id",
 			Name:               fieldName,
 			UpperCamelCaseName: tools.ToCamel(fieldName),
-			Type:               goType(fieldType),
+			Type:               _type,
+			RawType:            fieldType,
 			Comment:            fieldComment,
 			DefaultValue:       "",
 			Tag:                "db",

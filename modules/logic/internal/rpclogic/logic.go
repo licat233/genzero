@@ -118,6 +118,9 @@ func (l *Logic) Add() (err error) {
 		if strings.ToLower(field.Name) == "uuid" {
 			conveFieldsBuf.WriteString(fmt.Sprintf("%s: uniqueid.NewUUID(), // 这里的uniqueid包，请自己定义\n", field.UpperCamelCaseName))
 			continue
+		} else if field.Type == "sql.NullString" {
+			conveFieldsBuf.WriteString(fmt.Sprintf("%s: sql.NullString{Valid: true, String: in.%s},\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+			continue
 		}
 		conveFieldsBuf.WriteString(fmt.Sprintf("%s: in.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
@@ -294,6 +297,9 @@ func (l *Logic) PbToMd() string {
 		if field.Type == "time.Time" {
 			buf.WriteString(fmt.Sprintf("%s: time.Unix(pb.%s, 0).Local(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 			continue
+		} else if field.Type == "sql.NullString" {
+			buf.WriteString(fmt.Sprintf("%s: sql.NullString{Valid: true, String: pb.%s},\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+			continue
 		}
 		buf.WriteString(fmt.Sprintf("%s: pb.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 	}
@@ -314,6 +320,9 @@ func (l *Logic) MdToPb() string {
 	for _, field := range l.PbFields() {
 		if field.Type == "time.Time" {
 			buf.WriteString(fmt.Sprintf("%s: md.%s.Unix(),\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
+			continue
+		} else if field.Type == "sql.NullString" {
+			buf.WriteString(fmt.Sprintf("%s: md.%s.String,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))
 			continue
 		}
 		buf.WriteString(fmt.Sprintf("%s: md.%s,\n", field.UpperCamelCaseName, field.UpperCamelCaseName))

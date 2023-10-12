@@ -10,6 +10,19 @@ This is a tool to generate gozero service based on mysql.
 go install github.com/licat233/genzero@latest
 ```
 
+## Usage steps - 使用步骤
+
+1. 【初始化】
+   1. 使用`genzero init config`命令生成配置文件: genzero.yaml，然后根据自己的需求编辑genzero.yaml;
+2. 【生成.api或者.proto文件】
+   1. 使用`genzero start`命令生成 xxx.api 或者 xxx.proto 文件，然后根据自己的需求编辑 xxx.api 或者 xxx.proto文件;
+3. 【生成model文件、api服务文件或者rpc服务文件】
+   1. 使用`goctl model mysql ddl --src="xxx.sql" --dir="model" --style="goZero"`命令生成model包文件
+   2. 使用`goctl api go --api xxx.api --dir ./api --style goZero`命令生成api服务文件;
+   3. 使用`goctl rpc protoc xxx.proto --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style goZero`命令生成rpc服务文件；
+4. 【生成model代码、api logic代码或者rpc logic代码】
+   1. 使用`genzero start`命令生成相关的gozero服务代码，可选择的模块有"api服务中的logic代码"或者"rpc服务中的logic代码"，以及"model包的extend方法代码"
+
 ### Use from the command line
 
 ```text

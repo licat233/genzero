@@ -161,6 +161,10 @@ func NewStructField(name, typ, tagType, tagName, tagOpt, comment string) *Struct
 		typ = "int64"
 	}
 
+	if typ == "sql.NullString" {
+		typ = "string"
+	}
+
 	tagName = utils.ConvertStringStyle(config.C.Api.JsonStyle, tagName)
 	return &StructField{
 		Name:    name,
