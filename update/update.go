@@ -18,7 +18,7 @@ import (
 )
 
 func Update() {
-	currentVersion := config.CurrentVersion
+	currentVersion := config.ProjectVersion
 	latestVersion := getLatestVersion()
 
 	if strings.EqualFold(currentVersion, latestVersion) {

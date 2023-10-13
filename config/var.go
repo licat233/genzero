@@ -9,9 +9,9 @@ var (
 	DatabaseName string
 )
 
+var ProjectVersion = "v1.0.0" // CurrentVersion 当前项目版本
+
 const (
-	// CurrentVersion 当前项目版本
-	CurrentVersion = "v1.1.4"
 
 	// ProjectName 当前项目名称
 	ProjectName = "genzero"

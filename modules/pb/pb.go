@@ -72,7 +72,7 @@ func New() *PbModule {
 		ProjectAuthor:          tools.GetCurrentUserName(),
 		ProjectName:            config.ProjectName,
 		ProjectAddr:            config.ProjectURL,
-		ProjectVersion:         config.CurrentVersion,
+		ProjectVersion:         config.ProjectVersion,
 		TplContent:             conf.TplContent,
 		OutFileName:            getOutFilename(config.C.Pb.ServiceName),
 		OldContent:             "",

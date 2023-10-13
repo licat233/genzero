@@ -21,7 +21,7 @@ var versionCmd = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Print the version number of " + config.ProjectName,
 	Run: func(cmd *cobra.Command, args []string) {
-		tools.Success("current version: " + config.CurrentVersion)
+		tools.Success("current version: " + config.ProjectVersion)
 	},
 }
 
@@ -180,14 +180,14 @@ var rootCmd = &cobra.Command{
 	SuggestFor: []string{},
 	Short:      "This is a tool to generate gozero service based on mysql",
 	GroupID:    "",
-	Long:       fmt.Sprintf("This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\ncurrent version: %s\nGithub: https://github.com/licat233/genzero", config.CurrentVersion),
+	Long:       fmt.Sprintf("This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\ncurrent version: %s\nGithub: https://github.com/licat233/genzero", config.ProjectVersion),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return fmt.Errorf("%s requires at least one argument", cmd.CommandPath())
 		}
 		return nil
 	},
-	Version: config.CurrentVersion,
+	Version: config.ProjectVersion,
 	Run: func(cmd *cobra.Command, args []string) {
 		// run()
 	},
@@ -302,6 +302,16 @@ func init() {
 	rootCmd.AddCommand(logicCmd)
 
 	initCmd.AddCommand(initConfigCmd)
+
+	rootCmd.SetHelpTemplate(greenColorizeHelp(rootCmd.HelpTemplate()))
+}
+
+func greenColorizeHelp(template string) string {
+	// 在这里使用ANSI转义码添加颜色
+	// 参考ANSI转义码文档：https://en.wikipedia.org/wiki/ANSI_escape_code
+	// 将标题文本设置为绿色
+	template = "\033[32m" + template + "\033[0m"
+	return template
 }
 
 func Initialize() error {
