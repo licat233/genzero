@@ -9,7 +9,7 @@ var (
 	DatabaseName string
 )
 
-var ProjectVersion = "v1.0.0" // CurrentVersion 当前项目版本
+var ProjectVersion = GetVersion()
 
 const (
 
