@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/licat233/genzero/tools"
 	"gopkg.in/yaml.v3"
@@ -90,12 +88,12 @@ func RenameOldConfigFile() error {
 	return nil
 }
 
-func GetVersion() string {
-	out, err := exec.Command("git", "describe", "--tags", "--abbrev=0").Output()
-	if err != nil {
-		tools.Error("获取git tags出错:%s", err)
-		return "v1.0.0"
-	}
-	version := strings.TrimSpace(string(out))
-	return version
-}
+// func GetVersion() string {
+// 	out, err := exec.Command("git", "describe", "--tags", "--abbrev=0").Output()
+// 	if err != nil {
+// 		tools.Error("获取git tags出错:%s", err)
+// 		return "v1.0.0"
+// 	}
+// 	version := strings.TrimSpace(string(out))
+// 	return version
+// }
