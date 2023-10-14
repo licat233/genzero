@@ -257,7 +257,7 @@ func GenBaseStructCollection() StructCollection {
 		}),
 		NewStruct("NilReq", "json", "空请求", nil),
 		NewStruct("NilResp", "json", "空响应", nil),
-		NewStruct("Resp", "json", "空响应", StructFieldCollection{
+		NewStruct("Resp", "json", "通用数据响应", StructFieldCollection{
 			NewStructField("Body", "interface{}", "json", "body", "", "响应数据"),
 		}),
 		NewStruct("CaptchaResp", "json", "验证码响应", StructFieldCollection{
