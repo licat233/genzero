@@ -12,7 +12,7 @@ import (
 	"github.com/licat233/genzero/modules/model"
 	"github.com/licat233/genzero/modules/pb"
 	"github.com/licat233/genzero/tools"
-	"github.com/licat233/genzero/update"
+	"github.com/licat233/genzero/upgrade"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,7 @@ var upgradeCmd = &cobra.Command{
 	Aliases: []string{"up", "u"},
 	Short:   "Upgrade " + config.ProjectName + " to latest version",
 	Run: func(cmd *cobra.Command, args []string) {
-		update.Update()
+		upgrade.Upgrade()
 	},
 }
 
