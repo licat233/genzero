@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var C *Config
+var C *Config = New()
 
 type Config struct {
 	DB    *DatabaseConfig `yaml:"database"`

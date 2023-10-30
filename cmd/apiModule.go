@@ -26,3 +26,19 @@ var apiCmd = &cobra.Command{
 		tools.Success("Done.")
 	},
 }
+
+func init() {
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.JsonStyle, "json_style", config.SnakeCase, "JSON field naming style: "+config.StyleList)
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.Jwt, "jwt", "", "api jwt")
+	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Middleware, "middleware", []string{}, "api middleware")
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.Prefix, "prefix", "", "api prefix")
+	apiCmd.PersistentFlags().BoolVar(&config.C.Api.Multiple, "multiple", false, "api multiple")
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.Dir, "dir", "", "api output directory")
+	apiCmd.PersistentFlags().StringVar(&config.C.Api.ServiceName, "service_name", "", "service name, default value is database name")
+	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
+	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
+	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
+
+	apiCmd.SetHelpTemplate(setColorizeHelp(apiCmd.HelpTemplate()))
+	rootCmd.AddCommand(apiCmd)
+}

@@ -39,33 +39,6 @@ var upgradeCmd = &cobra.Command{
 	},
 }
 
-var initCmd = &cobra.Command{
-	Use:     "init",
-	Aliases: []string{"i"},
-	Short:   "Create the default " + config.ProjectName + " configuration file in the current directory",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("%s requires at least one argument", cmd.CommandPath())
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-	},
-}
-
-var initConfigCmd = &cobra.Command{
-	Use:     "config",
-	Aliases: []string{"c"},
-	Short:   "Create the default " + config.ProjectName + " configuration file in the current directory, or specified directory",
-	Run: func(cmd *cobra.Command, args []string) {
-		if err := config.C.CreateYaml(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
 var startCmd = &cobra.Command{
 	Use:     "start",
 	Aliases: []string{"run"},
@@ -131,75 +104,18 @@ func runByConf() {
 }
 
 func init() {
-	config.C = config.New()
-
-	initConfigCmd.PersistentFlags().StringVar(&config.InitConfSrc, "dir", config.DefaultConfigFileName, "file location for yaml configuration")
-
 	rootCmd.PersistentFlags().BoolVar(&IsDev, "dev", false, "dev mode, print error message")
 	rootCmd.PersistentFlags().StringVar(&config.ConfSrc, "conf", config.DefaultConfigFileName, "file location for yaml configuration")
-
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.DSN, "dsn", "", "data source name (DSN) to use when connecting to the database")
 	rootCmd.PersistentFlags().StringVar(&config.C.DB.Src, "src", "", "sql file to use when connecting to the database")
 	rootCmd.PersistentFlags().StringSliceVar(&config.C.DB.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
 	rootCmd.PersistentFlags().StringSliceVar(&config.C.DB.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
 	rootCmd.PersistentFlags().StringSliceVar(&config.C.DB.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.FileStyle, "file_style", config.LowerCamelCase, "proto file naming style: "+config.StyleList)
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Package, "pkg", "", "proto package")
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.GoPackage, "gopkg", "", "proto go package")
-	pbCmd.PersistentFlags().BoolVar(&config.C.Pb.Multiple, "multiple", false, "proto multiple")
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Dir, "dir", "", "proto output directory")
-	pbCmd.PersistentFlags().StringVar(&config.C.Pb.ServiceName, "service_name", "", "service name, default value is database name")
-	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
-	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
-	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
-
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.JsonStyle, "json_style", config.SnakeCase, "JSON field naming style: "+config.StyleList)
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.Jwt, "jwt", "", "api jwt")
-	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Middleware, "middleware", []string{}, "api middleware")
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.Prefix, "prefix", "", "api prefix")
-	apiCmd.PersistentFlags().BoolVar(&config.C.Api.Multiple, "multiple", false, "api multiple")
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.Dir, "dir", "", "api output directory")
-	apiCmd.PersistentFlags().StringVar(&config.C.Api.ServiceName, "service_name", "", "service name, default value is database name")
-	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
-	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
-	apiCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
-
-	modelCmd.PersistentFlags().StringVar(&config.C.Model.Dir, "dir", "", "model output directory")
-	modelCmd.PersistentFlags().StringVar(&config.C.Api.ServiceName, "service_name", "", "service name, default value is database name")
-	modelCmd.PersistentFlags().StringSliceVar(&config.C.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
-	modelCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
-	modelCmd.PersistentFlags().StringSliceVar(&config.C.Api.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
-
-	apilogicCmd.PersistentFlags().BoolVar(&config.C.Logic.Api.UseRpc, "use_rpc", false, "use rpc for api")
-	// apilogicCmd.PersistentFlags().BoolVar(&config.C.Logic.Api.RpcMultiple, "rpc_multiple", false, "is multiple rpc ?")
-	apilogicCmd.PersistentFlags().StringVar(&config.C.Logic.Api.FileStyle, "file_style", config.LowerCamelCase, "file naming style: "+config.StyleList)
-	apilogicCmd.PersistentFlags().StringVar(&config.C.Logic.Api.Dir, "dir", "", "api logic directory")
-	apilogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Api.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
-	apilogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Api.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
-	// apilogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Api.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
-
-	rpclogicCmd.PersistentFlags().BoolVar(&config.C.Logic.Rpc.Multiple, "multiple", false, "is multiple ?")
-	rpclogicCmd.PersistentFlags().StringVar(&config.C.Logic.Rpc.FileStyle, "file_style", config.LowerCamelCase, "file naming style: "+config.StyleList)
-	rpclogicCmd.PersistentFlags().StringVar(&config.C.Logic.Rpc.Dir, "dir", "", "rpc logic directory")
-	rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Rpc.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
-	// rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Rpc.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
-
 	rootCmd.AddGroup(modulesGroup)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
-	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(pbCmd)
-	rootCmd.AddCommand(apiCmd)
-	rootCmd.AddCommand(modelCmd)
 	rootCmd.AddCommand(startCmd)
-
-	logicCmd.AddCommand(apilogicCmd)
-	logicCmd.AddCommand(rpclogicCmd)
-
-	rootCmd.AddCommand(logicCmd)
-
-	initCmd.AddCommand(initConfigCmd)
 
 	rootCmd.SetHelpTemplate(greenColorizeHelp(rootCmd.HelpTemplate()))
 }

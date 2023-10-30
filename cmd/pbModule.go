@@ -27,3 +27,18 @@ var pbCmd = &cobra.Command{
 		tools.Success("Done.")
 	},
 }
+
+func init() {
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.FileStyle, "file_style", config.LowerCamelCase, "proto file naming style: "+config.StyleList)
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Package, "pkg", "", "proto package")
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.GoPackage, "gopkg", "", "proto go package")
+	pbCmd.PersistentFlags().BoolVar(&config.C.Pb.Multiple, "multiple", false, "proto multiple")
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.Dir, "dir", "", "proto output directory")
+	pbCmd.PersistentFlags().StringVar(&config.C.Pb.ServiceName, "service_name", "", "service name, default value is database name")
+	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
+	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreTables, "ignore_tables", []string{}, "ignore table string, default is none，split multiple value by ','")
+	pbCmd.PersistentFlags().StringSliceVar(&config.C.Pb.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
+
+	pbCmd.SetHelpTemplate(setColorizeHelp(pbCmd.HelpTemplate()))
+	rootCmd.AddCommand(pbCmd)
+}
