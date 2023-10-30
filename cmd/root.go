@@ -16,6 +16,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var modulesGroup = &cobra.Group{
+	ID:    "modules",
+	Title: "modules:",
+}
+
 var versionCmd = &cobra.Command{
 	Use:     "version",
 	Aliases: []string{"v"},
@@ -61,109 +66,6 @@ var initConfigCmd = &cobra.Command{
 	},
 }
 
-var modelCmd = &cobra.Command{
-	Use:   "model",
-	Short: "Generate model code",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Model.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := model.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
-var apiCmd = &cobra.Command{
-	Use:   "api",
-	Short: "Generate .api files",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Api.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := api.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
-var pbCmd = &cobra.Command{
-	Use:     "pb",
-	Aliases: []string{"proto"},
-	Short:   "Generate .proto files",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Pb.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := pb.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
-var logicCmd = &cobra.Command{
-	Use:   "logic",
-	Short: "Modify logic files, this feature has not been developed yet",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Logic.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := logic.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
-var apilogicCmd = &cobra.Command{
-	Use:   "api",
-	Short: "Modify api logic files",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Logic.Api.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := logic.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
-var rpclogicCmd = &cobra.Command{
-	Use:   "rpc",
-	Short: "Modify rpc logic files",
-	Run: func(cmd *cobra.Command, args []string) {
-		config.C.Logic.Rpc.Status = true
-		if err := Initialize(); err != nil {
-			tools.Error("Failed to initialize: " + err.Error())
-			os.Exit(1)
-		}
-		if err := logic.New().Run(); err != nil {
-			tools.Warning(err.Error())
-			os.Exit(1)
-		}
-		tools.Success("Done.")
-	},
-}
-
 var startCmd = &cobra.Command{
 	Use:     "start",
 	Aliases: []string{"run"},
@@ -175,12 +77,9 @@ var startCmd = &cobra.Command{
 }
 
 var rootCmd = &cobra.Command{
-	Use:        config.ProjectName,
-	Aliases:    []string{},
-	SuggestFor: []string{},
-	Short:      "This is a tool to generate gozero service based on mysql",
-	GroupID:    "",
-	Long:       fmt.Sprintf("This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\ncurrent version: %s\nGithub: https://github.com/licat233/genzero", config.ProjectVersion),
+	Use:   config.ProjectName,
+	Short: "This is a tool to generate gozero service based on mysql",
+	Long:  fmt.Sprintf("This is a tool to generate gozero service based on mysql.\nThe goctl tool must be installed before use.\ncurrent version: %s\nGithub: https://github.com/licat233/genzero", config.ProjectVersion),
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return fmt.Errorf("%s requires at least one argument", cmd.CommandPath())
@@ -230,8 +129,6 @@ func runByConf() {
 
 	tools.Success("Done.")
 }
-
-var IsDev bool
 
 func init() {
 	config.C = config.New()
@@ -288,6 +185,7 @@ func init() {
 	rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Rpc.Tables, "tables", []string{}, "need to generate tables, default is all tables，split multiple value by ','")
 	// rpclogicCmd.PersistentFlags().StringSliceVar(&config.C.Logic.Rpc.IgnoreColumns, "ignore_columns", []string{}, "ignore column string, default is none，split multiple value by ','")
 
+	rootCmd.AddGroup(modulesGroup)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(initCmd)
